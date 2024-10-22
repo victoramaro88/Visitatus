@@ -15,7 +15,7 @@ namespace API_Visitatus.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Cidade>>> GetCidades(long id)
+        public async Task<ActionResult<IEnumerable<Cidade>>> GetCidades(long id = 0)
         {
             if (id > 0)
             {

@@ -5,21 +5,21 @@ using Microsoft.EntityFrameworkCore;
 namespace API_Visitatus.Controllers
 {
     [Route("api/[controller]/[action]")]
-    public class EstadoController : ControllerBase
+    public class PerfilController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public EstadoController(AppDbContext context)
+        public PerfilController(AppDbContext context)
         {
             _context = context;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Estado>>> GetEstados(int id = 0)
+        public async Task<ActionResult<IEnumerable<Perfil>>> GetPerfil(int id = 0)
         {
             if (id > 0)
             {
-                var result = await _context.Estados.FindAsync(id);
+                var result = await _context.Perfils.FindAsync(id);
 
                 if (result == null)
                 {
@@ -27,12 +27,12 @@ namespace API_Visitatus.Controllers
                 }
                 else
                 {
-                    return Ok(new List<Estado> { result });
+                    return Ok(new List<Perfil> { result });
                 }
             }
             else
             {
-                var result = await _context.Estados.ToListAsync();
+                var result = await _context.Perfils.ToListAsync();
 
                 if (result == null || result.Count == 0)
                 {
@@ -43,6 +43,11 @@ namespace API_Visitatus.Controllers
                     return Ok(result);
                 }
             }
+        }
+
+        private bool RitoExists(int id)
+        {
+            return _context.Ritos.Any(e => e.RitCodi == id);
         }
     }
 }
