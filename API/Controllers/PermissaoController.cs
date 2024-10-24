@@ -45,6 +45,44 @@ namespace API_Visitatus.Controllers
             }
         }
 
+        [HttpGet("{perCodi}")]
+        public async Task<ActionResult<IEnumerable<PermissaoPerfilListaModel>>> GetPermissaoPerfil(int perCodi)
+        {
+            if (perCodi > 0)
+            {
+                var result = await (from pp in _context.PermissaoPerfils
+                                    join p in _context.Perfils on pp.PerCodi equals p.PerCodi
+                                    join pr in _context.Permissaos on pp.PemCodi equals pr.PemCodi
+                                    where p.PerCodi == perCodi
+                                    select new PermissaoPerfilListaModel
+                                    {
+                                        perCodi = p.PerCodi,
+                                        perNome = p.PerNome,
+                                        perStat = p.PerStat,
+                                        pemCodi = pr.PemCodi,
+                                        pemNome = pr.PemNome,
+                                        pemStat = pr.PemStat,
+                                        papAtvo = pp.PapAtvo,
+                                        pepStat = pp.PepStat
+                                    }).ToListAsync();
+
+                if (!result.Any())
+                {
+                    return NotFound("Sem registros.");
+                }
+                else
+                {
+                    return Ok(result);
+                }
+
+            }
+            else
+            {
+                return NotFound("Obrigatório o id do Perfil.");
+            }
+
+        }
+
         [HttpPut("{pemCodi}")]
         public async Task<IActionResult> PutRito(int pemCodi, Permissao permissao)
         {
