@@ -15,7 +15,7 @@ namespace API_Visitatus.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Sessao>>> GetSessao(int id = 0)
+        public async Task<ActionResult<IEnumerable<Sessao>>> GetSessao(long id = 0)
         {
             if (id > 0)
             {
@@ -45,8 +45,57 @@ namespace API_Visitatus.Controllers
             }
         }
 
+        [HttpGet("{LojCodi}")]
+        public Task<ActionResult<IEnumerable<SessaoListaModel>>> GetSessaoByLojCodi(long LojCodi)
+        {
+            try
+            {
+                if (LojCodi > 0)
+                {
+                    var result = (from s in _context.Sessaos
+                                  join g in _context.Graus on s.GraCodi equals g.GraCodi
+                                  join ts in _context.TipoSessaos on s.TiScodi equals ts.TiScodi
+                                  select new SessaoListaModel
+                                  {
+                                      SesCodi = s.SesCodi,
+                                      SesDesc = s.SesDesc,
+                                      SesDtHr = s.SesDtHr,
+                                      SesLibe = s.SesLibe,
+                                      SesStat = s.SesStat,
+                                      LojCodi = s.LojCodi,
+                                      GraCodi = s.GraCodi,
+                                      GraNome = g.GraNome,
+                                      TiSCodi = s.TiScodi,
+                                      TiSNome = ts.TiSnome,
+                                      SesNume = (long)s.SesNume!
+                                  })
+                                  .OrderBy(x => x.SesNume)
+                                  .ThenBy(x => x.SesDtHr)
+                                  .ToList();
+
+                    if (result == null || result.Count == 0)
+                    {
+                        return Task.FromResult<ActionResult<IEnumerable<SessaoListaModel>>>(NotFound());
+                    }
+                    else
+                    {
+                        return Task.FromResult<ActionResult<IEnumerable<SessaoListaModel>>>(Ok(result));
+                    }
+                }
+                else
+                {
+                    return Task.FromResult<ActionResult<IEnumerable<SessaoListaModel>>>(BadRequest("Parâmetros Inválidos."));
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
         [HttpPut("{sesCodi}")]
-        public async Task<IActionResult> PutSessao(int sesCodi, Sessao sessao)
+        public async Task<IActionResult> PutSessao(long sesCodi, Sessao sessao)
         {
             if (sesCodi != sessao.SesCodi)
             {
@@ -92,7 +141,7 @@ namespace API_Visitatus.Controllers
             }
         }
 
-        private bool SessaoExists(int id)
+        private bool SessaoExists(long id)
         {
             return _context.Sessaos.Any(e => e.SesCodi == id);
         }

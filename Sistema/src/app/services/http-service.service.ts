@@ -6,6 +6,8 @@ import { environment } from "../../environments/environment";
 import { LoginModel } from "../models/Login.Model";
 import { UsuarioLogadoModel } from "../models/UsuarioLogado.Model";
 import { PermissaoPerfilListaModel } from "../models/PermissaoPerfilLista.Model ";
+import { SessaoModel } from "../models/Sessao.Model";
+import { SessaoListaModel } from "../models/SessaoLista.Model";
 
 @Injectable({
     providedIn: 'root'
@@ -19,6 +21,14 @@ export class HttpService {
 
   public GetPermissaoPerfil(perCodi: number): Observable<PermissaoPerfilListaModel[]> {
     return this.http.get<PermissaoPerfilListaModel[]>(`${environment.apiServicos}/Permissao/GetPermissaoPerfil/${perCodi}`);
+  }
+
+  public GetSessao(perCodi: number): Observable<SessaoModel[]> {
+    return this.http.get<SessaoModel[]>(`${environment.apiServicos}/Sessao/GetSessao/${perCodi}`);
+  }
+
+  public GetSessaoByLojCodi(lojCodi: number): Observable<SessaoListaModel[]> {
+    return this.http.get<SessaoListaModel[]>(`${environment.apiServicos}/Sessao/GetSessaoByLojCodi/${lojCodi}`);
   }
 
   // #endregion

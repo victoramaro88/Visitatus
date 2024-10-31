@@ -23,6 +23,9 @@ import { TooltipModule } from 'primeng/tooltip';
 import { CardModule } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { MenubarModule } from 'primeng/menubar';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @NgModule({
   imports: [
@@ -48,7 +51,10 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     TooltipModule,
     CardModule,
     DialogModule,
-    RadioButtonModule
+    RadioButtonModule,
+    MenubarModule,
+    IconFieldModule,
+    InputIconModule
   ],
   exports: [
     CommonModule,
@@ -73,7 +79,10 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     TooltipModule,
     CardModule,
     DialogModule,
-    RadioButtonModule
+    RadioButtonModule,
+    MenubarModule,
+    IconFieldModule,
+    InputIconModule
   ],
   providers: [provideNgxMask()]
 })
