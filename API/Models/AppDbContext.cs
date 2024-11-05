@@ -379,6 +379,11 @@ namespace API_Visitatus.Models
 
                 entity.Property(e => e.SesLibe).HasColumnName("sesLibe");
 
+                entity.Property(e => e.SesNome)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("sesNome");
+
                 entity.Property(e => e.SesNume).HasColumnName("sesNume");
 
                 entity.Property(e => e.SesStat).HasColumnName("sesStat");

@@ -67,7 +67,8 @@ namespace API_Visitatus.Controllers
                                       GraNome = g.GraNome,
                                       TiSCodi = s.TiScodi,
                                       TiSNome = ts.TiSnome,
-                                      SesNume = (long)s.SesNume!
+                                      SesNume = (long)s.SesNume!,
+                                      SesNome = s.SesNome
                                   })
                                   .OrderBy(x => x.SesNume)
                                   .ThenBy(x => x.SesDtHr)
@@ -95,32 +96,39 @@ namespace API_Visitatus.Controllers
 
 
         [HttpPut("{sesCodi}")]
-        public async Task<IActionResult> PutSessao(long sesCodi, Sessao sessao)
+        public async Task<IActionResult> PutSessao(long sesCodi, [FromBody] Sessao sessao)
         {
-            if (sesCodi != sessao.SesCodi)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(sessao).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SessaoExists(sesCodi))
+                if (sesCodi != sessao.SesCodi)
                 {
-                    return NotFound();
+                    return BadRequest();
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return Ok("Alterado com sucesso!");
+                _context.Entry(sessao).State = EntityState.Modified;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!SessaoExists(sesCodi))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return Ok("Alterado com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]

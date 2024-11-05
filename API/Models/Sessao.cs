@@ -19,6 +19,7 @@ namespace API_Visitatus.Models
         public int GraCodi { get; set; }
         public int TiScodi { get; set; }
         public long? SesNume { get; set; }
+        public string SesNome { get; set; } = null!;
 
         public virtual Grau GraCodiNavigation { get; set; } = null!;
         public virtual Loja LojCodiNavigation { get; set; } = null!;

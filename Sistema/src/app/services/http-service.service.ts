@@ -1,3 +1,5 @@
+import { GrauModel } from './../models/Grau.Model';
+import { TipoSessaoModel } from './../models/TipoSessao.Model';
 
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from '@angular/core';
@@ -8,6 +10,7 @@ import { UsuarioLogadoModel } from "../models/UsuarioLogado.Model";
 import { PermissaoPerfilListaModel } from "../models/PermissaoPerfilLista.Model ";
 import { SessaoModel } from "../models/Sessao.Model";
 import { SessaoListaModel } from "../models/SessaoLista.Model";
+import { LojaModel } from "../models/Loja.Model";
 
 @Injectable({
     providedIn: 'root'
@@ -31,6 +34,18 @@ export class HttpService {
     return this.http.get<SessaoListaModel[]>(`${environment.apiServicos}/Sessao/GetSessaoByLojCodi/${lojCodi}`);
   }
 
+  public GetLojaByIdUsuario(usuCodi: number): Observable<LojaModel[]> {
+    return this.http.get<LojaModel[]>(`${environment.apiServicos}/Loja/GetLojaByIdUsuario/${usuCodi}`);
+  }
+
+  public GetTipoSessao(TiScodi: number): Observable<TipoSessaoModel[]> {
+    return this.http.get<TipoSessaoModel[]>(`${environment.apiServicos}/TipoSessao/GetTipoSessao/${TiScodi}`);
+  }
+
+  public GetGrau(GraCodi: number): Observable<GrauModel[]> {
+    return this.http.get<GrauModel[]>(`${environment.apiServicos}/Grau/GetGrau/${GraCodi}`);
+  }
+
   // #endregion
 
   // #region POST
@@ -50,9 +65,9 @@ export class HttpService {
 
   // #region PUT
 
-  // public PutConsultorio(conCodi: number, objConsultorio: ConsultorioModel): Observable<string> {
-  //   return this.http.put<string>(`${environment.apiServicos}/Consultorio/${conCodi}`, objConsultorio);
-  // }
+  public PutSessao(sesCodi: number, objSessao: SessaoModel): Observable<string> {
+    return this.http.put<string>(`${environment.apiServicos}/Sessao/PutSessao/${sesCodi}`, objSessao);
+  }
 
   // #endregion
 

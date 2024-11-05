@@ -15,7 +15,7 @@
   [paginator]="true"
   [rows]="5"
   [rowsPerPageOptions]="[5, 10, 20, 50, 100]"
-  [globalFilterFields]="['SesDesc', 'TiSNome', 'GraNome']"
+  [globalFilterFields]="['SesNume', 'SesDesc', 'TiSNome', 'GraNome']"
   >
   <ng-template pTemplate="caption">
     <div class="flex">
@@ -37,6 +37,7 @@
             <th style="text-align: center;">Data</th>
             <th style="text-align: center;">Tipo</th>
             <th style="text-align: center;">Grau</th>
+            <th style="text-align: center;">Nome</th>
             <th style="text-align: center;">Descrição</th>
             <th style="text-align: center;">Liberada</th>
             <th style="text-align: center;">Status</th>
@@ -49,23 +50,90 @@
             <td style="text-align: center;"><span class="p-column-title"><b>Data</b></span>{{ item.SesDtHr | date:'dd/MM/yyyy - hh:MM:ss' }}</td>
             <td style="text-align: center;">{{ item.TiSNome }}</td>
             <td style="text-align: center;">{{ item.GraNome }}</td>
-            <td>{{ item.SesDesc }}</td>
+            <td>{{ item.SesNome }}</td>
+            <td>{{ item.SesDesc.substring(0, 30) }}...</td>
             <td style="text-align: center;">{{ item.SesLibe ? 'Sim' : 'Não' }}</td>
             <td style="text-align: center;">{{ item.SesStat ? 'Ativa' : 'Inativa' }}</td>
             <td style="text-align: center;">
               <p-button (click)="EditarRegistro(item);" icon="pi pi-pen-to-square" [rounded]="true" [text]="true" severity="info" pTooltip="Editar" tooltipPosition="left"/>
-              <p-button icon="pi {{item.SesLibe ? 'pi-ban' : 'pi-thumbs-up'}}" [rounded]="true" [text]="true" [severity]="item.SesLibe ? 'danger' : 'success'" pTooltip="{{item.SesLibe ? 'Travar' : 'Liberar'}}" tooltipPosition="left"/>
-              <p-button icon="pi {{item.SesStat ? 'pi-lock-open' : 'pi-lock'}}" [rounded]="true" [text]="true" [severity]="item.SesStat ? 'danger' : 'success'" pTooltip="{{item.SesStat ? 'Inativar' : 'Ativar' }}" tooltipPosition="left"/>
+              <p-button (click)="LiberaTravaSessao(item.SesCodi, item);" icon="pi {{item.SesLibe ? 'pi-ban' : 'pi-thumbs-up'}}" [rounded]="true" [text]="true" [severity]="item.SesLibe ? 'danger' : 'success'" pTooltip="{{item.SesLibe ? 'Travar Sessão' : 'Liberar Sessão'}}" tooltipPosition="left"/>
+              <p-button (click)="AtivaInativaSessao(item.SesCodi, item);" icon="pi {{item.SesStat ? 'pi-lock-open' : 'pi-lock'}}" [rounded]="true" [text]="true" [severity]="item.SesStat ? 'danger' : 'success'" pTooltip="{{item.SesStat ? 'Inativar Sessão' : 'Ativar Sessão' }}" tooltipPosition="left"/>
             </td>
         </tr>
     </ng-template>
   </p-table>
 </div>
 
-<div *ngIf="boolManterRegistro">
+<div *ngIf="boolManterRegistro" class="container">
+
+  <div class="formgrid grid">
+    <div class="field col-12 md:col-2">
+        <label for="numeroSessao">Sessão Nº</label>
+        <input pInputText [(ngModel)]="objSessao.SesNume" id="numeroSessao" type="number" style="text-align: center;" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+    <div class="field col-12 md:col-2">
+        <label for="dataHora">Data / Hora</label><br>
+        <p-calendar
+            inputId="dataHora"
+            [(ngModel)]="objSessao.SesDtHr"
+            [showTime]="true"
+            [hourFormat]="'24'"
+            dateFormat="dd/mm/yy"
+            class="text-center-calendar"
+            [style]="{ width: '100%' }"
+          >
+        </p-calendar>
+    </div>
+    <div class="field col-12 md:col-8">
+        <label for="nomeSessao">Nome da Sessão</label>
+        <input pInputText id="nomeSessao" [(ngModel)]="objSessao.SesNome" type="text" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+    <div class="field col-12">
+        <label for="descSessao">Texto da Sessão</label>
+        <textarea id="descSessao" [(ngModel)]="objSessao.SesDesc" type="text" rows="4" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"></textarea>
+    </div>
+    <div class="field col-12 md:col-5">
+        <label for="state">Loja</label><br>
+        <p-dropdown
+          [options]="lstLoja"
+          [(ngModel)]="objLojaSelecionada"
+          optionLabel="displayName"
+          placeholder="Selecione"
+          [style]="{ width: '100%' }"
+          />
+    </div>
+    <div class="field col-12 md:col-4">
+        <label for="state">Tipo de Sessão</label><br>
+        <p-dropdown
+          [options]="lstTipoSessao"
+          [(ngModel)]="objTipoSessaoSelecionado"
+          optionLabel="TiSnome"
+          placeholder="Selecione"
+          [style]="{ width: '100%' }"
+          />
+    </div>
+    <div class="field col-12 md:col-3">
+        <label for="state">Grau</label><br>
+        <p-dropdown
+          [options]="lstGrau"
+          [(ngModel)]="objGrauSelecionado"
+          optionLabel="GraNome"
+          placeholder="Selecione"
+          [style]="{ width: '100%' }"
+          />
+    </div>
+    <div class="field col-12 md:col-6">
+        <label for="city">City</label>
+        <input id="city" type="text" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+    <div class="field col-12 md:col-3">
+        <label for="zip">Zip</label>
+        <input id="zip" type="text" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+</div>
 
   <div class="text-right">
-    <p-button label="Salvar" [raised]="true" severity="success" /> &nbsp;
+    <p-button (click)="SalvarRegistro();" label="Salvar" [raised]="true" severity="success" /> &nbsp;
     <p-button (click)="CancelaRegitro();" label="Cancelar" [raised]="true" severity="danger" />
   </div>
 </div>

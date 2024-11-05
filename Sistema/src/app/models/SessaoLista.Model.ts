@@ -10,6 +10,7 @@ export class SessaoListaModel {
   TiSCodi: number;
   TiSNome: string;
   SesNume: number;
+  SesNome: string;
 
   constructor(
     SesCodi: number,
@@ -22,7 +23,8 @@ export class SessaoListaModel {
     GraNome: string,
     TiSCodi: number,
     TiSNome: string,
-    SesNume: number
+    SesNume: number,
+    SesNome: string
   ) {
     this.SesCodi = SesCodi;
     this.SesDesc = SesDesc;
@@ -35,5 +37,6 @@ export class SessaoListaModel {
     this.TiSCodi = TiSCodi;
     this.TiSNome = TiSNome;
     this.SesNume = SesNume;
+    this.SesNome = SesNome;
   }
 }

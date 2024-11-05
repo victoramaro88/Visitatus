@@ -32,7 +32,9 @@ namespace API_Visitatus.Controllers
             }
             else
             {
-                var result = await _context.TipoSessaos.ToListAsync();
+                var result = await _context.TipoSessaos
+                           .OrderBy(ts => ts.TiSnome)
+                           .ToListAsync();
 
                 if (result == null || result.Count == 0)
                 {
