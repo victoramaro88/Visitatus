@@ -22,9 +22,9 @@
               <div class="grid">
                   <div class="col-12 pt-3">
                       <div class="text-right">
-                        <small>{{objUsuarioLogado.usuNome}}</small>
+                        <small>{{objUsuarioLogado ? objUsuarioLogado.usuNome : ''}}</small>
                         <br>
-                        <small><strong>Perfil:</strong> {{objPerfilUsuario.perNome}}</small>
+                        <small><strong>Perfil:</strong> {{objPerfilUsuario ? objPerfilUsuario.perNome : ''}}</small>
                       </div>
                   </div>
               </div>

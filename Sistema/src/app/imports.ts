@@ -26,6 +26,8 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { MenubarModule } from 'primeng/menubar';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { BadgeModule } from 'primeng/badge';
 
 @NgModule({
   imports: [
@@ -54,7 +56,9 @@ import { InputIconModule } from 'primeng/inputicon';
     RadioButtonModule,
     MenubarModule,
     IconFieldModule,
-    InputIconModule
+    InputIconModule,
+    SelectButtonModule,
+    BadgeModule
   ],
   exports: [
     CommonModule,
@@ -82,7 +86,9 @@ import { InputIconModule } from 'primeng/inputicon';
     RadioButtonModule,
     MenubarModule,
     IconFieldModule,
-    InputIconModule
+    InputIconModule,
+    SelectButtonModule,
+    BadgeModule
   ],
   providers: [provideNgxMask()]
 })

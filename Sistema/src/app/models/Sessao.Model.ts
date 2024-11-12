@@ -1,6 +1,7 @@
 export class SessaoModel {
   SesCodi: number;
   SesDesc: string;
+  SesNome: string;
   SesDtHr: Date;
   SesLibe: boolean;
   SesStat: boolean;
@@ -12,6 +13,7 @@ export class SessaoModel {
   constructor() {
     this.SesCodi = 0;
     this.SesDesc = "";
+    this.SesNome = "";
     this.SesDtHr = new Date();
     this.SesLibe = false;
     this.SesStat = false;

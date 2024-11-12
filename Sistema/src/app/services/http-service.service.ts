@@ -46,6 +46,10 @@ export class HttpService {
     return this.http.get<GrauModel[]>(`${environment.apiServicos}/Grau/GetGrau/${GraCodi}`);
   }
 
+  public GetValidaNumeroSessao(sesNume: number, lojCodi: number): Observable<SessaoModel> {
+    return this.http.get<SessaoModel>(`${environment.apiServicos}/Sessao/GetValidaNumeroSessao/${sesNume}/${lojCodi}`);
+  }
+
   // #endregion
 
   // #region POST
@@ -57,9 +61,9 @@ export class HttpService {
     return this.http.post<UsuarioLogadoModel>(`${environment.apiServicos}/Util/Login`, objLogin);
   }
 
-  // public InserirPessoa(objPessoa: PessoaDTO): Observable<string> {
-  //   return this.http.post<string>(`${environment.apiServicos}/Pessoa/InserirPessoa`, objPessoa);
-  // }
+  public PostSessao(objSessao: SessaoListaModel): Observable<string> {
+    return this.http.post<string>(`${environment.apiServicos}/Sessao/PostSessao`, objSessao);
+  }
 
   // #endregion
 

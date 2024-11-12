@@ -6,6 +6,9 @@
 <h2>Sessão</h2>
 
 <div *ngIf="!boolManterRegistro">
+  <div class="text-right mb-3">
+    <p-button (click)="boolManterRegistro = true;" label="Nova Sessão" [raised]="true" severity="primary" /> &nbsp;
+  </div>
   <p-table
   #dt
   [value]="lstSessao"
@@ -47,7 +50,7 @@
     <ng-template pTemplate="body" let-item>
         <tr>
             <td style="text-align: center;">{{ item.SesNume }}</td>
-            <td style="text-align: center;"><span class="p-column-title"><b>Data</b></span>{{ item.SesDtHr | date:'dd/MM/yyyy - hh:MM:ss' }}</td>
+            <td style="text-align: center;"><span class="p-column-title"><b>Data</b></span>{{ item.SesDtHr | date:'dd/MM/yyyy - HH:mm' }}</td>
             <td style="text-align: center;">{{ item.TiSNome }}</td>
             <td style="text-align: center;">{{ item.GraNome }}</td>
             <td>{{ item.SesNome }}</td>
@@ -86,11 +89,19 @@
     </div>
     <div class="field col-12 md:col-8">
         <label for="nomeSessao">Nome da Sessão</label>
-        <input pInputText id="nomeSessao" [(ngModel)]="objSessao.SesNome" type="text" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+        <input pInputText id="nomeSessao"
+        (input)="contadorCaracteres(100, 'NOME')"
+        maxlength="100"
+        [(ngModel)]="objSessao.SesNome" type="text" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+        <div class="text-right"><small>{{ caracteresRestantesNome }} caracteres restantes</small></div>
     </div>
     <div class="field col-12">
         <label for="descSessao">Texto da Sessão</label>
-        <textarea id="descSessao" [(ngModel)]="objSessao.SesDesc" type="text" rows="4" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"></textarea>
+        <textarea id="descSessao"
+        (input)="contadorCaracteres(500, 'TEXTO')"
+        maxlength="500"
+        [(ngModel)]="objSessao.SesDesc" type="text" rows="4" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"></textarea>
+        <div class="text-right"><small>{{ caracteresRestantesTexto }} caracteres restantes</small></div>
     </div>
     <div class="field col-12 md:col-5">
         <label for="state">Loja</label><br>
@@ -123,12 +134,34 @@
           />
     </div>
     <div class="field col-12 md:col-6">
-        <label for="city">City</label>
-        <input id="city" type="text" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+        <label for="liberarSessao">Liberar Sessão?
+          <small> ({{objSessao.SesLibe ? 'Sim' : 'Não'}})</small>
+        </label><br>
+        <p-selectButton
+          id="liberarSessao"
+          [options]="opcoesSelect"
+          [(ngModel)]="objSessao.SesLibe"
+          optionLabel="label"
+          optionValue="value"
+          aria-describedby="liberarSessao"
+          unselectable = "false"
+         />
+         <small id="liberarSessao">Libera a sessão para confirmação de presença.</small>
     </div>
-    <div class="field col-12 md:col-3">
-        <label for="zip">Zip</label>
-        <input id="zip" type="text" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    <div class="field col-12 md:col-6">
+        <label for="liberarSessao">Ativar Sessão?
+          <small> ({{objSessao.SesStat ? 'Sim' : 'Não'}})</small>
+        </label><br>
+        <p-selectButton
+          id="liberarSessao"
+          [options]="opcoesSelect"
+          [(ngModel)]="objSessao.SesStat"
+          optionLabel="label"
+          optionValue="value"
+          aria-describedby="liberarSessao"
+          unselectable = "false"
+         />
+         <small id="liberarSessao">Ativa a sessão para deixá-la visível.</small>
     </div>
 </div>
 

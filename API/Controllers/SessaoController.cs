@@ -94,6 +94,45 @@ namespace API_Visitatus.Controllers
             }
         }
 
+        [HttpGet("{sesNume}/{lojCodi}")]
+        public Task<ActionResult<IEnumerable<Sessao>>> GetValidaNumeroSessao(long sesNume, long lojCodi)
+        {
+            if (sesNume > 0 && lojCodi > 0)
+            {
+                var result = (from s in _context.Sessaos
+                              join g in _context.Graus on s.GraCodi equals g.GraCodi
+                              join ts in _context.TipoSessaos on s.TiScodi equals ts.TiScodi
+                              select new SessaoListaModel
+                              {
+                                  SesCodi = s.SesCodi,
+                                  SesDesc = s.SesDesc,
+                                  SesDtHr = s.SesDtHr,
+                                  SesLibe = s.SesLibe,
+                                  SesStat = s.SesStat,
+                                  LojCodi = s.LojCodi,
+                                  GraCodi = s.GraCodi,
+                                  GraNome = g.GraNome,
+                                  TiSCodi = s.TiScodi,
+                                  TiSNome = ts.TiSnome,
+                                  SesNume = (long)s.SesNume!,
+                                  SesNome = s.SesNome
+                              }).FirstOrDefault(s => s.SesNume == sesNume && s.LojCodi == lojCodi);
+
+                if (result == null)
+                {
+                    return Task.FromResult<ActionResult<IEnumerable<Sessao>>>(Ok(result));
+                }
+                else
+                {
+                    return Task.FromResult<ActionResult<IEnumerable<Sessao>>>(Ok(result));
+                }
+            }
+            else
+            {
+                return Task.FromResult<ActionResult<IEnumerable<Sessao>>>(BadRequest("Parâmetros Inválidos."));
+            }
+        }
+
 
         [HttpPut("{sesCodi}")]
         public async Task<IActionResult> PutSessao(long sesCodi, [FromBody] Sessao sessao)
@@ -132,7 +171,7 @@ namespace API_Visitatus.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Sessao>> PostSessao(Sessao sessao)
+        public async Task<ActionResult<Sessao>> PostSessao([FromBody] Sessao sessao)
         {
             try
             {
@@ -141,7 +180,7 @@ namespace API_Visitatus.Controllers
                 _context.Sessaos.Add(sessao);
                 var retorno = await _context.SaveChangesAsync();
 
-                return Ok(sessao);
+                return Ok("OK");
             }
             catch (Exception ex)
             {

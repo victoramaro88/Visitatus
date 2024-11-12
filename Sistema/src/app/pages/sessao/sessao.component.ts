@@ -26,7 +26,7 @@ export class SessaoComponent implements OnInit {
   boolLoading = true;
 
   lstSessao: SessaoListaModel[] = [];
-  objSessao: SessaoListaModel = new SessaoListaModel(0, '', new Date(), false, false, 0, 0, '', 0, '', 0, '');
+  objSessao: SessaoListaModel = new SessaoListaModel(0, '', new Date(), false, true, 0, 0, '', 0, '', 0, '');
   objUsuarioLogado: UsuarioLogadoModel = new UsuarioLogadoModel();
   lstLoja: LojaModel[] = [];
   objLojaSelecionada: LojaModel = {LojCodi: 0,LojNome: "",LojNumL: "",LojLogo: "",LojLogr: "",LojNume: "",LojBair: "",LojStat: false,CidCodi: 0,PotCodi: 0,RitCodi: 0};
@@ -34,7 +34,10 @@ export class SessaoComponent implements OnInit {
   objTipoSessaoSelecionado: TipoSessaoModel = { TiScodi: 0, TiSnome: "", TiSstat: false };
   lstGrau: GrauModel[] = [];
   objGrauSelecionado: GrauModel = {GraCodi: 0,GraNome: "",GraStat: false};
-  boolManterRegistro: boolean = true; //false;
+  boolManterRegistro: boolean = false;
+  caracteresRestantesTexto: number = 500;
+  caracteresRestantesNome: number = 100;
+  opcoesSelect: any[] = [{ label: 'Sim', value: true }, { label: 'Não', value: false }];
 
   constructor(
     private http: HttpService,
@@ -73,6 +76,28 @@ export class SessaoComponent implements OnInit {
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       this.boolLoading = false;
+    }
+  }
+
+  contadorCaracteres(limite: number, campo: string) {
+    switch (campo) {
+      case "TEXTO":
+        // Atualiza o contador de caracteres restantes
+        this.caracteresRestantesTexto = limite - this.objSessao.SesDesc.length;
+        // Limita o texto ao máximo permitido
+        if (this.objSessao.SesDesc.length > limite) {
+          this.objSessao.SesDesc = this.objSessao.SesDesc.substring(0, limite);
+        }
+        break;
+      case "NOME":
+        this.caracteresRestantesNome = limite - this.objSessao.SesNome.length;
+        if (this.objSessao.SesNome.length > limite) {
+          this.objSessao.SesNome = this.objSessao.SesNome.substring(0, limite);
+        }
+        break;
+
+      default:
+        break;
     }
   }
 
@@ -150,17 +175,146 @@ export class SessaoComponent implements OnInit {
   EditarRegistro(objSessao: SessaoListaModel) {
     this.boolManterRegistro = true;
     this.objSessao = objSessao;
-    console.warn("Obj para Editar: ", this.objSessao);
+    this.objLojaSelecionada = this.lstLoja.find(l => l.LojCodi === objSessao.LojCodi)!;
+    this.objTipoSessaoSelecionado = this.lstTipoSessao.find(ts => ts.TiScodi === objSessao.TiSCodi)!;
+    this.objGrauSelecionado = this.lstGrau.find(g => g.GraCodi === objSessao.GraCodi)!;
+    this.objSessao.SesDtHr = new Date(objSessao.SesDtHr);
   }
 
+  //-> FALTA VALIDAR A QUESTÃO DO NÚMERO DA SESSÃO QUANDO FOR EDITAR UMA JÁ EXISTENTE, SE VALIDA
   SalvarRegistro() {
+    this.objSessao.GraCodi = this.objGrauSelecionado.GraCodi;
     this.objSessao.TiSCodi = this.objTipoSessaoSelecionado.TiScodi;
     this.objSessao.LojCodi = this.objLojaSelecionada.LojCodi;
-    console.warn(this.objSessao);
+    const dataSelecionada = this.objSessao.SesDtHr;
+    const dataUtc = new Date(Date.UTC(
+      dataSelecionada.getFullYear(),
+      dataSelecionada.getMonth(),
+      dataSelecionada.getDate(),
+      dataSelecionada.getHours(),
+      dataSelecionada.getMinutes(),
+      dataSelecionada.getSeconds()
+    ));
+    this.objSessao.SesDtHr = dataUtc;
+
+    if (this.ValidaCampos()) {
+      //-> Validando se já possui uma sessão com este número, para esta Loja
+      if (this.objSessao.SesNume > 0 && this.objSessao.LojCodi > 0 && this.objSessao.SesCodi === 0) {
+        //-> Modo de Inserção
+        try {
+          this.boolLoading = true;
+          this.http.GetValidaNumeroSessao(this.objSessao.SesNume, this.objSessao.LojCodi).subscribe({
+            next: (response) => {
+              if (response && response.SesCodi > 0) {
+                this.boolLoading = false;
+                this.messageService.add({ severity: 'warn', summary: 'Atenção:', detail: 'Já existe uma sessão com este número para esta Loja.' });
+              } else {
+                //-> Se validou, salva as informações.
+                this.http.PostSessao(this.objSessao).subscribe({
+                  next: (response) => {
+                    this.boolLoading = false;
+                    if (response === 'OK') {
+                      this.messageService.add({ severity: 'success', summary: 'Sucesso!', detail: 'Registro salvo com sucesso!' });
+                      this.CancelaRegitro();
+                    } else {
+                      this.messageService.add({ severity: 'error', summary: 'Erro:', detail: 'Falha ao realizar a operação.' });
+                    }
+                  },
+                  error: (error) => {
+                    console.error('Erro ao carregar dados:', error);
+                    this.boolLoading = false;
+                  }
+                });
+              }
+            },
+            error: (error) => {
+              console.error('Erro ao carregar dados:', error);
+              this.boolLoading = false;
+            }
+          });
+        } catch (error) {
+          console.error('Erro ao carregar dados:', error);
+          this.boolLoading = false;
+        }
+      } else {
+        this.boolLoading = true;
+        //-> Modo de Edição
+        try {
+          let objPutSessao: SessaoModel = {
+            SesCodi: this.objSessao.SesCodi,
+            SesDesc: this.objSessao.SesDesc,
+            SesNome: this.objSessao.SesNome,
+            SesDtHr: this.objSessao.SesDtHr,
+            SesLibe: this.objSessao.SesLibe,
+            SesStat: this.objSessao.SesStat,
+            LojCodi: this.objSessao.LojCodi,
+            GraCodi: this.objSessao.GraCodi,
+            TiScodi: this.objSessao.TiSCodi,
+            SesNume: this.objSessao.SesNume
+          };
+
+          this.http.PutSessao(this.objSessao.SesCodi, objPutSessao).subscribe({
+            next: (response) => {
+              this.boolLoading = false;
+              if (response === 'Alterado com sucesso!') {
+                this.messageService.add({ severity: 'success', summary: 'Sucesso!', detail: 'Registro alterado com sucesso!' });
+                this.CancelaRegitro();
+              } else {
+                this.messageService.add({ severity: 'error', summary: 'Erro:', detail: 'Falha ao realizar a operação.' });
+              }
+            },
+            error: (error) => {
+              console.error('Erro ao carregar dados:', error);
+              this.boolLoading = false;
+            }
+          });
+        } catch (error) {
+          console.error('Erro ao carregar dados:', error);
+          this.messageService.add({ severity: 'error', summary: 'Erro:', detail: 'Falha ao realizar a operação.' });
+          this.boolLoading = false;
+        }
+      }
+    }
+  }
+
+  ValidaCampos() {
+    if (!this.objSessao.SesNume || this.objSessao.SesNume === 0 || !(/^[0-9]*$/.test(this.objSessao.SesNume.toString()))) {
+      this.messageService.add({ severity: 'warn', summary: 'Atenção:', detail: 'Insira um número de sessão válido.' });
+      return false;
+    }
+    if (this.objSessao.SesNome.length === 0) {
+      this.messageService.add({ severity: 'warn', summary: 'Atenção:', detail: 'Insira um nome para a sessão.' });
+      return false;
+    }
+    if (this.objSessao.SesDesc.length === 0) {
+      this.messageService.add({ severity: 'warn', summary: 'Atenção:', detail: 'Insira um texto para a sessão.' });
+      return false;
+    }
+    if (this.objSessao.LojCodi === 0) {
+      this.messageService.add({ severity: 'warn', summary: 'Atenção:', detail: 'Selecione uma loja.' });
+      return false;
+    }
+    if (this.objSessao.TiSCodi === 0) {
+      this.messageService.add({ severity: 'warn', summary: 'Atenção:', detail: 'Selecione um tipo de sessão.' });
+      return false;
+    }
+    if (this.objSessao.GraCodi === 0) {
+      this.messageService.add({ severity: 'warn', summary: 'Atenção:', detail: 'Selecione um grau para a sessão.' });
+      return false;
+    }
+    if (this.objSessao.SesLibe && !this.objSessao.SesStat) {
+      this.messageService.add({ severity: 'warn', summary: 'Atenção:', detail: 'Não é possível liberar a sessão com ela inativa. Ative a sessão para liberá-la.' });
+      return false;
+    }
+
+    return true;
   }
 
   CancelaRegitro() {
     this.objSessao = new SessaoListaModel(0, '', new Date(), false, false, 0, 0, '', 0, '', 0, '');
+    this.objGrauSelecionado = new GrauModel(0, '', false);
+    this.objTipoSessaoSelecionado = new TipoSessaoModel(0, '', false);
+    this.objLojaSelecionada = new LojaModel(0, '', '', '', '', '', '', false, 0, 0, 0);
     this.boolManterRegistro = false;
     this.GetSessaoByLojCodi(this.objUsuarioLogado.lojCodi);
   }
