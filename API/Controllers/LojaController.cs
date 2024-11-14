@@ -53,13 +53,14 @@ namespace API_Visitatus.Controllers
                 var result = (from ul in _context.UsuarioLojas
                               join u in _context.Usuarios on ul.UsuCodi equals u.UsuCodi
                               join l in _context.Lojas on ul.LojCodi equals l.LojCodi
-                              where u.UsuCodi == 1
+                              where u.UsuCodi == usuCodi
                               select new Loja
                               {
                                   LojCodi = l.LojCodi,
                                   LojNome = l.LojNome,
                                   LojNumL = l.LojNumL
-                              }).ToList();
+                              })
+                              .ToList();
 
                 if (result == null)
                 {

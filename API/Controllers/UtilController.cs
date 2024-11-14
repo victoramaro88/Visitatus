@@ -46,16 +46,25 @@ namespace API_Visitatus.Controllers
                         return Task.FromResult<ActionResult<UsuarioLogadoModel>>(NotFound("Usuário não encontrada."));
                     }
 
-                    var objUsuarioLoja = _context.UsuarioLojas.Where(ul => ul.UsuCodi == objUsuarioLogin.UsuCodi).FirstOrDefault();
+                    var objUsuarioLoja = _context.UsuarioLojas.Where(ul => ul.UsuCodi == objUsuarioLogin.UsuCodi).ToList();
                     if (objUsuarioLoja == null)
                     {
                         return Task.FromResult<ActionResult<UsuarioLogadoModel>>(NotFound("Usuário sem vínculo com nenhuma Loja."));
                     }
 
-                    var objLoja = _context.UsuarioLojas.Where(l => l.LojCodi == objUsuarioLoja!.LojCodi).FirstOrDefault();
-                    if (objLoja == null)
+                    List<Loja> lstLojas = new List<Loja>();
+                    foreach (var itemLoja in objUsuarioLoja)
                     {
-                        return Task.FromResult<ActionResult<UsuarioLogadoModel>>(NotFound("Loja não localizada."));
+                        Loja objLoja = new Loja();
+                        objLoja = _context.Lojas.Where(l => l.LojCodi == itemLoja.LojCodi).FirstOrDefault()!;
+                        if (objLoja == null)
+                        {
+                            return Task.FromResult<ActionResult<UsuarioLogadoModel>>(NotFound("Loja não localizada."));
+                        }
+                        else
+                        {
+                            lstLojas.Add(objLoja);
+                        }
                     }
 
                     List<PerfilUsuarioListaModel> lstPerfil = (from pu in _context.PerfilUsuarios
@@ -77,7 +86,7 @@ namespace API_Visitatus.Controllers
                     result.usLCodi = objUsuarioLogin.UsLcodi;
                     result.usuCodi = objUsuario.UsuCodi;
                     result.usuNome = objUsuario.UsuNome;
-                    result.lojCodi = objLoja.LojCodi;
+                    result.lojasUsuario = lstLojas;
                     result.lstPerfil = lstPerfil;
 
                     return Task.FromResult<ActionResult<UsuarioLogadoModel>>(Ok(result));

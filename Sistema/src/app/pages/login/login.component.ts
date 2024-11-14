@@ -82,6 +82,8 @@ export class LoginComponent implements OnInit {
             this.messageService.add({severity:'error', summary:'Erro: ', detail: error.error});
           } else if(error.error === 'Usuário sem vínculo com nenhuma Loja.') {
             this.messageService.add({severity:'error', summary:'Erro: ', detail: error.error});
+          } else if(error.error === 'Usuário sem perfil cadsatrado.') {
+            this.messageService.add({severity:'error', summary:'Erro: ', detail: error.error});
           } else {
             console.error(error.error);
             this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Falha ao realizar a operação, contate o suporte.'});

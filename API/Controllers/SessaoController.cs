@@ -70,13 +70,14 @@ namespace API_Visitatus.Controllers
                                       SesNume = (long)s.SesNume!,
                                       SesNome = s.SesNome
                                   })
-                                  .OrderBy(x => x.SesNume)
-                                  .ThenBy(x => x.SesDtHr)
+                                  .Where(l => l.LojCodi == LojCodi)
+                                  .OrderByDescending(x => x.SesDtHr)
+                                  .ThenBy(x => x.SesNume)
                                   .ToList();
 
                     if (result == null || result.Count == 0)
                     {
-                        return Task.FromResult<ActionResult<IEnumerable<SessaoListaModel>>>(NotFound());
+                        return Task.FromResult<ActionResult<IEnumerable<SessaoListaModel>>>(Ok(result));
                     }
                     else
                     {

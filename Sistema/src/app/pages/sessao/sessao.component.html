@@ -5,9 +5,21 @@
 
 <h2>Sessão</h2>
 
-<div *ngIf="!boolManterRegistro">
+<div *ngIf="this.lstLoja.length > 1 && !boolManterRegistro" class="field col-12 md:col-5">
+  <label for="state">Selecione a Loja</label><br>
+  <p-dropdown
+    [options]="lstLoja"
+    [(ngModel)]="objLojaSelecionada"
+    (onChange)="GetSessaoByLojCodi(objLojaSelecionada.LojCodi);"
+    optionLabel="displayName"
+    placeholder="Selecione"
+    [style]="{ width: '100%' }"
+    />
+</div>
+
+<div *ngIf="!boolManterRegistro && (lstSessao.length > 0 || objLojaSelecionada.LojCodi > 0)">
   <div class="text-right mb-3">
-    <p-button (click)="boolManterRegistro = true;" label="Nova Sessão" [raised]="true" severity="primary" /> &nbsp;
+    <p-button (click)="NovaSessao();" label="Nova Sessão" [raised]="true" severity="primary" /> &nbsp;
   </div>
   <p-table
   #dt
@@ -64,6 +76,11 @@
             </td>
         </tr>
     </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+          <td colspan="9" style="text-align: center;"><b>SEM RESULTADOS.</b></td>
+      </tr>
+  </ng-template>
   </p-table>
 </div>
 
@@ -106,6 +123,7 @@
     <div class="field col-12 md:col-5">
         <label for="state">Loja</label><br>
         <p-dropdown
+          [disabled]="true"
           [options]="lstLoja"
           [(ngModel)]="objLojaSelecionada"
           optionLabel="displayName"

@@ -46,22 +46,20 @@ export class SessaoComponent implements OnInit {
     private router: Router,
     private cryptoService: CryptoService
   ) {
-    // this.objPerfilUsuario = JSON.parse(this.cryptoService.lerDoSessionStorage("prf"));
-    // console.warn(this.objPerfilUsuario);
     this.objUsuarioLogado = JSON.parse(this.cryptoService.lerDoSessionStorage("usr"));
     // console.warn("Usuário Logado: ", this.objUsuarioLogado);
   }
 
   ngOnInit() {
-    this.GetSessaoByLojCodi(this.objUsuarioLogado.lojCodi);
     this.GetLojaByIdUsuario(this.objUsuarioLogado.usuCodi);
     this.GetTipoSessao(0);
     this.GetGrau(0);
   }
 
   GetSessaoByLojCodi(lojCodi: number) {
+    this.boolLoading = true;
     try {
-      this.boolLoading = true;
+      this.lstSessao = [];
       this.http.GetSessaoByLojCodi(lojCodi).subscribe({
         next: (response) => {
           this.lstSessao = response;
@@ -114,6 +112,10 @@ export class SessaoComponent implements OnInit {
             ...loja,
             displayName: `${loja.LojNome} - ${loja.LojNumL}` // Cria o campo concatenado
           }));
+          if (this.lstLoja.length === 1) {
+            this.objLojaSelecionada = this.lstLoja[0];
+            this.GetSessaoByLojCodi(this.objLojaSelecionada.LojCodi);
+          }
           // console.warn("Lista de Lojas do Usuário:", this.lstLoja);
           this.boolLoading = false;
         },
@@ -168,8 +170,12 @@ export class SessaoComponent implements OnInit {
     }
   }
 
-  onGlobalFilter(table: Table, event: Event) {
-    table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+  NovaSessao() {
+    this.boolManterRegistro = true;
+    if (this.lstLoja.length === 1) {
+      this.objLojaSelecionada = this.lstLoja[0];
+    }
+    this.objSessao.SesNume = this.lstSessao[0] ? this.lstSessao[0].SesNume + 1 : 1;
   }
 
   EditarRegistro(objSessao: SessaoListaModel) {
@@ -181,7 +187,6 @@ export class SessaoComponent implements OnInit {
     this.objSessao.SesDtHr = new Date(objSessao.SesDtHr);
   }
 
-  //-> FALTA VALIDAR A QUESTÃO DO NÚMERO DA SESSÃO QUANDO FOR EDITAR UMA JÁ EXISTENTE, SE VALIDA
   SalvarRegistro() {
     this.objSessao.GraCodi = this.objGrauSelecionado.GraCodi;
     this.objSessao.TiSCodi = this.objTipoSessaoSelecionado.TiScodi;
@@ -196,6 +201,7 @@ export class SessaoComponent implements OnInit {
       dataSelecionada.getSeconds()
     ));
     this.objSessao.SesDtHr = dataUtc;
+    const lojaSelecionada = this.objLojaSelecionada;
 
     if (this.ValidaCampos()) {
       //-> Validando se já possui uma sessão com este número, para esta Loja
@@ -216,6 +222,8 @@ export class SessaoComponent implements OnInit {
                     if (response === 'OK') {
                       this.messageService.add({ severity: 'success', summary: 'Sucesso!', detail: 'Registro salvo com sucesso!' });
                       this.CancelaRegitro();
+                      this.objLojaSelecionada = lojaSelecionada;
+                      this.GetSessaoByLojCodi(lojaSelecionada.LojCodi);
                     } else {
                       this.messageService.add({ severity: 'error', summary: 'Erro:', detail: 'Falha ao realizar a operação.' });
                     }
@@ -259,6 +267,8 @@ export class SessaoComponent implements OnInit {
               if (response === 'Alterado com sucesso!') {
                 this.messageService.add({ severity: 'success', summary: 'Sucesso!', detail: 'Registro alterado com sucesso!' });
                 this.CancelaRegitro();
+                this.objLojaSelecionada = lojaSelecionada;
+                this.GetSessaoByLojCodi(lojaSelecionada.LojCodi);
               } else {
                 this.messageService.add({ severity: 'error', summary: 'Erro:', detail: 'Falha ao realizar a operação.' });
               }
@@ -314,9 +324,10 @@ export class SessaoComponent implements OnInit {
     this.objSessao = new SessaoListaModel(0, '', new Date(), false, false, 0, 0, '', 0, '', 0, '');
     this.objGrauSelecionado = new GrauModel(0, '', false);
     this.objTipoSessaoSelecionado = new TipoSessaoModel(0, '', false);
-    this.objLojaSelecionada = new LojaModel(0, '', '', '', '', '', '', false, 0, 0, 0);
     this.boolManterRegistro = false;
-    this.GetSessaoByLojCodi(this.objUsuarioLogado.lojCodi);
+    this.lstSessao = [];
+
+    this.GetSessaoByLojCodi(this.objLojaSelecionada.LojCodi);
   }
 
   PutSessao(sesCodi: number, objSessao: SessaoModel) {
@@ -328,12 +339,12 @@ export class SessaoComponent implements OnInit {
           if (response === 'Alterado com sucesso!') {
             this.messageService.add({ severity: 'success', summary: 'Sucesso!', detail: 'Registro alterado com sucesso!' });
             this.boolLoading = false;
-            this.GetSessaoByLojCodi(this.objUsuarioLogado.lojCodi);
+            // this.GetSessaoByLojCodi(this.objUsuarioLogado.lojCodi);
           } else {
             console.error('Erro ao salvar o registro: ', response);
             this.messageService.add({ severity: 'error', summary: 'Erro:', detail: 'Falha ao alterar o registro.' });
             this.boolLoading = false;
-            this.GetSessaoByLojCodi(this.objUsuarioLogado.lojCodi);
+            // this.GetSessaoByLojCodi(this.objUsuarioLogado.lojCodi);
           }
         },
         error: (error) => {
@@ -355,6 +366,10 @@ export class SessaoComponent implements OnInit {
   AtivaInativaSessao(sesCodi: number, objSessao: SessaoModel) {
     objSessao.SesStat = !objSessao.SesStat;
     this.PutSessao(sesCodi, objSessao);
+  }
+
+  onGlobalFilter(table: Table, event: Event) {
+    table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
 
 }
