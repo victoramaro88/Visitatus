@@ -1,0 +1,73 @@
+<!-- ESTILOS CSS -->
+<style>
+  /* Estilo básico */
+  .responsive-div {
+    padding: 1rem;
+    margin: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Layout responsivo usando PrimeFlex */
+  @media (min-width: 768px) {
+    .responsive-div {
+      padding: 2rem;
+      max-width: 800px;
+      margin: 2rem auto;
+    }
+
+    .responsive-title {
+      font-size: 2rem; /* Título maior em telas maiores */
+    }
+
+    .responsive-text {
+      font-size: 1.2rem; /* Texto maior em telas maiores */
+    }
+  }
+
+  @media (max-width: 767px) {
+    .responsive-div {
+      padding: 1rem;
+      max-width: 95%;
+      margin: 1rem auto;
+    }
+
+    .responsive-title {
+      font-size: 1.5rem; /* Tamanho do título ajustado */
+    }
+
+    .responsive-text {
+      font-size: 1rem; /* Tamanho do texto ajustado */
+    }
+  }
+</style>
+
+<div class="responsive-div" style="background-color: rgb(51, 51, 51);">
+  <div class="grid">
+    <div class="col-2">
+        <div class="text-center p-3 border-round-sm bg-primary font-bold">
+          a
+        </div>
+    </div>
+    <div class="col-8">
+        <div class="text-center p-3 font-bold ">
+          <a class="responsive-title text-center">À G.D.G.A.D.U</a>
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="text-center p-3 border-round-sm bg-primary font-bold ">3</div>
+    </div>
+</div>
+  <p class="responsive-text">Este é um texto responsivo para demonstrar o comportamento.</p>
+</div>
+
+
+<div>
+  <p-card>
+    <h1>À G.D.G.A.D.U</h1>
+    <!-- <p class="m-0">
+        Lorem ipsum dolor sit amet...
+    </p> -->
+  </p-card>
+</div>

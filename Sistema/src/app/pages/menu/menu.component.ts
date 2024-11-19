@@ -91,7 +91,14 @@ export class MenuComponent implements OnInit {
           command: () => {
             this.router.navigate(['/contato']);
           }
-        }
+        },
+        {
+          label: 'Template (tmp)',
+          // icon: 'pi pi-home',
+          command: () => {
+            this.router.navigate(['/template']);
+          }
+        },
     ];
   }
 

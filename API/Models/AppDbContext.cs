@@ -28,6 +28,8 @@ namespace API_Visitatus.Models
         public virtual DbSet<Presenca> Presencas { get; set; } = null!;
         public virtual DbSet<Rito> Ritos { get; set; } = null!;
         public virtual DbSet<Sessao> Sessaos { get; set; } = null!;
+        public virtual DbSet<TemplateConvite> TemplateConvites { get; set; } = null!;
+        public virtual DbSet<TemplateLoja> TemplateLojas { get; set; } = null!;
         public virtual DbSet<TipoSessao> TipoSessaos { get; set; } = null!;
         public virtual DbSet<Usuario> Usuarios { get; set; } = null!;
         public virtual DbSet<UsuarioLogin> UsuarioLogins { get; set; } = null!;
@@ -38,7 +40,7 @@ namespace API_Visitatus.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=victoramaro.com.br, 11433;Initial Catalog=DB_Visitatus_DEV;User ID=V1s1tAtu5D3v;Password=&i329cQs7");
+                optionsBuilder.UseSqlServer("Data Source=visitatus.com.br, 11433;Initial Catalog=DB_Visitatus_DEV;User ID=V1s1tAtu5D3v;Password=&i329cQs7");
             }
         }
 
@@ -407,6 +409,55 @@ namespace API_Visitatus.Models
                     .HasForeignKey(d => d.TiScodi)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_SessTiS");
+            });
+
+            modelBuilder.Entity<TemplateConvite>(entity =>
+            {
+                entity.HasKey(e => e.TmpCvtCodi)
+                    .HasName("PK__Template__DC58E92A4BCB8E8A");
+
+                entity.ToTable("TemplateConvite", "dbo");
+
+                entity.Property(e => e.TmpCvtCodi)
+                    .ValueGeneratedNever()
+                    .HasColumnName("tmpCvtCodi");
+
+                entity.Property(e => e.TmpCvtMode)
+                    .IsUnicode(false)
+                    .HasColumnName("tmpCvtMode");
+
+                entity.Property(e => e.TmpCvtNome)
+                    .HasMaxLength(250)
+                    .IsUnicode(false)
+                    .HasColumnName("tmpCvtNome");
+
+                entity.Property(e => e.TmpCvtStat).HasColumnName("tmpCvtStat");
+            });
+
+            modelBuilder.Entity<TemplateLoja>(entity =>
+            {
+                entity.HasKey(e => new { e.TmpCvtCodi, e.LojCodi })
+                    .HasName("PK__Template__B48949B95D8C07F4");
+
+                entity.ToTable("TemplateLoja", "dbo");
+
+                entity.Property(e => e.TmpCvtCodi).HasColumnName("tmpCvtCodi");
+
+                entity.Property(e => e.LojCodi).HasColumnName("lojCodi");
+
+                entity.Property(e => e.TmpLoja).HasColumnName("tmpLoja");
+
+                entity.HasOne(d => d.LojCodiNavigation)
+                    .WithMany(p => p.TemplateLojas)
+                    .HasForeignKey(d => d.LojCodi)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__TemplateL__lojCo__5070F446");
+
+                entity.HasOne(d => d.TmpCvtCodiNavigation)
+                    .WithMany(p => p.TemplateLojas)
+                    .HasForeignKey(d => d.TmpCvtCodi)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__TemplateL__tmpCv__4F7CD00D");
             });
 
             modelBuilder.Entity<TipoSessao>(entity =>

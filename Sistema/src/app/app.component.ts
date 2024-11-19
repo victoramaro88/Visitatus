@@ -26,7 +26,8 @@ export class AppComponent {
     this.versionApp = environment.version;
   }
 
-  isLoginRoute(): boolean {
-    return this.router.url === '/login';
+  shouldShowMenu(): boolean {
+    const hiddenRoutes = ['/login', '/template'];
+    return !hiddenRoutes.includes(this.router.url);
   }
 }
