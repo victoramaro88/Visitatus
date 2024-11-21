@@ -134,6 +134,64 @@ namespace API_Visitatus.Controllers
             }
         }
 
+        [HttpGet("{sesCodi}")]
+        public Task<ActionResult<IEnumerable<SessaoConviteModel>>> GetSessaoBySesCodi(long sesCodi)
+        {
+            try
+            {
+                if (sesCodi > 0)
+                {
+                    SessaoConviteModel result = (from s in _context.Sessaos
+                                  join g in _context.Graus on s.GraCodi equals g.GraCodi
+                                  join ts in _context.TipoSessaos on s.TiScodi equals ts.TiScodi
+                                  join l in _context.Lojas on s.LojCodi equals l.LojCodi
+                                  join p in _context.Potencia on l.PotCodi equals p.PotCodi
+                                  join r in _context.Ritos on l.RitCodi equals r.RitCodi
+                                  join c in _context.Cidades on l.CidCodi equals c.CidCodi
+                                  join e in _context.Estados on c.EstCodi equals e.EstCodi
+                                  where s.SesCodi == sesCodi
+                                  select new SessaoConviteModel
+                                  {
+                                      SesCodi = s.SesCodi,
+                                      SesNume = (long)s.SesNume!,
+                                      SesNome = s.SesNome,
+                                      SesDesc = s.SesDesc,
+                                      SesDtHr = s.SesDtHr,
+                                      SesLibe = s.SesLibe,
+                                      SesStat = s.SesStat,
+                                      TiSNome = ts.TiSnome,
+                                      GraNome = g.GraNome,
+                                      LojCodi = l.LojCodi,
+                                      LojNome = l.LojNome,
+                                      LojStat = l.LojStat,
+                                      LojNume = l.LojNume,
+                                      LojLogr = l.LojLogr,
+                                      LojNumL = l.LojNumL,
+                                      LojBair = l.LojBair,
+                                      PotNome = p.PotNome,
+                                      PotSigl = p.PotSigl,
+                                      PotRegu = p.PotRegu,
+                                      RitNome = r.RitNome,
+                                      CidNome = c.CidNome,
+                                      EstSigl = e.EstSigl,
+                                      LojLogo = l.LojLogo,
+                                      PotLogo = p.PotLogo
+                                  }).FirstOrDefault()!;
+
+
+                    return Task.FromResult<ActionResult<IEnumerable<SessaoConviteModel>>>(Ok(result));
+                }
+                else
+                {
+                    return Task.FromResult<ActionResult<IEnumerable<SessaoConviteModel>>>(BadRequest("Parâmetros Inválidos."));
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
 
         [HttpPut("{sesCodi}")]
         public async Task<IActionResult> PutSessao(long sesCodi, [FromBody] Sessao sessao)

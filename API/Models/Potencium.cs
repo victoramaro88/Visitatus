@@ -15,6 +15,7 @@ namespace API_Visitatus.Models
         public string PotLogo { get; set; } = null!;
         public bool PotRegu { get; set; }
         public bool PotStat { get; set; }
+        public string? PotSigl { get; set; }
 
         public virtual ICollection<Loja> Lojas { get; set; }
     }

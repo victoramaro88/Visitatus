@@ -1,3 +1,4 @@
+import { ConviteComponent } from './pages/convite/convite.component';
 import { SessaoComponent } from './pages/sessao/sessao.component';
 import { ContatoComponent } from './pages/contato/contato.component';
 import { RouterModule, Routes } from '@angular/router';
@@ -12,6 +13,7 @@ export const routes: Routes = [
   { path: 'contato', component: ContatoComponent },
   { path: 'sessao', component: SessaoComponent },
   { path: 'template', component: TemplateConviteComponent },
+  { path: 'convite/:data', component: ConviteComponent },
   { path: '**', redirectTo: 'login' }
 ];
 

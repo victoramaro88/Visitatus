@@ -12,6 +12,7 @@ import { UsuarioLogadoModel } from '../../models/UsuarioLogado.Model';
 import { SessaoListaModel } from '../../models/SessaoLista.Model';
 import { Table } from 'primeng/table';
 import { TipoSessaoModel } from '../../models/TipoSessao.Model';
+import { Base64Service } from '../../services/base64.service';
 
 @Component({
   selector: 'app-sessao',
@@ -44,6 +45,7 @@ export class SessaoComponent implements OnInit {
     private messageService: MessageService,
     private utils: Utils,
     private router: Router,
+    private base64Service: Base64Service,
     private cryptoService: CryptoService
   ) {
     this.objUsuarioLogado = JSON.parse(this.cryptoService.lerDoSessionStorage("usr"));
@@ -366,6 +368,12 @@ export class SessaoComponent implements OnInit {
   AtivaInativaSessao(sesCodi: number, objSessao: SessaoModel) {
     objSessao.SesStat = !objSessao.SesStat;
     this.PutSessao(sesCodi, objSessao);
+  }
+
+  GetSessaoBySesCodi(lojCodi: number) {
+    this.boolLoading = true;
+    // console.warn(this.cryptoService.criptografar(lojCodi));
+    this.router.navigate(['/convite', this.cryptoService.criptografar(this.base64Service.convertNumberToBase64(lojCodi))]);
   }
 
   onGlobalFilter(table: Table, event: Event) {

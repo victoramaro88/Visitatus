@@ -11,6 +11,7 @@ import { PermissaoPerfilListaModel } from "../models/PermissaoPerfilLista.Model 
 import { SessaoModel } from "../models/Sessao.Model";
 import { SessaoListaModel } from "../models/SessaoLista.Model";
 import { LojaModel } from "../models/Loja.Model";
+import { SessaoConviteModel } from '../models/SessaoConvite.Model';
 
 @Injectable({
     providedIn: 'root'
@@ -48,6 +49,10 @@ export class HttpService {
 
   public GetValidaNumeroSessao(sesNume: number, lojCodi: number): Observable<SessaoModel> {
     return this.http.get<SessaoModel>(`${environment.apiServicos}/Sessao/GetValidaNumeroSessao/${sesNume}/${lojCodi}`);
+  }
+
+  public GetSessaoBySesCodi(sesCodi: number): Observable<SessaoConviteModel> {
+    return this.http.get<SessaoConviteModel>(`${environment.apiServicos}/Sessao/GetSessaoBySesCodi/${sesCodi}`);
   }
 
   // #endregion

@@ -303,6 +303,11 @@ namespace API_Visitatus.Models
 
                 entity.Property(e => e.PotRegu).HasColumnName("potRegu");
 
+                entity.Property(e => e.PotSigl)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .HasColumnName("potSigl");
+
                 entity.Property(e => e.PotStat).HasColumnName("potStat");
             });
 

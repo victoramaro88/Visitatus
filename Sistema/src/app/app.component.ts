@@ -15,19 +15,21 @@ import { ImportsModule } from './imports';
 export class AppComponent {
   versionApp: string | undefined;
 
+  isMenuHidden: boolean = false;
+  private hiddenRoutes = ['/login', '/template', '/convite']; // Rotas onde o menu será oculto
+
   constructor(
     private primengConfig: PrimeNGConfig,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.primengConfig.ripple = true;
-
     this.versionApp = environment.version;
-  }
 
-  shouldShowMenu(): boolean {
-    const hiddenRoutes = ['/login', '/template'];
-    return !hiddenRoutes.includes(this.router.url);
+    this.router.events.subscribe(() => {
+      const currentRoute = this.router.url;
+      this.isMenuHidden = this.hiddenRoutes.some(route => currentRoute.startsWith(route));
+    });
   }
 }
