@@ -16,8 +16,12 @@ namespace API_Visitatus.Models
         {
         }
 
+        public virtual DbSet<Cargo> Cargos { get; set; } = null!;
+        public virtual DbSet<CargosRito> CargosRitos { get; set; } = null!;
         public virtual DbSet<Cidade> Cidades { get; set; } = null!;
         public virtual DbSet<Estado> Estados { get; set; } = null!;
+        public virtual DbSet<GestaoAdministrativa> GestaoAdministrativas { get; set; } = null!;
+        public virtual DbSet<GestaoCargo> GestaoCargos { get; set; } = null!;
         public virtual DbSet<Grau> Graus { get; set; } = null!;
         public virtual DbSet<Loja> Lojas { get; set; } = null!;
         public virtual DbSet<Perfil> Perfils { get; set; } = null!;
@@ -47,6 +51,58 @@ namespace API_Visitatus.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("V1s1tAtu5D3v");
+
+            modelBuilder.Entity<Cargo>(entity =>
+            {
+                entity.HasKey(e => e.CarCodi)
+                    .HasName("PK__Cargos__2586F70254A813A2");
+
+                entity.ToTable("Cargos", "dbo");
+
+                entity.Property(e => e.CarCodi)
+                    .ValueGeneratedNever()
+                    .HasColumnName("carCodi");
+
+                entity.Property(e => e.CarDesc)
+                    .HasMaxLength(300)
+                    .IsUnicode(false)
+                    .HasColumnName("carDesc");
+
+                entity.Property(e => e.CarNome)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("carNome");
+
+                entity.Property(e => e.CarStat).HasColumnName("carStat");
+            });
+
+            modelBuilder.Entity<CargosRito>(entity =>
+            {
+                entity.HasKey(e => new { e.CarCodi, e.RitCodi })
+                    .HasName("PK__CargosRi__19D73633089FAD79");
+
+                entity.ToTable("CargosRito", "dbo");
+
+                entity.Property(e => e.CarCodi).HasColumnName("carCodi");
+
+                entity.Property(e => e.RitCodi).HasColumnName("ritCodi");
+
+                entity.Property(e => e.CariOrdm).HasColumnName("cariOrdm");
+
+                entity.Property(e => e.CariStat).HasColumnName("cariStat");
+
+                entity.HasOne(d => d.CarCodiNavigation)
+                    .WithMany(p => p.CargosRitos)
+                    .HasForeignKey(d => d.CarCodi)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__CargosRit__carCo__6A30C649");
+
+                entity.HasOne(d => d.RitCodiNavigation)
+                    .WithMany(p => p.CargosRitos)
+                    .HasForeignKey(d => d.RitCodi)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__CargosRit__ritCo__6B24EA82");
+            });
 
             modelBuilder.Entity<Cidade>(entity =>
             {
@@ -97,6 +153,75 @@ namespace API_Visitatus.Models
                     .HasColumnName("estSigl");
 
                 entity.Property(e => e.EstStat).HasColumnName("estStat");
+            });
+
+            modelBuilder.Entity<GestaoAdministrativa>(entity =>
+            {
+                entity.HasKey(e => e.GstAdmCodi)
+                    .HasName("PK__GestaoAd__2667E1A9CEB9AF33");
+
+                entity.ToTable("GestaoAdministrativa", "dbo");
+
+                entity.Property(e => e.GstAdmCodi)
+                    .ValueGeneratedNever()
+                    .HasColumnName("gstAdmCodi");
+
+                entity.Property(e => e.GstAdmDtFi)
+                    .HasColumnType("date")
+                    .HasColumnName("gstAdmDtFi");
+
+                entity.Property(e => e.GstAdmDtIn)
+                    .HasColumnType("date")
+                    .HasColumnName("gstAdmDtIn");
+
+                entity.Property(e => e.GstAdmNome)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("gstAdmNome");
+
+                entity.Property(e => e.GstAdmStat).HasColumnName("gstAdmStat");
+
+                entity.Property(e => e.LojCodi).HasColumnName("lojCodi");
+
+                entity.HasOne(d => d.LojCodiNavigation)
+                    .WithMany(p => p.GestaoAdministrativas)
+                    .HasForeignKey(d => d.LojCodi)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_gstAdmLj");
+            });
+
+            modelBuilder.Entity<GestaoCargo>(entity =>
+            {
+                entity.HasKey(e => new { e.GstAdmCodi, e.CarCodi, e.UsuCodi })
+                    .HasName("PK__GestaoCa__C245BB607887D10B");
+
+                entity.ToTable("GestaoCargos", "dbo");
+
+                entity.Property(e => e.GstAdmCodi).HasColumnName("gstAdmCodi");
+
+                entity.Property(e => e.CarCodi).HasColumnName("carCodi");
+
+                entity.Property(e => e.UsuCodi).HasColumnName("usuCodi");
+
+                entity.Property(e => e.GstCarStat).HasColumnName("gstCarStat");
+
+                entity.HasOne(d => d.CarCodiNavigation)
+                    .WithMany(p => p.GestaoCargos)
+                    .HasForeignKey(d => d.CarCodi)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__GestaoCar__carCo__66603565");
+
+                entity.HasOne(d => d.GstAdmCodiNavigation)
+                    .WithMany(p => p.GestaoCargos)
+                    .HasForeignKey(d => d.GstAdmCodi)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__GestaoCar__gstAd__656C112C");
+
+                entity.HasOne(d => d.UsuCodiNavigation)
+                    .WithMany(p => p.GestaoCargos)
+                    .HasForeignKey(d => d.UsuCodi)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__GestaoCar__usuCo__6754599E");
             });
 
             modelBuilder.Entity<Grau>(entity =>
@@ -450,7 +575,7 @@ namespace API_Visitatus.Models
 
                 entity.Property(e => e.LojCodi).HasColumnName("lojCodi");
 
-                entity.Property(e => e.TmpLoja).HasColumnName("tmpLoja");
+                entity.Property(e => e.TmpLjStat).HasColumnName("tmpLjStat");
 
                 entity.HasOne(d => d.LojCodiNavigation)
                     .WithMany(p => p.TemplateLojas)

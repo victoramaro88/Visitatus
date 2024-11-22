@@ -7,6 +7,7 @@ namespace API_Visitatus.Models
     {
         public Loja()
         {
+            GestaoAdministrativas = new HashSet<GestaoAdministrativa>();
             Sessaos = new HashSet<Sessao>();
             TemplateLojas = new HashSet<TemplateLoja>();
             UsuarioLojas = new HashSet<UsuarioLoja>();
@@ -27,6 +28,7 @@ namespace API_Visitatus.Models
         public virtual Cidade CidCodiNavigation { get; set; } = null!;
         public virtual Potencium PotCodiNavigation { get; set; } = null!;
         public virtual Rito RitCodiNavigation { get; set; } = null!;
+        public virtual ICollection<GestaoAdministrativa> GestaoAdministrativas { get; set; }
         public virtual ICollection<Sessao> Sessaos { get; set; }
         public virtual ICollection<TemplateLoja> TemplateLojas { get; set; }
         public virtual ICollection<UsuarioLoja> UsuarioLojas { get; set; }

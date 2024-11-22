@@ -7,6 +7,7 @@ namespace API_Visitatus.Models
     {
         public Rito()
         {
+            CargosRitos = new HashSet<CargosRito>();
             Lojas = new HashSet<Loja>();
         }
 
@@ -15,6 +16,7 @@ namespace API_Visitatus.Models
         public string? RitLogo { get; set; }
         public bool RitStat { get; set; }
 
+        public virtual ICollection<CargosRito> CargosRitos { get; set; }
         public virtual ICollection<Loja> Lojas { get; set; }
     }
 }

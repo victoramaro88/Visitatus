@@ -7,6 +7,7 @@ namespace API_Visitatus.Models
     {
         public Usuario()
         {
+            GestaoCargos = new HashSet<GestaoCargo>();
             PerfilUsuarios = new HashSet<PerfilUsuario>();
             Presencas = new HashSet<Presenca>();
             UsuarioLogins = new HashSet<UsuarioLogin>();
@@ -21,6 +22,7 @@ namespace API_Visitatus.Models
         public string UsuNcel { get; set; } = null!;
         public bool UsuStat { get; set; }
 
+        public virtual ICollection<GestaoCargo> GestaoCargos { get; set; }
         public virtual ICollection<PerfilUsuario> PerfilUsuarios { get; set; }
         public virtual ICollection<Presenca> Presencas { get; set; }
         public virtual ICollection<UsuarioLogin> UsuarioLogins { get; set; }

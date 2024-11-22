@@ -142,41 +142,73 @@ namespace API_Visitatus.Controllers
                 if (sesCodi > 0)
                 {
                     SessaoConviteModel result = (from s in _context.Sessaos
-                                  join g in _context.Graus on s.GraCodi equals g.GraCodi
-                                  join ts in _context.TipoSessaos on s.TiScodi equals ts.TiScodi
-                                  join l in _context.Lojas on s.LojCodi equals l.LojCodi
-                                  join p in _context.Potencia on l.PotCodi equals p.PotCodi
-                                  join r in _context.Ritos on l.RitCodi equals r.RitCodi
-                                  join c in _context.Cidades on l.CidCodi equals c.CidCodi
-                                  join e in _context.Estados on c.EstCodi equals e.EstCodi
-                                  where s.SesCodi == sesCodi
-                                  select new SessaoConviteModel
-                                  {
-                                      SesCodi = s.SesCodi,
-                                      SesNume = (long)s.SesNume!,
-                                      SesNome = s.SesNome,
-                                      SesDesc = s.SesDesc,
-                                      SesDtHr = s.SesDtHr,
-                                      SesLibe = s.SesLibe,
-                                      SesStat = s.SesStat,
-                                      TiSNome = ts.TiSnome,
-                                      GraNome = g.GraNome,
-                                      LojCodi = l.LojCodi,
-                                      LojNome = l.LojNome,
-                                      LojStat = l.LojStat,
-                                      LojNume = l.LojNume,
-                                      LojLogr = l.LojLogr,
-                                      LojNumL = l.LojNumL,
-                                      LojBair = l.LojBair,
-                                      PotNome = p.PotNome,
-                                      PotSigl = p.PotSigl,
-                                      PotRegu = p.PotRegu,
-                                      RitNome = r.RitNome,
-                                      CidNome = c.CidNome,
-                                      EstSigl = e.EstSigl,
-                                      LojLogo = l.LojLogo,
-                                      PotLogo = p.PotLogo
-                                  }).FirstOrDefault()!;
+                                                 join g in _context.Graus on s.GraCodi equals g.GraCodi
+                                                 join ts in _context.TipoSessaos on s.TiScodi equals ts.TiScodi
+                                                 join l in _context.Lojas on s.LojCodi equals l.LojCodi
+                                                 join p in _context.Potencia on l.PotCodi equals p.PotCodi
+                                                 join r in _context.Ritos on l.RitCodi equals r.RitCodi
+                                                 join c in _context.Cidades on l.CidCodi equals c.CidCodi
+                                                 join e in _context.Estados on c.EstCodi equals e.EstCodi
+                                                 where s.SesCodi == sesCodi
+                                                 select new SessaoConviteModel
+                                                 {
+                                                     SesCodi = s.SesCodi,
+                                                     SesNume = (long)s.SesNume!,
+                                                     SesNome = s.SesNome,
+                                                     SesDesc = s.SesDesc,
+                                                     SesDtHr = s.SesDtHr,
+                                                     SesLibe = s.SesLibe,
+                                                     SesStat = s.SesStat,
+                                                     TiSNome = ts.TiSnome,
+                                                     GraNome = g.GraNome,
+                                                     LojCodi = l.LojCodi,
+                                                     LojNome = l.LojNome,
+                                                     LojStat = l.LojStat,
+                                                     LojNume = l.LojNume,
+                                                     LojLogr = l.LojLogr,
+                                                     LojNumL = l.LojNumL,
+                                                     LojBair = l.LojBair,
+                                                     PotNome = p.PotNome,
+                                                     PotSigl = p.PotSigl,
+                                                     PotRegu = p.PotRegu,
+                                                     RitNome = r.RitNome,
+                                                     CidNome = c.CidNome,
+                                                     EstSigl = e.EstSigl,
+                                                     LojLogo = l.LojLogo,
+                                                     PotLogo = p.PotLogo
+                                                 }).FirstOrDefault()!;
+
+                    if (result != null)
+                    {
+                        List<GestaoAdmAtivaModel> lstGestaoAdmAtiva = (from l in _context.Lojas
+                                                                    join ga in _context.GestaoAdministrativas on l.LojCodi equals ga.LojCodi
+                                                                    join gc in _context.GestaoCargos on ga.GstAdmCodi equals gc.GstAdmCodi
+                                                                    join c in _context.Cargos on gc.CarCodi equals c.CarCodi
+                                                                    join u in _context.Usuarios on gc.UsuCodi equals u.UsuCodi
+                                                                    where l.LojCodi == 1 &&
+                                                                          ga.GstAdmStat == true &&
+                                                                          ga.GstAdmDtIn <= DateTime.Today &&
+                                                                          ga.GstAdmDtFi >= DateTime.Today
+                                                                    orderby ga.GstAdmDtFi descending
+                                                                    select new GestaoAdmAtivaModel
+                                                                    {
+                                                                        LojCodi = l.LojCodi,
+                                                                        LojNome = l.LojNome,
+                                                                        LojNumL = l.LojNumL,
+                                                                        GstAdmNome = ga.GstAdmNome,
+                                                                        GstAdmDtIn = ga.GstAdmDtIn,
+                                                                        GstAdmDtFi = ga.GstAdmDtFi,
+                                                                        GstAdmStat = ga.GstAdmStat,
+                                                                        CarCodi = c.CarCodi,
+                                                                        CarNome = c.CarNome,
+                                                                        UsuNome = u.UsuNome
+                                                                    }).ToList();
+                        if(lstGestaoAdmAtiva != null)
+                        {
+                            result.lstGestaoAdmAtiva = new List<GestaoAdmAtivaModel>();
+                            result.lstGestaoAdmAtiva = lstGestaoAdmAtiva;
+                        }
+                    }
 
 
                     return Task.FromResult<ActionResult<IEnumerable<SessaoConviteModel>>>(Ok(result));

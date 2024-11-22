@@ -1,3 +1,5 @@
+import { GestaoAdmAtivaModel } from "./GestaoAdmAtiva.Model";
+
 export class SessaoConviteModel {
   SesCodi: number;
   SesNume: number;
@@ -21,6 +23,7 @@ export class SessaoConviteModel {
   RitNome?: string;
   CidNome?: string;
   EstSigl?: string;
+  lstGestaoAdmAtiva?: GestaoAdmAtivaModel[];
   LojLogo?: string;
   PotLogo?: string;
 
@@ -47,6 +50,7 @@ export class SessaoConviteModel {
     RitNome?: string,
     CidNome?: string,
     EstSigl?: string,
+    lstGestaoAdmAtiva?: GestaoAdmAtivaModel[],
     LojLogo?: string,
     PotLogo?: string
   ) {
@@ -72,6 +76,7 @@ export class SessaoConviteModel {
     this.RitNome = RitNome;
     this.CidNome = CidNome;
     this.EstSigl = EstSigl;
+    this.lstGestaoAdmAtiva = lstGestaoAdmAtiva;
     this.LojLogo = LojLogo;
     this.PotLogo = PotLogo;
   }

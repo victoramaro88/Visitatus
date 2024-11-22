@@ -24,7 +24,9 @@
         public string? RitNome { get; set; }
         public string? CidNome { get; set; }
         public string? EstSigl { get; set; }
+        public List<GestaoAdmAtivaModel>? lstGestaoAdmAtiva{ get; set; }
         public string? LojLogo { get; set; }
         public string? PotLogo { get; set; }
+
     }
 }
