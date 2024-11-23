@@ -372,8 +372,24 @@ export class SessaoComponent implements OnInit {
 
   GetSessaoBySesCodi(lojCodi: number) {
     this.boolLoading = true;
-    // console.warn(this.cryptoService.criptografar(lojCodi));
-    this.router.navigate(['/convite', this.cryptoService.criptografar(this.base64Service.convertNumberToBase64(lojCodi))]);
+    // this.router.navigate(['/convite', this.cryptoService.criptografar(this.base64Service.convertNumberToBase64(lojCodi))]);
+    
+    // Criar a árvore da URL corretamente
+    const urlTree = this.router.createUrlTree(['/convite', this.cryptoService.criptografar(this.base64Service.convertNumberToBase64(lojCodi))]);
+    
+    // Serializar a URL com base na rota configurada
+    const url = this.router.serializeUrl(urlTree);
+    
+    // Obter o baseHref configurado na aplicação (para contextos específicos)
+    const baseHref = document.getElementsByTagName('base')[0]?.href || '';
+    
+    // Concatenar a URL final corretamente
+    const fullUrl = baseHref.replace(/\/$/, '') + url;
+    
+    // Abrir a nova aba com a URL corrigida
+    window.open(fullUrl, '_blank');
+
+    this.boolLoading = false;
   }
 
   onGlobalFilter(table: Table, event: Event) {
