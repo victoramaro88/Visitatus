@@ -55,6 +55,10 @@ export class HttpService {
     return this.http.get<SessaoConviteModel>(`${environment.apiServicos}/Sessao/GetSessaoBySesCodi/${sesCodi}`);
   }
 
+  public GetTemplateLoja(lojCodi: number): Observable<SessaoConviteModel> {
+    return this.http.get<SessaoConviteModel>(`${environment.apiServicos}/TemplateLoja/GetTemplateLoja/${lojCodi}`);
+  }
+
   // #endregion
 
   // #region POST

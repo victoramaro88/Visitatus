@@ -43,12 +43,32 @@ export class ConviteComponent implements OnInit {
     }
   }
 
-  GetSessaoBySesCodi(lojCodi: number) {
+  GetSessaoBySesCodi(sesCodi: number) {
+    this.boolLoading = true;
     try {
-      this.http.GetSessaoBySesCodi(lojCodi).subscribe({
+      this.http.GetSessaoBySesCodi(sesCodi).subscribe({
         next: (response) => {
           // this.lstSessao = response;
           console.warn("Convite Sessão:", response);
+          this.GetTemplateLoja(response.LojCodi);
+        },
+        error: (error) => {
+          console.error('Erro ao carregar dados:', error);
+          this.boolLoading = false;
+        }
+      });
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+      this.boolLoading = false;
+    }
+  }
+
+  GetTemplateLoja(lojCodi: number) {
+    try {
+      this.http.GetTemplateLoja(lojCodi).subscribe({
+        next: (response) => {
+          // this.lstSessao = response;
+          console.warn("Template do Convite:", response);
           this.boolLoading = false;
         },
         error: (error) => {
