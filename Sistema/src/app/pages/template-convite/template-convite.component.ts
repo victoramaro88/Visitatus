@@ -16,4 +16,8 @@ export class TemplateConviteComponent {
     private router: Router
   ) {}
 
+  ConfirmarPresenca(){
+    console.warn('Presença Confirmada!');
+  }
+
 }

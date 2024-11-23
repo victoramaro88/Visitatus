@@ -12,6 +12,7 @@ import { SessaoModel } from "../models/Sessao.Model";
 import { SessaoListaModel } from "../models/SessaoLista.Model";
 import { LojaModel } from "../models/Loja.Model";
 import { SessaoConviteModel } from '../models/SessaoConvite.Model';
+import { TemplateLojaModel } from '../models/TemplateLoja.Model';
 
 @Injectable({
     providedIn: 'root'
@@ -55,8 +56,8 @@ export class HttpService {
     return this.http.get<SessaoConviteModel>(`${environment.apiServicos}/Sessao/GetSessaoBySesCodi/${sesCodi}`);
   }
 
-  public GetTemplateLoja(lojCodi: number): Observable<SessaoConviteModel> {
-    return this.http.get<SessaoConviteModel>(`${environment.apiServicos}/TemplateLoja/GetTemplateLoja/${lojCodi}`);
+  public GetTemplateLoja(lojCodi: number): Observable<TemplateLojaModel> {
+    return this.http.get<TemplateLojaModel>(`${environment.apiServicos}/TemplateLoja/GetTemplateLoja/${lojCodi}`);
   }
 
   // #endregion
