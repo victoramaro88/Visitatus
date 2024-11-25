@@ -1,3 +1,8 @@
+<p-blockUI [blocked]="boolLoading">
+  <i class="pi pi-spin pi-spinner-dotted" style="font-size: 3rem"></i>
+</p-blockUI>
+<p-toast></p-toast>
 
-
-<div #dynamicContainer [innerHTML]="htmlContent"></div>
+<div #dynamicContainer>
+  <div [innerHTML]="htmlContent" (click)="onContainerClick($event)"></div>
+</div>

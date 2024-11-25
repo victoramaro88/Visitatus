@@ -1,0 +1,50 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Estilos gerais para a div */
+.responsive-div {
+  /* background-color: #f0f0f0; */
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: margin 0.3s ease;
+}
+
+/* Para telas maiores (desktop) */
+@media (min-width: 768px) {
+  .responsive-div {
+    margin: 0 20%;
+  }
+}
+
+/* Para telas menores (celular) */
+@media (max-width: 767px) {
+  .responsive-div {
+    margin: 0;
+  }
+}
+
+
+/* Centralização do contêiner */
+.responsive-img-container {
+  display: flex; /* Ativa o Flexbox */
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+  width: 100%; /* Garante que ocupe toda a largura disponível */
+  height: 100%; /* Garante que ocupe toda a altura da coluna */
+}
+
+/* Responsividade da imagem */
+.responsive-img {
+  max-width: 30%; /* Adapta ao tamanho do contêiner */
+  height: auto; /* Mantém a proporção da imagem */
+  object-fit: contain; /* Ajusta a imagem sem cortar */
+}
+
+/* Ajuste específico para telas menores */
+@media (max-width: 768px) {
+  .responsive-img {
+    max-width: 50%; /* Adapta o tamanho da imagem para telas menores */
+  }
+}

@@ -1,1 +1,44 @@
-<p>confirmacao-presenca works!</p>
+<p-blockUI [blocked]="boolLoading">
+  <i class="pi pi-spin pi-spinner-dotted" style="font-size: 3rem"></i>
+</p-blockUI>
+<p-toast />
+
+<div *ngIf="objSessaoConvite" class="responsive-div">
+  <p-card header="Confirmação de Presença">
+    <p class="m-0">
+        Confirme sua presença para a sessão:
+    </p>
+
+    <br>
+    <div class="text-center">
+      <div class="grid">
+        <div class="col-6">
+          <div class="responsive-img-container">
+            <img
+              src="data:image/png;base64,{{objSessaoConvite.LojLogo}}"
+              alt="Brasão Loja"
+              class="responsive-img"
+            />
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="responsive-img-container">
+            <img
+              src="data:image/png;base64,{{objSessaoConvite.PotLogo}}"
+              alt="Brasão Potência"
+              class="responsive-img"
+            />
+          </div>
+        </div>
+      </div>
+      <b>{{objSessaoConvite.LojNome}} - {{objSessaoConvite.LojNumL}}</b>
+      <br>
+      <b>{{objSessaoConvite.PotNome}}</b>
+    </div><br>
+    <b>Sessão: </b> {{objSessaoConvite.TiSNome}}<br>
+    <b>Grau: </b> {{objSessaoConvite.GraNome}}<br>
+    <b>Dia:</b> {{objSessaoConvite.SesDtHr | date: 'dd/MM/yyyy'}}<br>
+    <b>Hora: </b> {{objSessaoConvite.SesDtHr | date: 'HH:mm'}}<br>
+    <b>Descrição: </b> {{objSessaoConvite.SesDesc}}<br>
+  </p-card>
+</div>

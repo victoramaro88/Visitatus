@@ -5,6 +5,7 @@ import { PerfilUsuarioListaModel } from '../../models/PerfilUsuarioLista.Model';
 import { CryptoService } from '../../services/crypto.service';
 import { UsuarioLogadoModel } from '../../models/UsuarioLogado.Model';
 import { Router } from '@angular/router';
+import { Base64Service } from '../../services/base64.service';
 
 @Component({
   selector: 'app-menu',
@@ -23,7 +24,8 @@ export class MenuComponent implements OnInit {
   constructor(
     private messageService: MessageService,
     private cryptoService: CryptoService,
-    private router: Router
+    private router: Router,
+    private base64Service: Base64Service
   ) {
     this.objUsuarioLogado = JSON.parse(this.cryptoService.lerDoSessionStorage("usr"));
     // console.warn("Usuário Logado: ", this.objPerfilUsuario);
@@ -93,12 +95,23 @@ export class MenuComponent implements OnInit {
           }
         },
         {
-          label: 'Template (tmp)',
-          // icon: 'pi pi-home',
-          command: () => {
-            this.router.navigate(['/template']);
-          }
-        },
+            label: 'Temporários',
+            // icon: 'pi pi-book',
+            items: [
+              {
+                label: 'Templates',
+                command: () => {
+                  this.router.navigate(['/template']);
+                }
+              },
+              {
+                label: 'Confirmação de Presença',
+                command: () => {
+                  this.GetSessaoBySesCodi(4); // -> Código da sessão para testes: 4
+                }
+            },
+          ]
+        }
     ];
   }
 
@@ -106,5 +119,24 @@ export class MenuComponent implements OnInit {
     sessionStorage.clear();
     localStorage.clear();
     this.router.navigate(['/login']);
+  }
+
+  GetSessaoBySesCodi(lojCodi: number) {
+    // this.router.navigate(['/convite', this.cryptoService.criptografar(this.base64Service.convertNumberToBase64(lojCodi))]);
+
+    // Criar a árvore da URL corretamente
+    const urlTree = this.router.createUrlTree(['/confirmacao', this.cryptoService.criptografar(this.base64Service.convertNumberToBase64(lojCodi))]);
+
+    // Serializar a URL com base na rota configurada
+    const url = this.router.serializeUrl(urlTree);
+
+    // Obter o baseHref configurado na aplicação (para contextos específicos)
+    const baseHref = document.getElementsByTagName('base')[0]?.href || '';
+
+    // Concatenar a URL final corretamente
+    const fullUrl = baseHref.replace(/\/$/, '') + url;
+
+    // Abrir a nova aba com a URL corrigida
+    window.open(fullUrl, '_blank');
   }
 }

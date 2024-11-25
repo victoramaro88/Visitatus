@@ -16,7 +16,7 @@ export class AppComponent {
   versionApp: string | undefined;
 
   isMenuHidden: boolean = false;
-  private hiddenRoutes = ['/login', '/template', '/convite']; // Rotas onde o menu será oculto
+  private hiddenRoutes = ['/login', '/template', '/convite', '/confirmacao']; // Rotas onde o menu será oculto
 
   constructor(
     private primengConfig: PrimeNGConfig,

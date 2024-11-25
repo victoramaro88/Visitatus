@@ -1,3 +1,4 @@
+import { ConfirmacaoPresencaComponent } from './pages/confirmacao-presenca/confirmacao-presenca.component';
 import { ConviteComponent } from './pages/convite/convite.component';
 import { SessaoComponent } from './pages/sessao/sessao.component';
 import { ContatoComponent } from './pages/contato/contato.component';
@@ -14,6 +15,8 @@ export const routes: Routes = [
   { path: 'sessao', component: SessaoComponent },
   { path: 'template', component: TemplateConviteComponent },
   { path: 'convite/:data', component: ConviteComponent },
+  { path: 'confirmacao/:data', component: ConfirmacaoPresencaComponent },
+  // { path: 'confirmacao', component: ConfirmacaoPresencaComponent }, //-> Temporário
   { path: '**', redirectTo: 'login' }
 ];
 

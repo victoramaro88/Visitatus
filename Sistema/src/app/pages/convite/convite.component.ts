@@ -1,19 +1,23 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { HttpService } from '../../services/http-service.service';
-import { ActivatedRoute } from '@angular/router';
 import { CryptoService } from '../../services/crypto.service';
 import { Base64Service } from '../../services/base64.service';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { SessaoConviteModel } from '../../models/SessaoConvite.Model';
 import { TemplateLojaModel } from '../../models/TemplateLoja.Model';
-import { Renderer2 } from '@angular/core';
+import { ImportsModule } from '../../imports';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-convite',
+  standalone: true,
   templateUrl: './convite.component.html',
-  styleUrls: ['./convite.component.css']
+  styleUrls: ['./convite.component.css'],
+  imports: [ImportsModule],
+  providers: [MessageService]
 })
-export class ConviteComponent implements OnInit, AfterViewInit {
+export class ConviteComponent implements OnInit {
   @ViewChild('dynamicContainer', { static: false }) dynamicContainer!: ElementRef;
 
   boolLoading = true;
@@ -26,11 +30,11 @@ export class ConviteComponent implements OnInit, AfterViewInit {
   constructor(
     private http: HttpService,
     private route: ActivatedRoute,
+    private router: Router,
     private cryptoService: CryptoService,
     private base64Service: Base64Service,
-    private sanitizer: DomSanitizer,
-    private renderer: Renderer2
-  ) { }
+    private sanitizer: DomSanitizer
+  ) {}
 
   ngOnInit(): void {
     try {
@@ -41,33 +45,12 @@ export class ConviteComponent implements OnInit, AfterViewInit {
       this.GetSessaoBySesCodi(this.idSessaoCrypto);
     } catch (error) {
       this.boolLoading = false;
+      console.warn('Falha ao receber os parâmetros.');
     }
-  }
-
-  ngAfterViewInit(): void {
-    // Após a renderização, tentamos acessar o botão
-    this.addButtonClickListener();
   }
 
   renderDynamicHtml(rawHtml: string) {
     this.htmlContent = this.sanitizer.bypassSecurityTrustHtml(rawHtml);
-    const dynamicHtml = this.htmlContent;
-
-    // Injetar o HTML dinâmico no container
-    this.dynamicContainer.nativeElement.innerHTML = dynamicHtml;
-
-    // Esperar um ciclo de detecção de mudanças para garantir que o DOM foi atualizado
-    setTimeout(() => this.addButtonClickListener(), 0);
-  }
-
-  addButtonClickListener() {
-    const button = this.dynamicContainer.nativeElement.querySelector('#confirmar-presenca-btn');
-    if (button) {
-      // Vincular manualmente o evento click ao botão
-      this.renderer.listen(button, 'click', () => {
-        this.ConfirmarPresenca();
-      });
-    }
   }
 
   GetSessaoBySesCodi(sesCodi: number) {
@@ -117,7 +100,25 @@ export class ConviteComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ConfirmarPresenca() {
-    console.warn('Presença Confirmada!', this.objSessaoConvite?.SesCodi);
+  onContainerClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (target.id === 'confirmar-presenca-btn') {
+      this.ConfirmarPresenca();
+    }
   }
+
+  ConfirmarPresenca() {
+    // console.warn('Presença Confirmada!', this.objSessaoConvite?.SesCodi);
+
+    // Criar a árvore da URL corretamente
+    // const urlTree = this.router.createUrlTree(['/confirmacao', this.cryptoService.criptografar(this.base64Service.convertNumberToBase64(this.objSessaoConvite?.SesCodi!))]);
+    // const url = this.router.serializeUrl(urlTree);
+    // const baseHref = document.getElementsByTagName('base')[0]?.href || '';
+    // const fullUrl = baseHref.replace(/\/$/, '') + url;
+    // window.open(fullUrl, '_self');
+
+    const path = ['/confirmacao', this.cryptoService.criptografar(this.base64Service.convertNumberToBase64(this.objSessaoConvite?.SesCodi!))];
+    this.router.navigate(path);
+  }
+
 }
