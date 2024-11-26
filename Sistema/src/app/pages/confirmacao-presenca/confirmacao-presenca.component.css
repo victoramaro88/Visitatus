@@ -37,7 +37,7 @@ body {
 
 /* Responsividade da imagem */
 .responsive-img {
-  max-width: 30%; /* Adapta ao tamanho do contêiner */
+  max-width: 25%; /* Adapta ao tamanho do contêiner */
   height: auto; /* Mantém a proporção da imagem */
   object-fit: contain; /* Ajusta a imagem sem cortar */
 }
@@ -47,4 +47,17 @@ body {
   .responsive-img {
     max-width: 50%; /* Adapta o tamanho da imagem para telas menores */
   }
+}
+
+
+::ng-deep #usuNasc input.p-inputtext {
+  text-align: center;
+}
+
+::ng-deep #usuNCel input.p-inputtext {
+  text-align: center;
+}
+
+::ng-deep #nCim input.p-inputtext {
+  text-align: center;
 }

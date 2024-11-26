@@ -1,6 +1,7 @@
 ﻿using API_Visitatus.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace API_Visitatus.Controllers
 {
@@ -42,6 +43,49 @@ namespace API_Visitatus.Controllers
                 {
                     return Ok(result);
                 }
+            }
+        }
+
+        [HttpGet("{LojCodi}")]
+        public Task<ActionResult<IEnumerable<Potencium>>> GetPotenciaRegularByLojCodi(int LojCodi)
+        {
+            if (LojCodi > 0)
+            {
+                var potenciaRegu = _context.Lojas
+                    .Where(l => l.LojCodi == LojCodi)
+                                .Join(
+                        _context.Potencia,
+                        l => l.PotCodi,
+                        p => p.PotCodi,
+                        (l, p) => p.PotRegu
+                    )
+                    .FirstOrDefault();
+
+                var result = _context.Potencia
+                    .Where(p => p.PotRegu == potenciaRegu)
+                    .Select(p => new
+                    {
+                        p.PotCodi,
+                        p.PotNome,
+                        p.PotLogo,
+                        p.PotRegu,
+                        p.PotStat,
+                        p.PotSigl
+                    })
+                    .ToList();
+
+                if (result == null)
+                {
+                    return Task.FromResult<ActionResult<IEnumerable<Potencium>>>(NotFound());
+                }
+                else
+                {
+                    return Task.FromResult<ActionResult<IEnumerable<Potencium>>>(Ok( result ));
+                }
+            }
+            else
+            {
+                return Task.FromResult<ActionResult<IEnumerable<Potencium>>>(BadRequest("Parâmetros Inválidos."));
             }
         }
 

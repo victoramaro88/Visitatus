@@ -9,6 +9,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SessaoListaModel } from '../../models/SessaoLista.Model';
 import { UsuarioLogadoModel } from '../../models/UsuarioLogado.Model';
 import { SessaoConviteModel } from '../../models/SessaoConvite.Model';
+import { UsuarioModel } from '../../models/Usuario.Model';
+import { PotenciaModel } from '../../models/Potencia.Model';
+import { LojaModel } from '../../models/Loja.Model';
 
 @Component({
   selector: 'app-confirmacao-presenca',
@@ -25,8 +28,24 @@ export class ConfirmacaoPresencaComponent implements OnInit {
   idSessaoCrypto: number = 0;
   objSessao: SessaoListaModel = new SessaoListaModel(0, '', new Date(), false, true, 0, 0, '', 0, '', 0, '');
   objUsuarioLogado: UsuarioLogadoModel = new UsuarioLogadoModel();
+  objUsuario: UsuarioModel = new UsuarioModel();
 
   objSessaoConvite: SessaoConviteModel | undefined;
+  lstPotencia: PotenciaModel[] = [];
+  objPotencia: PotenciaModel = new PotenciaModel();
+  objLoja: LojaModel = {
+    LojCodi: 0,
+    LojNome: "",
+    LojNumL: "",
+    LojLogo: "",
+    LojLogr: "",
+    LojNume: "",
+    LojBair: "",
+    LojStat: false,
+    CidCodi: 0,
+    PotCodi: 0,
+    RitCodi: 0
+  };
 
   constructor(
     private http: HttpService,
@@ -60,6 +79,21 @@ export class ConfirmacaoPresencaComponent implements OnInit {
       next: (response) => {
         this.objSessaoConvite = response;
         console.warn('Sessão:', this.objSessaoConvite);
+        this.GetPotenciaRegularByLojCodi(this.objSessaoConvite.LojCodi);
+      },
+      error: (error) => {
+        console.error('Erro ao carregar dados:', error);
+        this.boolLoading = false;
+      }
+    });
+  }
+
+  GetPotenciaRegularByLojCodi(lojCodi: number) {
+    this.http.GetPotenciaRegularByLojCodi(lojCodi).subscribe({
+      next: (response) => {
+        this.lstPotencia = [];
+        this.lstPotencia = response.filter(p => p.PotStat === true);
+        console.warn('Lista das Potências:', this.lstPotencia);
         this.boolLoading = false;
       },
       error: (error) => {
@@ -67,6 +101,23 @@ export class ConfirmacaoPresencaComponent implements OnInit {
         this.boolLoading = false;
       }
     });
+  }
+
+  GetLojaByPotLojNume(PotCodi: number, LojNumL: string) {
+    if (PotCodi > 0 && LojNumL.length > 0) {
+      this.boolLoading = true;
+      this.http.GetLojaByPotLojNume(PotCodi, LojNumL.toString()).subscribe({
+        next: (response) => {
+          this.objLoja = response;
+          console.warn('Loja Pesquisada:', this.objLoja);
+          this.boolLoading = false;
+        },
+        error: (error) => {
+          console.error('Erro ao carregar dados:', error);
+          this.boolLoading = false;
+        }
+      });
+    }
   }
 
 }

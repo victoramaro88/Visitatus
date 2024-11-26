@@ -1,6 +1,5 @@
 import { GrauModel } from './../models/Grau.Model';
 import { TipoSessaoModel } from './../models/TipoSessao.Model';
-
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
@@ -13,6 +12,7 @@ import { SessaoListaModel } from "../models/SessaoLista.Model";
 import { LojaModel } from "../models/Loja.Model";
 import { SessaoConviteModel } from '../models/SessaoConvite.Model';
 import { TemplateLojaModel } from '../models/TemplateLoja.Model';
+import { PotenciaModel } from '../models/Potencia.Model';
 
 @Injectable({
     providedIn: 'root'
@@ -58,6 +58,14 @@ export class HttpService {
 
   public GetTemplateLoja(lojCodi: number): Observable<TemplateLojaModel> {
     return this.http.get<TemplateLojaModel>(`${environment.apiServicos}/TemplateLoja/GetTemplateLoja/${lojCodi}`);
+  }
+
+  public GetPotenciaRegularByLojCodi(lojCodi: number): Observable<PotenciaModel[]> {
+    return this.http.get<PotenciaModel[]>(`${environment.apiServicos}/Potencia/GetPotenciaRegularByLojCodi/${lojCodi}`);
+  }
+
+  public GetLojaByPotLojNume(PotCodi: number, LojNumL: string): Observable<LojaModel> {
+    return this.http.get<LojaModel>(`${environment.apiServicos}/Loja/GetLojaByPotLojNume/${PotCodi}/${LojNumL}`);
   }
 
   // #endregion

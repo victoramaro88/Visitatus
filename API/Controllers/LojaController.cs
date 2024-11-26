@@ -45,6 +45,30 @@ namespace API_Visitatus.Controllers
             }
         }
 
+        [HttpGet("{PotCodi}/{LojNumL}")]
+        public async Task<ActionResult<IEnumerable<Loja>>> GetLojaByPotLojNume(int PotCodi, string LojNumL)
+        {
+            if (PotCodi > 0 && LojNumL.Length > 0)
+            {
+                var result = await _context.Lojas
+                    .Where(l => l.PotCodi == PotCodi && l.LojNumL == LojNumL)
+                    .ToListAsync();
+
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(result);
+                }
+            }
+            else
+            {
+                return BadRequest("Parâmetros inválidos.");
+            }
+        }
+
         [HttpGet("{usuCodi}")]
         public ActionResult<IEnumerable<Loja>> GetLojaByIdUsuario(long usuCodi)
         {

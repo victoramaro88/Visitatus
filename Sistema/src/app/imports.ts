@@ -28,6 +28,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { BadgeModule } from 'primeng/badge';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @NgModule({
   imports: [
@@ -58,7 +59,8 @@ import { BadgeModule } from 'primeng/badge';
     IconFieldModule,
     InputIconModule,
     SelectButtonModule,
-    BadgeModule
+    BadgeModule,
+    InputNumberModule
   ],
   exports: [
     CommonModule,
@@ -88,7 +90,8 @@ import { BadgeModule } from 'primeng/badge';
     IconFieldModule,
     InputIconModule,
     SelectButtonModule,
-    BadgeModule
+    BadgeModule,
+    InputNumberModule
   ],
   providers: [provideNgxMask()]
 })
