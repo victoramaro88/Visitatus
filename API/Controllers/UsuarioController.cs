@@ -1,6 +1,7 @@
 ﻿using API_Visitatus.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace API_Visitatus.Controllers
 {
@@ -42,6 +43,49 @@ namespace API_Visitatus.Controllers
                 {
                     return Ok(result);
                 }
+            }
+        }
+
+        [HttpGet("{usuNCIM}/{potCodi}/{lojNumL}")]
+        public ActionResult<IEnumerable<Usuario>> GetUsuarioByLoja(string usuNCIM, int potCodi, string lojNumL)
+        {
+            if (usuNCIM.Length > 0 && potCodi > 0 && lojNumL.Length > 0)
+            {
+                var result = _context.Usuarios
+                    .Where(u => u.UsuNcim == "320097")
+                                .Join(
+                        _context.UsuarioLojas,
+                        u => u.UsuCodi,
+                        ul => ul.UsuCodi,
+                        (u, ul) => new { Usuario = u, UsuarioLoja = ul }
+                                )
+                    .Join(
+                        _context.Lojas,
+                        combined => combined.UsuarioLoja.LojCodi,
+                        l => l.LojCodi,
+                        (combined, l) => new
+                        {
+                            combined.Usuario.UsuCodi,
+                            combined.Usuario.UsuNome,
+                            combined.Usuario.UsuNcim,
+                            combined.Usuario.UsuNasc,
+                            combined.Usuario.UsuEmai,
+                            combined.Usuario.UsuNcel,
+                            combined.Usuario.UsuStat,
+                            LojNome = l.LojNome,
+                            LojNumL = l.LojNumL,
+                            PotCodi = l.PotCodi
+                        }
+                    )
+                    .Where(result => result.PotCodi == 5 && result.LojNumL == "4024")
+                    .ToList();
+
+
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest("Parâmetros inválidos.");
             }
         }
 

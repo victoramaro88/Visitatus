@@ -52,16 +52,9 @@ namespace API_Visitatus.Controllers
             {
                 var result = await _context.Lojas
                     .Where(l => l.PotCodi == PotCodi && l.LojNumL == LojNumL)
-                    .ToListAsync();
+                    .FirstOrDefaultAsync();
 
-                if (result == null)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    return Ok(result);
-                }
+                return Ok(result);
             }
             else
             {

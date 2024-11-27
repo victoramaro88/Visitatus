@@ -12,6 +12,7 @@ import { SessaoConviteModel } from '../../models/SessaoConvite.Model';
 import { UsuarioModel } from '../../models/Usuario.Model';
 import { PotenciaModel } from '../../models/Potencia.Model';
 import { LojaModel } from '../../models/Loja.Model';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-confirmacao-presenca',
@@ -32,7 +33,8 @@ export class ConfirmacaoPresencaComponent implements OnInit {
 
   objSessaoConvite: SessaoConviteModel | undefined;
   lstPotencia: PotenciaModel[] = [];
-  objPotencia: PotenciaModel = new PotenciaModel();
+  objPotenciaIrmao: PotenciaModel = new PotenciaModel();
+  objPotenciaLoja: PotenciaModel = new PotenciaModel();
   objLoja: LojaModel = {
     LojCodi: 0,
     LojNome: "",
@@ -54,7 +56,8 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private base64Service: Base64Service,
-    private cryptoService: CryptoService
+    private cryptoService: CryptoService,
+    private cd: ChangeDetectorRef
   ) {
     this.objUsuarioLogado = JSON.parse(this.cryptoService.lerDoSessionStorage("usr"));
     // console.warn("Usuário Logado: ", this.objUsuarioLogado);
@@ -108,8 +111,23 @@ export class ConfirmacaoPresencaComponent implements OnInit {
       this.boolLoading = true;
       this.http.GetLojaByPotLojNume(PotCodi, LojNumL.toString()).subscribe({
         next: (response) => {
-          this.objLoja = response;
-          console.warn('Loja Pesquisada:', this.objLoja);
+          this.objLoja = {
+            LojCodi: 0,
+            LojNome: "",
+            LojNumL: LojNumL,
+            LojLogo: "",
+            LojLogr: "",
+            LojNume: "",
+            LojBair: "",
+            LojStat: false,
+            CidCodi: 0,
+            PotCodi: PotCodi,
+            RitCodi: 0
+          };
+          if (response) {
+            this.objLoja = response;
+          }
+          // console.warn('Loja Pesquisada:', this.objLoja);
           this.boolLoading = false;
         },
         error: (error) => {
