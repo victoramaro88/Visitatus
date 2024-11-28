@@ -1,3 +1,4 @@
+import { LojaConsulta, UsrLoja } from './../../models/ConsultaUsuarioLoja.Model';
 import { Component, OnInit } from '@angular/core';
 import { ImportsModule } from '../../imports';
 import { MessageService } from 'primeng/api';
@@ -13,6 +14,7 @@ import { UsuarioModel } from '../../models/Usuario.Model';
 import { PotenciaModel } from '../../models/Potencia.Model';
 import { LojaModel } from '../../models/Loja.Model';
 import { ChangeDetectorRef } from '@angular/core';
+import { ConsultaUsuarioLojaModel } from '../../models/ConsultaUsuarioLoja.Model';
 
 @Component({
   selector: 'app-confirmacao-presenca',
@@ -34,20 +36,9 @@ export class ConfirmacaoPresencaComponent implements OnInit {
   objSessaoConvite: SessaoConviteModel | undefined;
   lstPotencia: PotenciaModel[] = [];
   objPotenciaIrmao: PotenciaModel = new PotenciaModel();
-  objPotenciaLoja: PotenciaModel = new PotenciaModel();
-  objLoja: LojaModel = {
-    LojCodi: 0,
-    LojNome: "",
-    LojNumL: "",
-    LojLogo: "",
-    LojLogr: "",
-    LojNume: "",
-    LojBair: "",
-    LojStat: false,
-    CidCodi: 0,
-    PotCodi: 0,
-    RitCodi: 0
-  };
+  objConsultaUsrLj: ConsultaUsuarioLojaModel = new ConsultaUsuarioLojaModel();
+  objLojaConsulta: LojaConsulta = new LojaConsulta();
+  objUsrLoja: UsrLoja = new UsrLoja();
 
   constructor(
     private http: HttpService,
@@ -95,7 +86,20 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     this.http.GetPotenciaRegularByLojCodi(lojCodi).subscribe({
       next: (response) => {
         this.lstPotencia = [];
-        this.lstPotencia = response.filter(p => p.PotStat === true);
+        response.forEach(itemPotencia => {
+          if (itemPotencia.PotStat === true) {
+            let objPot: PotenciaModel = {
+              PotCodi: itemPotencia.PotCodi,
+              PotNome: itemPotencia.PotNome,
+              PotLogo: itemPotencia.PotLogo,
+              PotRegu: itemPotencia.PotRegu,
+              PotStat: itemPotencia.PotStat,
+              PotSigl: itemPotencia.PotSigl + ' - ' + itemPotencia.PotNome
+            };
+            this.lstPotencia.push(objPot);
+          }
+        });
+
         console.warn('Lista das Potências:', this.lstPotencia);
         this.boolLoading = false;
       },
@@ -106,28 +110,20 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     });
   }
 
-  GetLojaByPotLojNume(PotCodi: number, LojNumL: string) {
-    if (PotCodi > 0 && LojNumL.length > 0) {
+  GetUsuarioByLoja(UsuNCIM: string, PotCodi: number, LojNumL: string) {
+    if (UsuNCIM.length > 0 && PotCodi > 0 && LojNumL.length > 0) {
       this.boolLoading = true;
-      this.http.GetLojaByPotLojNume(PotCodi, LojNumL.toString()).subscribe({
+      this.http.GetUsuarioByLoja(UsuNCIM, PotCodi, LojNumL.toString()).subscribe({
         next: (response) => {
-          this.objLoja = {
-            LojCodi: 0,
-            LojNome: "",
-            LojNumL: LojNumL,
-            LojLogo: "",
-            LojLogr: "",
-            LojNume: "",
-            LojBair: "",
-            LojStat: false,
-            CidCodi: 0,
-            PotCodi: PotCodi,
-            RitCodi: 0
-          };
-          if (response) {
-            this.objLoja = response;
+          if (response.objUsuarioLoja) {
+            this.objConsultaUsrLj.objUsuarioLoja = response.objUsuarioLoja;
+            this.objConsultaUsrLj.objUsuarioLoja.UsuNasc = new Date(response.objUsuarioLoja.UsuNasc.toString());
           }
-          // console.warn('Loja Pesquisada:', this.objLoja);
+          if (response.objLojaConsulta) {
+            this.objConsultaUsrLj.objLojaConsulta = response.objLojaConsulta;
+          }
+
+          console.warn('Retorno Consulta Loja / Usuário:', this.objConsultaUsrLj);
           this.boolLoading = false;
         },
         error: (error) => {
@@ -137,5 +133,37 @@ export class ConfirmacaoPresencaComponent implements OnInit {
       });
     }
   }
+
+  // GetLojaByPotLojNume(PotCodi: number, LojNumL: string) {
+  //   if (PotCodi > 0 && LojNumL.length > 0) {
+  //     this.boolLoading = true;
+  //     this.http.GetLojaByPotLojNume(PotCodi, LojNumL.toString()).subscribe({
+  //       next: (response) => {
+  //         this.objLoja = {
+  //           LojCodi: 0,
+  //           LojNome: "",
+  //           LojNumL: LojNumL,
+  //           LojLogo: "",
+  //           LojLogr: "",
+  //           LojNume: "",
+  //           LojBair: "",
+  //           LojStat: false,
+  //           CidCodi: 0,
+  //           PotCodi: PotCodi,
+  //           RitCodi: 0
+  //         };
+  //         if (response) {
+  //           this.objLoja = response;
+  //         }
+  //         // console.warn('Loja Pesquisada:', this.objLoja);
+  //         this.boolLoading = false;
+  //       },
+  //       error: (error) => {
+  //         console.error('Erro ao carregar dados:', error);
+  //         this.boolLoading = false;
+  //       }
+  //     });
+  //   }
+  // }
 
 }

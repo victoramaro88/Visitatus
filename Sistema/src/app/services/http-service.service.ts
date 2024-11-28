@@ -13,6 +13,7 @@ import { LojaModel } from "../models/Loja.Model";
 import { SessaoConviteModel } from '../models/SessaoConvite.Model';
 import { TemplateLojaModel } from '../models/TemplateLoja.Model';
 import { PotenciaModel } from '../models/Potencia.Model';
+import { ConsultaUsuarioLojaModel } from '../models/ConsultaUsuarioLoja.Model';
 
 @Injectable({
     providedIn: 'root'
@@ -66,6 +67,10 @@ export class HttpService {
 
   public GetLojaByPotLojNume(PotCodi: number, LojNumL: string): Observable<LojaModel> {
     return this.http.get<LojaModel>(`${environment.apiServicos}/Loja/GetLojaByPotLojNume/${PotCodi}/${LojNumL}`);
+  }
+
+  public GetUsuarioByLoja(UsuNCIM: string, PotCodi: number, LojNumL: string): Observable<ConsultaUsuarioLojaModel> {
+    return this.http.get<ConsultaUsuarioLojaModel>(`${environment.apiServicos}/Usuario/GetUsuarioByLoja/${UsuNCIM}/${PotCodi}/${LojNumL}`);
   }
 
   // #endregion

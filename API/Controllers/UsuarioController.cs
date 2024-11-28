@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using static API_Visitatus.Models.ConsultaUsuarioLojaModel;
 
 namespace API_Visitatus.Controllers
 {
@@ -47,12 +48,16 @@ namespace API_Visitatus.Controllers
         }
 
         [HttpGet("{usuNCIM}/{potCodi}/{lojNumL}")]
-        public ActionResult<IEnumerable<Usuario>> GetUsuarioByLoja(string usuNCIM, int potCodi, string lojNumL)
+        public ActionResult<IEnumerable<ConsultaUsuarioLojaModel>> GetUsuarioByLoja(string usuNCIM, int potCodi, string lojNumL)
         {
+            ConsultaUsuarioLojaModel objConsultaUsuarioLoja = new ConsultaUsuarioLojaModel();
+            objConsultaUsuarioLoja.objUsuarioLoja = new UsrLoja();
+            objConsultaUsuarioLoja.objLojaConsulta = new LojaConsulta();
+
             if (usuNCIM.Length > 0 && potCodi > 0 && lojNumL.Length > 0)
             {
-                var result = _context.Usuarios
-                    .Where(u => u.UsuNcim == "320097")
+                var resultUsuarioLoja = _context.Usuarios
+                    .Where(u => u.UsuNcim == usuNCIM)
                                 .Join(
                         _context.UsuarioLojas,
                         u => u.UsuCodi,
@@ -63,25 +68,47 @@ namespace API_Visitatus.Controllers
                         _context.Lojas,
                         combined => combined.UsuarioLoja.LojCodi,
                         l => l.LojCodi,
-                        (combined, l) => new
+                        (combined, l) => new UsrLoja
                         {
-                            combined.Usuario.UsuCodi,
-                            combined.Usuario.UsuNome,
-                            combined.Usuario.UsuNcim,
-                            combined.Usuario.UsuNasc,
-                            combined.Usuario.UsuEmai,
-                            combined.Usuario.UsuNcel,
-                            combined.Usuario.UsuStat,
+                            UsuCodi = combined.Usuario.UsuCodi,
+                            UsuNome = combined.Usuario.UsuNome,
+                            UsuNCIM = combined.Usuario.UsuNcim,
+                            UsuNasc = combined.Usuario.UsuNasc,
+                            UsuEmai = combined.Usuario.UsuEmai,
+                            UsuNCel = combined.Usuario.UsuNcel,
+                            UsuStat = combined.Usuario.UsuStat,
                             LojNome = l.LojNome,
                             LojNumL = l.LojNumL,
                             PotCodi = l.PotCodi
                         }
                     )
-                    .Where(result => result.PotCodi == 5 && result.LojNumL == "4024")
-                    .ToList();
+                    .Where(result => result.PotCodi == potCodi && result.LojNumL == lojNumL)
+                    .FirstOrDefault();
+
+                objConsultaUsuarioLoja.objUsuarioLoja = resultUsuarioLoja;
 
 
-                return Ok(result);
+                var resultLoja = _context.Lojas
+                    .Where(l => l.LojNumL == lojNumL && l.PotCodi == potCodi)
+                    .Select(l => new LojaConsulta
+                    {
+                        LojCodi = l.LojCodi,
+                        LojNome = l.LojNome,
+                        LojNumL = l.LojNumL,
+                        LojLogo = l.LojLogo,
+                        LojLogr = l.LojLogr,
+                        LojNume = l.LojNume,
+                        LojBair = l.LojBair,
+                        LojStat = l.LojStat,
+                        CidCodi = l.CidCodi,
+                        PotCodi = l.PotCodi,
+                        RitCodi = l.RitCodi
+                    })
+                    .FirstOrDefault();
+
+                objConsultaUsuarioLoja.objLojaConsulta = resultLoja;
+
+                return Ok(objConsultaUsuarioLoja);
             }
             else
             {
