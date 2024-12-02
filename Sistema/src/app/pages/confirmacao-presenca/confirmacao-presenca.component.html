@@ -60,117 +60,42 @@
               [filter]="true"
               filterBy="PotSigl"
               [showClear]="true"
-              (onChange)="GetUsuarioByLoja(objUsrLoja.UsuNCIM, objPotenciaIrmao.PotCodi, objLojaConsulta.LojNumL);"
+              (onChange)="GetUsuarioByLoja(this.objConsultaUsrLj.objUsuarioLoja.UsuNCIM, objPotenciaIrmao.PotCodi, this.objConsultaUsrLj.objLojaConsulta.LojNumL);"
             />
           </div>
           <div class="field col-12 md:col-3 p-fluid">
             <label for="LojNumL">Nº da Loja</label>
-            <input pInputText id="LojNumL" (blur)="GetUsuarioByLoja(objUsrLoja.UsuNCIM, objPotenciaIrmao.PotCodi, objLojaConsulta.LojNumL);" type="text" [(ngModel)]="objLojaConsulta.LojNumL" style="text-align: center;"/>
+            <input pInputText id="LojNumL" (blur)="GetUsuarioByLoja(this.objConsultaUsrLj.objUsuarioLoja.UsuNCIM, objPotenciaIrmao.PotCodi, this.objConsultaUsrLj.objLojaConsulta.LojNumL);" type="text" [(ngModel)]="this.objConsultaUsrLj.objLojaConsulta.LojNumL" style="text-align: center;"/>
           </div>
           <div class="field col-12 md:col-3 p-fluid">
               <label for="nCim">Nº do CIM</label>
-              <input pInputText id="nCim" (blur)="GetUsuarioByLoja(objUsrLoja.UsuNCIM, objPotenciaIrmao.PotCodi, objLojaConsulta.LojNumL);" type="text" [(ngModel)]="objUsrLoja.UsuNCIM"  style="text-align: center;"/>
+              <input pInputText id="nCim" (blur)="GetUsuarioByLoja(this.objConsultaUsrLj.objUsuarioLoja.UsuNCIM, objPotenciaIrmao.PotCodi, this.objConsultaUsrLj.objLojaConsulta.LojNumL);" type="text" [(ngModel)]="this.objConsultaUsrLj.objUsuarioLoja.UsuNCIM"  style="text-align: center;"/>
           </div>
           <div class="field col-12 md:col-6 p-fluid">
               <label for="nomeUser">Nome Completo</label><br>
-              <input id="nomeUser" type="text" pInputText [(ngModel)]="objConsultaUsrLj.objUsuarioLoja.UsuNome" />
+              <input [disabled]="boolBlockIntputsUsuario" id="nomeUser" type="text" pInputText [(ngModel)]="this.objConsultaUsrLj.objUsuarioLoja.UsuNome" />
           </div>
           <div class="field col-12 md:col-6 p-fluid">
             <label for="nomeUser">Nome da Loja</label><br>
-            <input id="nomeUser" type="text" pInputText [(ngModel)]="objLojaConsulta.LojNome" />
+            <input [disabled]="boolBlockIntputsLoja" id="nomeUser" type="text" pInputText [(ngModel)]="this.objConsultaUsrLj.objLojaConsulta.LojNome" />
           </div>
           <div class="field col-12 md:col-3 p-fluid">
             <label for="usuNasc">Data de Nascimento</label>
-            <p-calendar id="usuNasc" [(ngModel)]="objConsultaUsrLj.objUsuarioLoja.UsuNasc" dateFormat="dd/mm/yy"/>
+            <p-calendar [disabled]="boolBlockIntputsUsuario" id="usuNasc" [(ngModel)]="this.objConsultaUsrLj.objUsuarioLoja.UsuNasc" dateFormat="dd/mm/yy"/>
           </div>
           <div class="field col-12 md:col-3 p-fluid">
             <label for="usuNCel">Celular</label>
-            <p-inputMask id="usuNCel" mask="(99) 99999-9999" [(ngModel)]="objConsultaUsrLj.objUsuarioLoja.UsuNCel" placeholder="(00) 00000-0000"></p-inputMask>
+            <p-inputMask [disabled]="boolBlockIntputsUsuario" id="usuNCel" mask="(99) 99999-9999" [(ngModel)]="this.objConsultaUsrLj.objUsuarioLoja.UsuNCel" placeholder="(00) 00000-0000"></p-inputMask>
           </div>
           <div class="field col-12 md:col-6 p-fluid">
             <label for="usuEmai">E-mail</label><br>
-            <input id="usuEmai" type="text" pInputText [(ngModel)]="objConsultaUsrLj.objUsuarioLoja.UsuEmai" class="p-2" style="text-transform: lowercase;"/>
+            <input [disabled]="boolBlockIntputsUsuario" id="usuEmai" type="text" pInputText [(ngModel)]="this.objConsultaUsrLj.objUsuarioLoja.UsuEmai" class="p-2" style="text-transform: lowercase;"/>
           </div>
         </div>
 
-        <!-- <hr><br> -->
-
-        <!-- <b>Dados do Irmão:</b><br><br>
-        <div class="formgrid grid">
-          <div class="field col-12 md:col-3 p-fluid">
-            <label for="potCodi">Potência da Loja</label>
-            <p-dropdown
-              id="potCodi"
-              [options]="lstPotencia"
-              [(ngModel)]="objPotenciaIrmao"
-              optionLabel="PotSigl"
-              placeholder="Selecione a Potência"
-              [filter]="true"
-              filterBy="PotSigl"
-              [showClear]="true"
-            />
-          </div>
-          <div class="field col-12 md:col-3 p-fluid">
-              <label for="nCim">Nº do CIM</label>
-              <p-inputNumber id="nCim" inputId="nCim" [(ngModel)]="objUsuario.UsuNcim" mode="decimal" [useGrouping]="false" />
-          </div>
-          <div class="field col-12 md:col-6 p-fluid">
-              <label for="nomeUser">Nome Completo</label><br>
-              <input id="nomeUser" type="text" pInputText [(ngModel)]="objUsuario.UsuNome" />
-          </div>
-          <div class="field col-12 md:col-3 p-fluid">
-            <label for="usuNasc">Data de Nascimento</label>
-            <p-calendar id="usuNasc" [(ngModel)]="objUsuario.UsuNasc" dateFormat="dd/mm/yy"/>
-          </div>
-          <div class="field col-12 md:col-3 p-fluid">
-            <label for="usuNCel">Celular</label>
-            <p-inputMask id="usuNCel" mask="(99) 99999-9999" [(ngModel)]="objUsuario.UsuNcel" placeholder="(00) 00000-0000"></p-inputMask>
-          </div>
-          <div class="field col-12 md:col-6 p-fluid">
-            <label for="usuEmai">E-mail</label><br>
-            <input id="usuEmai" type="text" pInputText [(ngModel)]="objUsuario.UsuEmai" class="p-2" style="text-transform: lowercase;"/>
-          </div>
+        <div class="text-center mt-3">
+          <p-button (onClick)="ConfirmarPresenca();" label="Confirmar" [raised]="true" severity="success" icon="pi pi-check"/>
         </div>
-        <hr>
-
-        <br><b>Dados Loja:</b><br><br>
-        <div class="formgrid grid">
-          <div class="field col-12 md:col-3 p-fluid">
-            <label for="potCodi">Potência da Loja</label>
-            <p-dropdown
-              id="potCodi"
-              [options]="lstPotencia"
-              [(ngModel)]="objPotenciaLoja"
-              optionLabel="PotSigl"
-              placeholder="Selecione a Potência"
-              [filter]="true"
-              filterBy="PotSigl"
-              [showClear]="true"
-              (onChange)="GetLojaByPotLojNume(objPotenciaLoja ? objPotenciaLoja.PotCodi : 0, objLoja ? objLoja.LojNumL : '');"
-            />
-          </div>
-          <div class="field col-12 md:col-3 p-fluid">
-            <label for="LojNumL">Nº da Loja</label>
-            <input pInputText id="LojNumL" (blur)="GetLojaByPotLojNume(objPotenciaLoja ? objPotenciaLoja.PotCodi : 0, objLoja ? objLoja.LojNumL : '');" type="text" [(ngModel)]="objLoja.LojNumL" />
-          </div>
-          <div class="field col-12 md:col-6 p-fluid">
-            <label for="nomeUser">Nome da Loja</label><br>
-            <input id="nomeUser" type="text" pInputText [(ngModel)]="objLoja.LojNome" />
-          </div>
-          <div class="field col-12 md:col-3 p-fluid">
-            <label for="usuNasc">Data de Nascimento</label>
-            <p-calendar id="usuNasc" [(ngModel)]="objUsuario.UsuNasc" dateFormat="dd/mm/yy"/>
-          </div>
-          <div class="field col-12 md:col-4 p-fluid">
-            <label for="usuNCel">Celular</label>
-            <p-inputMask id="usuNCel" mask="(99) 99999-9999" [(ngModel)]="objUsuario.UsuNcel" placeholder="(00) 00000-0000"></p-inputMask>
-          </div>
-          <div class="field col-12 md:col-8 p-fluid">
-            <label for="usuEmai">E-mail</label><br>
-            <input id="usuEmai" type="text" pInputText [(ngModel)]="objUsuario.UsuEmai" class="p-2" style="text-transform: lowercase;"/>
-          </div>
-        </div> -->
-      <!-- </p-card> -->
     </div>
   </p-card>
 </div>

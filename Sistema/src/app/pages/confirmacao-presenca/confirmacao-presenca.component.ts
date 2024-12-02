@@ -37,8 +37,8 @@ export class ConfirmacaoPresencaComponent implements OnInit {
   lstPotencia: PotenciaModel[] = [];
   objPotenciaIrmao: PotenciaModel = new PotenciaModel();
   objConsultaUsrLj: ConsultaUsuarioLojaModel = new ConsultaUsuarioLojaModel();
-  objLojaConsulta: LojaConsulta = new LojaConsulta();
-  objUsrLoja: UsrLoja = new UsrLoja();
+  boolBlockIntputsLoja: boolean = true;
+  boolBlockIntputsUsuario: boolean = true;
 
   constructor(
     private http: HttpService,
@@ -113,14 +113,24 @@ export class ConfirmacaoPresencaComponent implements OnInit {
   GetUsuarioByLoja(UsuNCIM: string, PotCodi: number, LojNumL: string) {
     if (UsuNCIM.length > 0 && PotCodi > 0 && LojNumL.length > 0) {
       this.boolLoading = true;
+      this.boolBlockIntputsLoja = true;
+      this.boolBlockIntputsUsuario = true;
+      this.objConsultaUsrLj = new ConsultaUsuarioLojaModel();
+      this.objConsultaUsrLj.objLojaConsulta.PotCodi = PotCodi;
+      this.objConsultaUsrLj.objLojaConsulta.LojNumL = LojNumL;
+      this.objConsultaUsrLj.objUsuarioLoja.UsuNCIM = UsuNCIM;
       this.http.GetUsuarioByLoja(UsuNCIM, PotCodi, LojNumL.toString()).subscribe({
         next: (response) => {
           if (response.objUsuarioLoja) {
             this.objConsultaUsrLj.objUsuarioLoja = response.objUsuarioLoja;
             this.objConsultaUsrLj.objUsuarioLoja.UsuNasc = new Date(response.objUsuarioLoja.UsuNasc.toString());
+          } else {
+            this.boolBlockIntputsUsuario = false;
           }
           if (response.objLojaConsulta) {
             this.objConsultaUsrLj.objLojaConsulta = response.objLojaConsulta;
+          } else {
+            this.boolBlockIntputsLoja = false;
           }
 
           console.warn('Retorno Consulta Loja / Usuário:', this.objConsultaUsrLj);
@@ -134,36 +144,48 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     }
   }
 
-  // GetLojaByPotLojNume(PotCodi: number, LojNumL: string) {
-  //   if (PotCodi > 0 && LojNumL.length > 0) {
-  //     this.boolLoading = true;
-  //     this.http.GetLojaByPotLojNume(PotCodi, LojNumL.toString()).subscribe({
-  //       next: (response) => {
-  //         this.objLoja = {
-  //           LojCodi: 0,
-  //           LojNome: "",
-  //           LojNumL: LojNumL,
-  //           LojLogo: "",
-  //           LojLogr: "",
-  //           LojNume: "",
-  //           LojBair: "",
-  //           LojStat: false,
-  //           CidCodi: 0,
-  //           PotCodi: PotCodi,
-  //           RitCodi: 0
-  //         };
-  //         if (response) {
-  //           this.objLoja = response;
-  //         }
-  //         // console.warn('Loja Pesquisada:', this.objLoja);
-  //         this.boolLoading = false;
-  //       },
-  //       error: (error) => {
-  //         console.error('Erro ao carregar dados:', error);
-  //         this.boolLoading = false;
-  //       }
-  //     });
-  //   }
-  // }
+  ConfirmarPresenca() {
+    this.objConsultaUsrLj.objLojaConsulta.PotCodi = this.objPotenciaIrmao.PotCodi;
 
+    if (this.ValidaInformacoes()) {
+      console.warn(this.objConsultaUsrLj);
+    }
+  }
+
+  ValidaInformacoes() {
+    if (this.objConsultaUsrLj.objLojaConsulta.PotCodi === 0) {
+      this.messageService.add({ severity: 'warn', summary: 'Atenção: ', detail: 'Selecione uma potência.' });
+      return false;
+    }
+    if (this.objConsultaUsrLj.objLojaConsulta.LojNumL.length === 0) {
+      this.messageService.add({ severity: 'warn', summary: 'Atenção: ', detail: 'Insira o número da Loja.' });
+      return false;
+    }
+    if (this.objConsultaUsrLj.objUsuarioLoja.UsuNCIM.length === 0) {
+      this.messageService.add({ severity: 'warn', summary: 'Atenção: ', detail: 'Insira o seu CIM.' });
+      return false;
+    }
+    if (this.objConsultaUsrLj.objUsuarioLoja.UsuNome.length === 0) {
+      this.messageService.add({ severity: 'warn', summary: 'Atenção: ', detail: 'Insira o seu nome.' });
+      return false;
+    }
+    if (this.objConsultaUsrLj.objLojaConsulta.LojNome.length === 0) {
+      this.messageService.add({ severity: 'warn', summary: 'Atenção: ', detail: 'Insira o nome de sua Loja.' });
+      return false;
+    }
+    if (this.objConsultaUsrLj.objUsuarioLoja.UsuNCel.length === 0) {
+      this.messageService.add({ severity: 'warn', summary: 'Atenção: ', detail: 'Insira o seu número do celular.' });
+      return false;
+    }
+    if (this.objConsultaUsrLj.objUsuarioLoja.UsuEmai.length === 0) {
+      this.messageService.add({ severity: 'warn', summary: 'Atenção: ', detail: 'Insira o seu e-mail.' });
+      return false;
+    }
+    if (!this.utils.ValidarEmail(this.objConsultaUsrLj.objUsuarioLoja.UsuEmai)) {
+      this.messageService.add({ severity: 'warn', summary: 'Atenção: ', detail: 'E-mail inválido, verifique.' });
+      return false;
+    }
+
+    return true;
+  }
 }
