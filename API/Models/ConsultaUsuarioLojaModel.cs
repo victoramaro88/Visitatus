@@ -2,6 +2,7 @@
 {
     public class ConsultaUsuarioLojaModel
     {
+        public long sesCodi { get; set; }
         public UsrLoja? objUsuarioLoja { get; set; }
         public LojaConsulta? objLojaConsulta { get; set; }
 

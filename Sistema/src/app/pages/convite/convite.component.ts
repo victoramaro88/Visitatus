@@ -33,6 +33,7 @@ export class ConviteComponent implements OnInit {
     private router: Router,
     private cryptoService: CryptoService,
     private base64Service: Base64Service,
+    private messageService: MessageService,
     private sanitizer: DomSanitizer
   ) {}
 
@@ -62,6 +63,7 @@ export class ConviteComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);
+        this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Falha ao realizar a operação, contate o suporte.'});
         this.boolLoading = false;
       }
     });

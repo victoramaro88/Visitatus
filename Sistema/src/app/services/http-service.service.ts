@@ -88,6 +88,10 @@ export class HttpService {
     return this.http.post<string>(`${environment.apiServicos}/Sessao/PostSessao`, objSessao);
   }
 
+  public PostConfirmaPresenca(objPresenca: ConsultaUsuarioLojaModel): Observable<string> {
+    return this.http.post<string>(`${environment.apiServicos}/Presenca/PostConfirmaPresenca`, objPresenca);
+  }
+
   // #endregion
 
   // #region PUT

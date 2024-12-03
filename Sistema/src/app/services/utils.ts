@@ -85,4 +85,8 @@ export class Utils {
 
     return telefone;
   }
+
+  RemoveMascaraTelefone(input: string): string {
+    return input.replace(/\D/g, ''); // Remove todos os caracteres não numéricos
+  }
 }

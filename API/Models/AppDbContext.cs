@@ -294,7 +294,6 @@ namespace API_Visitatus.Models
                 entity.HasOne(d => d.CidCodiNavigation)
                     .WithMany(p => p.Lojas)
                     .HasForeignKey(d => d.CidCodi)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_CidLoj");
 
                 entity.HasOne(d => d.PotCodiNavigation)
@@ -306,7 +305,6 @@ namespace API_Visitatus.Models
                 entity.HasOne(d => d.RitCodiNavigation)
                     .WithMany(p => p.Lojas)
                     .HasForeignKey(d => d.RitCodi)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_RitLoj");
             });
 
@@ -626,7 +624,7 @@ namespace API_Visitatus.Models
                     .HasColumnName("usuEmai");
 
                 entity.Property(e => e.UsuNasc)
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasColumnName("usuNasc");
 
                 entity.Property(e => e.UsuNcel)

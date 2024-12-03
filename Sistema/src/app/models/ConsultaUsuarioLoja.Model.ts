@@ -1,8 +1,10 @@
 export class ConsultaUsuarioLojaModel {
+  sesCodi: number;
   objUsuarioLoja: UsrLoja;
   objLojaConsulta: LojaConsulta;
 
   constructor() {
+    this.sesCodi = 0;
     this.objUsuarioLoja = new UsrLoja();
     this.objLojaConsulta = new LojaConsulta();
   }

@@ -100,9 +100,9 @@ namespace API_Visitatus.Controllers
                         LojNume = l.LojNume,
                         LojBair = l.LojBair,
                         LojStat = l.LojStat,
-                        CidCodi = l.CidCodi,
+                        CidCodi = (long)l.CidCodi!,
                         PotCodi = l.PotCodi,
-                        RitCodi = l.RitCodi
+                        RitCodi = (int)l.RitCodi!
                     })
                     .FirstOrDefault();
 

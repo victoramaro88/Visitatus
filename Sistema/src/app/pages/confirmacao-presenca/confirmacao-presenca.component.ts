@@ -1,4 +1,4 @@
-import { LojaConsulta, UsrLoja } from './../../models/ConsultaUsuarioLoja.Model';
+import { ConsultaUsuarioLojaModel } from './../../models/ConsultaUsuarioLoja.Model';
 import { Component, OnInit } from '@angular/core';
 import { ImportsModule } from '../../imports';
 import { MessageService } from 'primeng/api';
@@ -12,9 +12,14 @@ import { UsuarioLogadoModel } from '../../models/UsuarioLogado.Model';
 import { SessaoConviteModel } from '../../models/SessaoConvite.Model';
 import { UsuarioModel } from '../../models/Usuario.Model';
 import { PotenciaModel } from '../../models/Potencia.Model';
-import { LojaModel } from '../../models/Loja.Model';
 import { ChangeDetectorRef } from '@angular/core';
-import { ConsultaUsuarioLojaModel } from '../../models/ConsultaUsuarioLoja.Model';
+
+interface Mensagem {
+  titulo: string;
+  corpoMensagem: string;
+  icone: string;
+  corIcone: string;
+}
 
 @Component({
   selector: 'app-confirmacao-presenca',
@@ -39,6 +44,8 @@ export class ConfirmacaoPresencaComponent implements OnInit {
   objConsultaUsrLj: ConsultaUsuarioLojaModel = new ConsultaUsuarioLojaModel();
   boolBlockIntputsLoja: boolean = true;
   boolBlockIntputsUsuario: boolean = true;
+  boolDialogMensagem: boolean = false;
+  mensagem: Mensagem = {titulo: '', corpoMensagem: '', icone: '', corIcone: ''};
 
   constructor(
     private http: HttpService,
@@ -77,6 +84,7 @@ export class ConfirmacaoPresencaComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);
+        this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Falha ao realizar a operação, contate o suporte.'});
         this.boolLoading = false;
       }
     });
@@ -100,11 +108,11 @@ export class ConfirmacaoPresencaComponent implements OnInit {
           }
         });
 
-        console.warn('Lista das Potências:', this.lstPotencia);
         this.boolLoading = false;
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);
+        this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Falha ao realizar a operação, contate o suporte.'});
         this.boolLoading = false;
       }
     });
@@ -133,11 +141,11 @@ export class ConfirmacaoPresencaComponent implements OnInit {
             this.boolBlockIntputsLoja = false;
           }
 
-          console.warn('Retorno Consulta Loja / Usuário:', this.objConsultaUsrLj);
           this.boolLoading = false;
         },
         error: (error) => {
           console.error('Erro ao carregar dados:', error);
+          this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Falha ao realizar a operação, contate o suporte.'});
           this.boolLoading = false;
         }
       });
@@ -145,10 +153,40 @@ export class ConfirmacaoPresencaComponent implements OnInit {
   }
 
   ConfirmarPresenca() {
+    this.objConsultaUsrLj.objUsuarioLoja.UsuNCel = this.utils.RemoveMascaraTelefone(this.objConsultaUsrLj.objUsuarioLoja.UsuNCel);
     this.objConsultaUsrLj.objLojaConsulta.PotCodi = this.objPotenciaIrmao.PotCodi;
+    this.objConsultaUsrLj.sesCodi = this.idSessaoCrypto;
 
     if (this.ValidaInformacoes()) {
+      this.boolLoading = true;
       console.warn(this.objConsultaUsrLj);
+      this.http.PostConfirmaPresenca(this.objConsultaUsrLj).subscribe({
+        next: (response) => {
+          console.warn(response);
+          this.boolLoading = false;
+          if (response === 'Presença confirmada com sucesso.') {
+            this.mensagem.titulo = 'Presença Confirmada!';
+            this.mensagem.corpoMensagem = 'Sua presença já foi confirmada com sucesso!';
+            this.mensagem.icone = 'pi-check';
+            this.mensagem.corIcone = 'green';
+            this.boolDialogMensagem = true;
+          } else if (response === 'Presença já confirmada.') {
+            this.mensagem.titulo = 'Presença já Confirmada!';
+            this.mensagem.corpoMensagem = 'Sua presença já foi confirmada para esta sessão.';
+            this.mensagem.icone = 'pi-exclamation-triangle';
+            this.mensagem.corIcone = 'yellow';
+            this.boolDialogMensagem = true;
+          }else {
+            console.error('Erro ao confirmar a presença:', response);
+            this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Falha ao realizar a operação, contate o suporte.'});
+          }
+        },
+        error: (error) => {
+          console.error('Erro ao carregar dados:', error);
+          this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Falha ao realizar a operação, contate o suporte.'});
+          this.boolLoading = false;
+        }
+      });
     }
   }
 
@@ -187,5 +225,11 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     }
 
     return true;
+  }
+
+  FechaDialog() {
+    this.boolDialogMensagem = false;
+    this.objConsultaUsrLj = new ConsultaUsuarioLojaModel();
+    this.objPotenciaIrmao = new PotenciaModel();
   }
 }

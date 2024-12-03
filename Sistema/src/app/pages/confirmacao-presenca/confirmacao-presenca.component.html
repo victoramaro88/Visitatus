@@ -99,3 +99,20 @@
     </div>
   </p-card>
 </div>
+
+<p-dialog [header]="mensagem.titulo" [modal]="true" [(visible)]="boolDialogMensagem" [style]="{ width: '25rem' }">
+  <ng-template pTemplate="header">
+    <div class="inline-flex align-items-center justify-content-center gap-2">
+        <i class="pi {{mensagem.icone}}" style="font-size: 2.5rem" style="color: {{mensagem.corIcone}}"></i>&nbsp;
+        <span class="font-bold white-space-nowrap">
+            {{mensagem.titulo}}
+        </span>
+    </div>
+</ng-template>
+  <div class="flex align-items-center gap-3 mb-3">
+      <span>{{mensagem.corpoMensagem}}</span>
+  </div>
+  <div class="flex justify-content-center gap-2 mt-4">
+      <p-button label="Fechar" (onClick)="FechaDialog();" />
+  </div>
+</p-dialog>
