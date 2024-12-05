@@ -338,11 +338,19 @@ namespace API_Visitatus.Models
                     .ValueGeneratedNever()
                     .HasColumnName("peUCodi");
 
+                entity.Property(e => e.LojCodi).HasColumnName("lojCodi");
+
                 entity.Property(e => e.PeUstat).HasColumnName("peUStat");
 
                 entity.Property(e => e.PerCodi).HasColumnName("perCodi");
 
                 entity.Property(e => e.UsuCodi).HasColumnName("usuCodi");
+
+                entity.HasOne(d => d.LojCodiNavigation)
+                    .WithMany(p => p.PerfilUsuarios)
+                    .HasForeignKey(d => d.LojCodi)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_PeULoj");
 
                 entity.HasOne(d => d.PerCodiNavigation)
                     .WithMany(p => p.PerfilUsuarios)

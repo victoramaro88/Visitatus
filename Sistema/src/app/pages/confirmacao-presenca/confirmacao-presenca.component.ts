@@ -166,7 +166,7 @@ export class ConfirmacaoPresencaComponent implements OnInit {
           this.boolLoading = false;
           if (response === 'Presença confirmada com sucesso.') {
             this.mensagem.titulo = 'Presença Confirmada!';
-            this.mensagem.corpoMensagem = 'Sua presença já foi confirmada com sucesso!';
+            this.mensagem.corpoMensagem = 'Presença confirmada com sucesso!';
             this.mensagem.icone = 'pi-check';
             this.mensagem.corIcone = 'green';
             this.boolDialogMensagem = true;

@@ -30,9 +30,9 @@
             public string? LojNume { get; set; }
             public string? LojBair { get; set; }
             public bool LojStat { get; set; }
-            public long CidCodi { get; set; }
+            public long? CidCodi { get; set; }
             public int PotCodi { get; set; }
-            public int RitCodi { get; set; }
+            public int? RitCodi { get; set; }
         }
     }
 }
