@@ -13,6 +13,7 @@ import { SessaoListaModel } from '../../models/SessaoLista.Model';
 import { Table } from 'primeng/table';
 import { TipoSessaoModel } from '../../models/TipoSessao.Model';
 import { Base64Service } from '../../services/base64.service';
+import { PerfilUsuarioListaModel } from '../../models/PerfilUsuarioLista.Model';
 
 @Component({
   selector: 'app-sessao',
@@ -29,8 +30,8 @@ export class SessaoComponent implements OnInit {
   lstSessao: SessaoListaModel[] = [];
   objSessao: SessaoListaModel = new SessaoListaModel(0, '', new Date(), false, true, 0, 0, '', 0, '', 0, '');
   objUsuarioLogado: UsuarioLogadoModel = new UsuarioLogadoModel();
+  objPerfilSelecionado: PerfilUsuarioListaModel = new PerfilUsuarioListaModel();
   lstLoja: LojaModel[] = [];
-  objLojaSelecionada: LojaModel = {LojCodi: 0,LojNome: "",LojNumL: "",LojLogo: "",LojLogr: "",LojNume: "",LojBair: "",LojStat: false,CidCodi: 0,PotCodi: 0,RitCodi: 0};
   lstTipoSessao: TipoSessaoModel[] = [];
   objTipoSessaoSelecionado: TipoSessaoModel = { TiScodi: 0, TiSnome: "", TiSstat: false };
   lstGrau: GrauModel[] = [];
@@ -49,11 +50,13 @@ export class SessaoComponent implements OnInit {
     private cryptoService: CryptoService
   ) {
     this.objUsuarioLogado = JSON.parse(this.cryptoService.lerDoSessionStorage("usr"));
-    // console.warn("Usuário Logado: ", this.objUsuarioLogado);
+    // console.warn("Usuário Logado (Sessão): ", this.objUsuarioLogado);
+    this.objPerfilSelecionado = JSON.parse(this.cryptoService.lerDoSessionStorage("prf"));
+    // console.warn("Perfil Selecionado (Sessão): ", this.objPerfilSelecionado);
   }
 
   ngOnInit() {
-    this.GetLojaByIdUsuario(this.objUsuarioLogado.usuCodi);
+    this.GetSessaoByLojCodi(this.objPerfilSelecionado.lojCodi);
     this.GetTipoSessao(0);
     this.GetGrau(0);
   }
@@ -65,7 +68,7 @@ export class SessaoComponent implements OnInit {
       this.http.GetSessaoByLojCodi(lojCodi).subscribe({
         next: (response) => {
           this.lstSessao = response;
-          // console.warn("Lista de Sessões:", this.lstSessao);
+          console.warn("Lista de Sessões:", this.lstSessao);
           this.boolLoading = false;
         },
         error: (error) => {
@@ -103,33 +106,6 @@ export class SessaoComponent implements OnInit {
 
   ConcatenaLojaNumero(objLoja: LojaModel): string {
     return objLoja.LojNome + " - " + objLoja.LojNumL
-  }
-
-  GetLojaByIdUsuario(usuCodi: number) {
-    try {
-      this.boolLoading = true;
-      this.http.GetLojaByIdUsuario(usuCodi).subscribe({
-        next: (response) => {
-          this.lstLoja = response.map(loja => ({
-            ...loja,
-            displayName: `${loja.LojNome} - ${loja.LojNumL}` // Cria o campo concatenado
-          }));
-          if (this.lstLoja.length === 1) {
-            this.objLojaSelecionada = this.lstLoja[0];
-            this.GetSessaoByLojCodi(this.objLojaSelecionada.LojCodi);
-          }
-          // console.warn("Lista de Lojas do Usuário:", this.lstLoja);
-          this.boolLoading = false;
-        },
-        error: (error) => {
-          console.error('Erro ao carregar dados:', error);
-          this.boolLoading = false;
-        }
-      });
-    } catch (error) {
-      console.error('Erro ao carregar dados:', error);
-      this.boolLoading = false;
-    }
   }
 
   GetTipoSessao(TiScodi: number) {
@@ -174,16 +150,12 @@ export class SessaoComponent implements OnInit {
 
   NovaSessao() {
     this.boolManterRegistro = true;
-    if (this.lstLoja.length === 1) {
-      this.objLojaSelecionada = this.lstLoja[0];
-    }
     this.objSessao.SesNume = this.lstSessao[0] ? this.lstSessao[0].SesNume + 1 : 1;
   }
 
   EditarRegistro(objSessao: SessaoListaModel) {
     this.boolManterRegistro = true;
     this.objSessao = objSessao;
-    this.objLojaSelecionada = this.lstLoja.find(l => l.LojCodi === objSessao.LojCodi)!;
     this.objTipoSessaoSelecionado = this.lstTipoSessao.find(ts => ts.TiScodi === objSessao.TiSCodi)!;
     this.objGrauSelecionado = this.lstGrau.find(g => g.GraCodi === objSessao.GraCodi)!;
     this.objSessao.SesDtHr = new Date(objSessao.SesDtHr);
@@ -192,7 +164,7 @@ export class SessaoComponent implements OnInit {
   SalvarRegistro() {
     this.objSessao.GraCodi = this.objGrauSelecionado.GraCodi;
     this.objSessao.TiSCodi = this.objTipoSessaoSelecionado.TiScodi;
-    this.objSessao.LojCodi = this.objLojaSelecionada.LojCodi;
+    this.objSessao.LojCodi = this.objPerfilSelecionado.lojCodi;
     const dataSelecionada = this.objSessao.SesDtHr;
     const dataUtc = new Date(Date.UTC(
       dataSelecionada.getFullYear(),
@@ -203,7 +175,6 @@ export class SessaoComponent implements OnInit {
       dataSelecionada.getSeconds()
     ));
     this.objSessao.SesDtHr = dataUtc;
-    const lojaSelecionada = this.objLojaSelecionada;
 
     if (this.ValidaCampos()) {
       //-> Validando se já possui uma sessão com este número, para esta Loja
@@ -224,8 +195,7 @@ export class SessaoComponent implements OnInit {
                     if (response === 'OK') {
                       this.messageService.add({ severity: 'success', summary: 'Sucesso!', detail: 'Registro salvo com sucesso!' });
                       this.CancelaRegitro();
-                      this.objLojaSelecionada = lojaSelecionada;
-                      this.GetSessaoByLojCodi(lojaSelecionada.LojCodi);
+                      this.GetSessaoByLojCodi(this.objPerfilSelecionado.lojCodi);
                     } else {
                       this.messageService.add({ severity: 'error', summary: 'Erro:', detail: 'Falha ao realizar a operação.' });
                     }
@@ -269,8 +239,7 @@ export class SessaoComponent implements OnInit {
               if (response === 'Alterado com sucesso!') {
                 this.messageService.add({ severity: 'success', summary: 'Sucesso!', detail: 'Registro alterado com sucesso!' });
                 this.CancelaRegitro();
-                this.objLojaSelecionada = lojaSelecionada;
-                this.GetSessaoByLojCodi(lojaSelecionada.LojCodi);
+                this.GetSessaoByLojCodi(this.objPerfilSelecionado.lojCodi);
               } else {
                 this.messageService.add({ severity: 'error', summary: 'Erro:', detail: 'Falha ao realizar a operação.' });
               }
@@ -329,7 +298,7 @@ export class SessaoComponent implements OnInit {
     this.boolManterRegistro = false;
     this.lstSessao = [];
 
-    this.GetSessaoByLojCodi(this.objLojaSelecionada.LojCodi);
+    this.GetSessaoByLojCodi(this.objPerfilSelecionado.lojCodi);
   }
 
   PutSessao(sesCodi: number, objSessao: SessaoModel) {
@@ -373,19 +342,19 @@ export class SessaoComponent implements OnInit {
   GetSessaoBySesCodi(lojCodi: number) {
     this.boolLoading = true;
     // this.router.navigate(['/convite', this.cryptoService.criptografar(this.base64Service.convertNumberToBase64(lojCodi))]);
-    
+
     // Criar a árvore da URL corretamente
     const urlTree = this.router.createUrlTree(['/convite', this.cryptoService.criptografar(this.base64Service.convertNumberToBase64(lojCodi))]);
-    
+
     // Serializar a URL com base na rota configurada
     const url = this.router.serializeUrl(urlTree);
-    
+
     // Obter o baseHref configurado na aplicação (para contextos específicos)
     const baseHref = document.getElementsByTagName('base')[0]?.href || '';
-    
+
     // Concatenar a URL final corretamente
     const fullUrl = baseHref.replace(/\/$/, '') + url;
-    
+
     // Abrir a nova aba com a URL corrigida
     window.open(fullUrl, '_blank');
 

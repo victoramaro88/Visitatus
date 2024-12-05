@@ -59,14 +59,14 @@ namespace API_Visitatus.Controllers
                 var resultUsuarioLoja = _context.Usuarios
                     .Where(u => u.UsuNcim == usuNCIM)
                                 .Join(
-                        _context.UsuarioLojas,
+                        _context.PerfilUsuarios,
                         u => u.UsuCodi,
-                        ul => ul.UsuCodi,
-                        (u, ul) => new { Usuario = u, UsuarioLoja = ul }
+                        pu => pu.UsuCodi,
+                        (u, pu) => new { Usuario = u, PerfilUsuario = pu }
                                 )
                     .Join(
                         _context.Lojas,
-                        combined => combined.UsuarioLoja.LojCodi,
+                        combined => combined.PerfilUsuario.LojCodi,
                         l => l.LojCodi,
                         (combined, l) => new UsrLoja
                         {

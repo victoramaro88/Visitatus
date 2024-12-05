@@ -37,64 +37,71 @@ namespace API_Visitatus.Controllers
 
                 var validaSenha = VerifyPassword(objUsuarioLogin.UsLpass, objLogin.senha!);
 
-                if (validaSenha == PasswordVerificationResult.Success)
-                {
-                    var objUsuario = _context.Usuarios.Where(p => p.UsuCodi == objUsuarioLogin.UsuCodi).FirstOrDefault();
-
-                    if (objUsuario == null)
-                    {
-                        return Task.FromResult<ActionResult<UsuarioLogadoModel>>(NotFound("Usuário não encontrada."));
-                    }
-
-                    var objUsuarioLoja = _context.UsuarioLojas.Where(ul => ul.UsuCodi == objUsuarioLogin.UsuCodi).ToList();
-                    if (objUsuarioLoja == null)
-                    {
-                        return Task.FromResult<ActionResult<UsuarioLogadoModel>>(NotFound("Usuário sem vínculo com nenhuma Loja."));
-                    }
-
-                    List<Loja> lstLojas = new List<Loja>();
-                    foreach (var itemLoja in objUsuarioLoja)
-                    {
-                        Loja objLoja = new Loja();
-                        objLoja = _context.Lojas.Where(l => l.LojCodi == itemLoja.LojCodi).FirstOrDefault()!;
-                        if (objLoja == null)
-                        {
-                            return Task.FromResult<ActionResult<UsuarioLogadoModel>>(NotFound("Loja não localizada."));
-                        }
-                        else
-                        {
-                            lstLojas.Add(objLoja);
-                        }
-                    }
-
-                    List<PerfilUsuarioListaModel> lstPerfil = (from pu in _context.PerfilUsuarios
-                                     join p in _context.Perfils on pu.PerCodi equals p.PerCodi
-                                     where pu.UsuCodi == objUsuario.UsuCodi && p.PerStat == true
-                                     select new PerfilUsuarioListaModel
-                                     {
-                                         perCodi = p.PerCodi,
-                                         perNome = p.PerNome,
-                                         peUCodi = pu.PeUcodi,
-                                         peUStat = pu.PeUstat
-                                     }).ToList();
-
-                    if (lstPerfil == null || lstPerfil.Count == 0)
-                    {
-                        return Task.FromResult<ActionResult<UsuarioLogadoModel>>(NotFound("Usuário sem perfil cadsatrado."));
-                    }
-
-                    result.usLCodi = objUsuarioLogin.UsLcodi;
-                    result.usuCodi = objUsuario.UsuCodi;
-                    result.usuNome = objUsuario.UsuNome;
-                    result.lojasUsuario = lstLojas;
-                    result.lstPerfil = lstPerfil;
-
-                    return Task.FromResult<ActionResult<UsuarioLogadoModel>>(Ok(result));
-                }
-                else
+                if (validaSenha != PasswordVerificationResult.Success)
                 {
                     return Task.FromResult<ActionResult<UsuarioLogadoModel>>(Unauthorized("Senha incorreta."));
                 }
+
+                var objUsuario = _context.Usuarios.Where(p => p.UsuCodi == objUsuarioLogin.UsuCodi).FirstOrDefault();
+
+                if (objUsuario == null)
+                {
+                    return Task.FromResult<ActionResult<UsuarioLogadoModel>>(NotFound("Usuário não encontrada."));
+                }
+
+                List<PerfilUsuarioListaModel> lstPerfil = _context.PerfilUsuarios
+                    .Join(_context.Usuarios,
+                          pu => pu.UsuCodi,
+                          u => u.UsuCodi,
+                          (pu, u) => new { pu, u })
+                    .Join(_context.Lojas,
+                          pu_u => pu_u.pu.LojCodi,
+                          l => l.LojCodi,
+                          (pu_u, l) => new { pu_u.pu, pu_u.u, l })
+                    .Join(_context.Perfils,
+                          pu_u_l => pu_u_l.pu.PerCodi,
+                          p => p.PerCodi,
+                          (pu_u_l, p) => new
+                          {
+                              pu_u_l.pu.PeUcodi,
+                              pu_u_l.pu.PeUstat,
+                              pu_u_l.pu.PerCodi,
+                              pu_u_l.pu.UsuCodi,
+                              pu_u_l.pu.LojCodi,
+                              p.PerNome,
+                              p.PerStat,
+                              pu_u_l.l.LojNome,
+                              pu_u_l.l.LojNumL,
+                              pu_u_l.l.LojStat
+                          })
+                    .Where(joined => joined.UsuCodi == 1)
+                    .Select(result => new PerfilUsuarioListaModel
+                    {
+                        peUCodi = result.PeUcodi,
+                        peUStat = result.PeUstat,
+                        perCodi = result.PerCodi,
+                        usuCodi = result.UsuCodi,
+                        lojCodi = result.LojCodi,
+                        perNome = result.PerNome,
+                        perStat = result.PerStat,
+                        lojNome = result.LojNome,
+                        lojNumL = result.LojNumL,
+                        lojStat = result.LojStat
+                    })
+                    .ToList();
+
+                if (lstPerfil == null || lstPerfil.Count == 0)
+                {
+                    return Task.FromResult<ActionResult<UsuarioLogadoModel>>(NotFound("Usuário sem perfil cadsatrado."));
+                }
+
+                result.usLCodi = objUsuarioLogin.UsLcodi;
+                result.usuCodi = objUsuario.UsuCodi;
+                result.usuNome = objUsuario.UsuNome;
+                result.lstPerfil = lstPerfil;
+
+                return Task.FromResult<ActionResult<UsuarioLogadoModel>>(Ok(result));
+
             }
             catch (Exception e)
             {

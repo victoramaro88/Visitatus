@@ -37,7 +37,6 @@ namespace API_Visitatus.Models
         public virtual DbSet<TipoSessao> TipoSessaos { get; set; } = null!;
         public virtual DbSet<Usuario> Usuarios { get; set; } = null!;
         public virtual DbSet<UsuarioLogin> UsuarioLogins { get; set; } = null!;
-        public virtual DbSet<UsuarioLoja> UsuarioLojas { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -683,32 +682,6 @@ namespace API_Visitatus.Models
                     .HasForeignKey(d => d.UsuCodi)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_UsuLogin");
-            });
-
-            modelBuilder.Entity<UsuarioLoja>(entity =>
-            {
-                entity.HasKey(e => new { e.UsuCodi, e.LojCodi })
-                    .HasName("PK__UsuarioL__12E41944FBD2F5B8");
-
-                entity.ToTable("UsuarioLoja", "dbo");
-
-                entity.Property(e => e.UsuCodi).HasColumnName("usuCodi");
-
-                entity.Property(e => e.LojCodi).HasColumnName("lojCodi");
-
-                entity.Property(e => e.UsLstat).HasColumnName("usLStat");
-
-                entity.HasOne(d => d.LojCodiNavigation)
-                    .WithMany(p => p.UsuarioLojas)
-                    .HasForeignKey(d => d.LojCodi)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__UsuarioLo__lojCo__30F848ED");
-
-                entity.HasOne(d => d.UsuCodiNavigation)
-                    .WithMany(p => p.UsuarioLojas)
-                    .HasForeignKey(d => d.UsuCodi)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__UsuarioLo__usuCo__300424B4");
             });
 
             OnModelCreatingPartial(modelBuilder);

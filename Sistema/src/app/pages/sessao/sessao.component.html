@@ -3,21 +3,9 @@
 </p-blockUI>
 <p-toast />
 
-<h2>Sessão</h2>
+<h2>Cadastro de Sessão</h2>
 
-<div *ngIf="this.lstLoja.length > 1 && !boolManterRegistro" class="field col-12 md:col-5">
-  <label for="state">Selecione a Loja</label><br>
-  <p-dropdown
-    [options]="lstLoja"
-    [(ngModel)]="objLojaSelecionada"
-    (onChange)="GetSessaoByLojCodi(objLojaSelecionada.LojCodi);"
-    optionLabel="displayName"
-    placeholder="Selecione"
-    [style]="{ width: '100%' }"
-    />
-</div>
-
-<div *ngIf="!boolManterRegistro && (lstSessao.length > 0 || objLojaSelecionada.LojCodi > 0)">
+<div *ngIf="!boolManterRegistro && (lstSessao.length > 0)">
   <div class="text-right mb-3">
     <p-button (click)="NovaSessao();" label="Nova Sessão" [raised]="true" severity="primary" /> &nbsp;
   </div>
@@ -126,9 +114,8 @@
         <p-dropdown
           [disabled]="true"
           [options]="lstLoja"
-          [(ngModel)]="objLojaSelecionada"
           optionLabel="displayName"
-          placeholder="Selecione"
+          placeholder="{{objPerfilSelecionado.lojNome}} - {{objPerfilSelecionado.lojNumL}}"
           [style]="{ width: '100%' }"
           />
     </div>

@@ -37,7 +37,9 @@
                 [value]="item"
                 [(ngModel)]="objPerfilSelecionado" />
             <label [for]="item.perCodi" class="ml-2">
-                {{ item.perNome }}
+                {{ item.perNome }}:
+                <br>
+                {{item.lojNome}} {{item.lojNumL}}
             </label>
         </div>
     </div>

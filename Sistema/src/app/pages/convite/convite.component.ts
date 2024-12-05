@@ -59,6 +59,7 @@ export class ConviteComponent implements OnInit {
     this.http.GetSessaoBySesCodi(sesCodi).subscribe({
       next: (response) => {
         this.objSessaoConvite = response;
+        console.warn('Sessão Retorno:', this.objSessaoConvite);
         this.GetTemplateLoja(response.LojCodi);
       },
       error: (error) => {
@@ -89,14 +90,19 @@ export class ConviteComponent implements OnInit {
           .replace('[LojBair]', this.objSessaoConvite?.LojBair!)
           .replace('[CidNome]', this.objSessaoConvite?.CidNome!)
           .replace('[EstSigl]', this.objSessaoConvite?.EstSigl!)
-          .replace('[UsuNome]', this.objSessaoConvite?.lstGestaoAdmAtiva?.find(u => u.CarCodi === 1)?.UsuNome!)
-          .replace('[CarNome]', this.objSessaoConvite?.lstGestaoAdmAtiva?.find(u => u.CarCodi === 1)?.CarNome!);
-
+          .replace('[UsuNome]', (this.objSessaoConvite?.lstGestaoAdmAtiva?.length! > 0 ? this.objSessaoConvite?.lstGestaoAdmAtiva?.find(u => u.CarCodi === 1)?.UsuNome! : ''))
+          .replace('[CarNome]', (this.objSessaoConvite?.lstGestaoAdmAtiva?.length! > 0 ? this.objSessaoConvite?.lstGestaoAdmAtiva?.find(u => u.CarCodi === 1)?.CarNome! : ''))
+        console.warn(this.objSessaoConvite?.lstGestaoAdmAtiva);
         this.renderDynamicHtml(objHtmlReplace);
         this.boolLoading = false;
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);
+        if (error.status === 404) {
+          this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Loja sem modelo de Convite, contate o suporte.'});
+        } else {
+          this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Falha ao realizar a operação, contate o suporte.'});
+        }
         this.boolLoading = false;
       }
     });
@@ -110,15 +116,6 @@ export class ConviteComponent implements OnInit {
   }
 
   ConfirmarPresenca() {
-    // console.warn('Presença Confirmada!', this.objSessaoConvite?.SesCodi);
-
-    // Criar a árvore da URL corretamente
-    // const urlTree = this.router.createUrlTree(['/confirmacao', this.cryptoService.criptografar(this.base64Service.convertNumberToBase64(this.objSessaoConvite?.SesCodi!))]);
-    // const url = this.router.serializeUrl(urlTree);
-    // const baseHref = document.getElementsByTagName('base')[0]?.href || '';
-    // const fullUrl = baseHref.replace(/\/$/, '') + url;
-    // window.open(fullUrl, '_self');
-
     const path = ['/confirmacao', this.cryptoService.criptografar(this.base64Service.convertNumberToBase64(this.objSessaoConvite?.SesCodi!))];
     this.router.navigate(path);
   }

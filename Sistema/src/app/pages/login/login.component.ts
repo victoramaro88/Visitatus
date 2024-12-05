@@ -80,7 +80,7 @@ export class LoginComponent implements OnInit {
             this.messageService.add({severity:'error', summary:'Erro: ', detail: error.error});
           } else if(error.error ==='Usuário não encontrado.') {
             this.messageService.add({severity:'error', summary:'Erro: ', detail: error.error});
-          } else if(error.error === 'Usuário sem vínculo com nenhuma Loja.') {
+          } else if(error.error === 'Usuário sem vínculo com nenhuma Loja ou Perfil.') {
             this.messageService.add({severity:'error', summary:'Erro: ', detail: error.error});
           } else if(error.error === 'Usuário sem perfil cadsatrado.') {
             this.messageService.add({severity:'error', summary:'Erro: ', detail: error.error});
@@ -99,7 +99,7 @@ export class LoginComponent implements OnInit {
     this.boolLoading = true;
     if (this.objPerfilSelecionado.perCodi > 0) {
       this.boolDialogPerfil = false;
-      // console.warn("Perfil Selecionado", this.objPerfilSelecionado);
+      console.warn("Perfil Selecionado", this.objPerfilSelecionado);
       this.cryptoService.salvarNoSessionStorage("prf", JSON.stringify(this.objPerfilSelecionado));
       this.router.navigate(['/home']);
       this.boolLoading = false;

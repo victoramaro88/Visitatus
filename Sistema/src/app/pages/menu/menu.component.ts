@@ -30,7 +30,7 @@ export class MenuComponent implements OnInit {
     this.objUsuarioLogado = JSON.parse(this.cryptoService.lerDoSessionStorage("usr"));
     // console.warn("Usuário Logado: ", this.objPerfilUsuario);
     this.objPerfilUsuario = JSON.parse(this.cryptoService.lerDoSessionStorage("prf"));
-    // console.warn("Perfil: ", this.objPerfilUsuario);
+    // console.warn("Perfil (Menu): ", this.objPerfilUsuario);
   }
 
   ngOnInit() {

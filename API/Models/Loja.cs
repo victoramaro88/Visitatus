@@ -11,7 +11,6 @@ namespace API_Visitatus.Models
             PerfilUsuarios = new HashSet<PerfilUsuario>();
             Sessaos = new HashSet<Sessao>();
             TemplateLojas = new HashSet<TemplateLoja>();
-            UsuarioLojas = new HashSet<UsuarioLoja>();
         }
 
         public long LojCodi { get; set; }
@@ -33,6 +32,5 @@ namespace API_Visitatus.Models
         public virtual ICollection<PerfilUsuario> PerfilUsuarios { get; set; }
         public virtual ICollection<Sessao> Sessaos { get; set; }
         public virtual ICollection<TemplateLoja> TemplateLojas { get; set; }
-        public virtual ICollection<UsuarioLoja> UsuarioLojas { get; set; }
     }
 }

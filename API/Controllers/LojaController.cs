@@ -14,12 +14,12 @@ namespace API_Visitatus.Controllers
             _context = context;
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Loja>>> GetLoja(int id = 0)
+        [HttpGet("{LojCodi}")]
+        public async Task<ActionResult<IEnumerable<Loja>>> GetLoja(long LojCodi = 0)
         {
-            if (id > 0)
+            if (LojCodi > 0)
             {
-                var result = await _context.Lojas.FindAsync(id);
+                var result = await _context.Lojas.FindAsync(LojCodi);
 
                 if (result == null)
                 {
@@ -67,9 +67,9 @@ namespace API_Visitatus.Controllers
         {
             if (usuCodi > 0)
             {
-                var result = (from ul in _context.UsuarioLojas
-                              join u in _context.Usuarios on ul.UsuCodi equals u.UsuCodi
-                              join l in _context.Lojas on ul.LojCodi equals l.LojCodi
+                var result = (from pu in _context.PerfilUsuarios
+                              join u in _context.Usuarios on pu.UsuCodi equals u.UsuCodi
+                              join l in _context.Lojas on pu.LojCodi equals l.LojCodi
                               where u.UsuCodi == usuCodi
                               select new Loja
                               {

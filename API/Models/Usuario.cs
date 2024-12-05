@@ -11,7 +11,6 @@ namespace API_Visitatus.Models
             PerfilUsuarios = new HashSet<PerfilUsuario>();
             Presencas = new HashSet<Presenca>();
             UsuarioLogins = new HashSet<UsuarioLogin>();
-            UsuarioLojas = new HashSet<UsuarioLoja>();
         }
 
         public long UsuCodi { get; set; }
@@ -26,6 +25,5 @@ namespace API_Visitatus.Models
         public virtual ICollection<PerfilUsuario> PerfilUsuarios { get; set; }
         public virtual ICollection<Presenca> Presencas { get; set; }
         public virtual ICollection<UsuarioLogin> UsuarioLogins { get; set; }
-        public virtual ICollection<UsuarioLoja> UsuarioLojas { get; set; }
     }
 }
