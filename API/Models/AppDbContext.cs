@@ -443,8 +443,8 @@ namespace API_Visitatus.Models
 
             modelBuilder.Entity<Presenca>(entity =>
             {
-                entity.HasKey(e => new { e.UsuCodi, e.SesCodi })
-                    .HasName("PK__Presenca__37F71BB1FCF643DC");
+                entity.HasKey(e => new { e.UsuCodi, e.SesCodi, e.LojCodi })
+                    .HasName("Presenca_PK");
 
                 entity.ToTable("Presenca", "dbo");
 
@@ -452,7 +452,15 @@ namespace API_Visitatus.Models
 
                 entity.Property(e => e.SesCodi).HasColumnName("sesCodi");
 
+                entity.Property(e => e.LojCodi).HasColumnName("lojCodi");
+
                 entity.Property(e => e.PreAtiv).HasColumnName("preAtiv");
+
+                entity.HasOne(d => d.LojCodiNavigation)
+                    .WithMany(p => p.Presencas)
+                    .HasForeignKey(d => d.LojCodi)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Presenca_Loja_FK");
 
                 entity.HasOne(d => d.SesCodiNavigation)
                     .WithMany(p => p.Presencas)

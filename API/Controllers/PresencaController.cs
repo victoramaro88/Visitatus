@@ -58,59 +58,98 @@ namespace API_Visitatus.Controllers
                     novoLojaId = loja.LojCodi;
                 }
 
-                //-> Se não vier id do usuário, insere ele na tabela, vinculando-o com a Loja e atribuindo o perfil código 3 (Visitante).
+                //-> Se não vier id do usuário, verifica se já existe, senão, insere ele na tabela, vinculando-o com a Loja e atribuindo o perfil código 4 (Membro).
                 if (objPresenca.objUsuarioLoja.UsuCodi == 0)
                 {
-                    Usuario usuario = new Usuario
+                    //-> Faz uma consulta, para saber se o usuário já existe na base, mas em outra Loja
+                    var usuarioOutraLoja = await _context.Usuarios
+                        .Where(u => u.UsuNome.ToUpper() == objPresenca.objUsuarioLoja.UsuNome!.ToUpper()
+                            && u.UsuNcim.ToUpper() == objPresenca.objUsuarioLoja.UsuNCIM!.ToUpper())
+                        .FirstOrDefaultAsync();
+
+                    if (usuarioOutraLoja != null)
                     {
-                        UsuCodi = _context.Usuarios.Max(p => (int?)p.UsuCodi) + 1 ?? 1,
-                        UsuNome = objPresenca.objUsuarioLoja.UsuNome!,
-                        UsuNcim = objPresenca.objUsuarioLoja.UsuNCIM!,
-                        UsuNasc = objPresenca.objUsuarioLoja.UsuNasc!,
-                        UsuEmai = objPresenca.objUsuarioLoja.UsuEmai!,
-                        UsuNcel = objPresenca.objUsuarioLoja.UsuNCel!,
-                        UsuStat = true
+                        //-> Inserindo o perfil deste usuário como FILIADO desta Loja.
+                        PerfilUsuario perfilUsuario = new PerfilUsuario
+                        {
+                            PeUcodi = _context.PerfilUsuarios.Max(p => (int?)p.PeUcodi) + 1 ?? 1,
+                            PeUstat = true,
+                            PerCodi = 5, //-> Perfil selecionado como FILIADO.
+                            UsuCodi = usuarioOutraLoja.UsuCodi,
+                            LojCodi = objPresenca.objLojaConsulta.LojCodi > 0 ? objPresenca.objLojaConsulta.LojCodi : novoLojaId
+                        };
+
+                        _context.PerfilUsuarios.Add(perfilUsuario);
+                        await _context.SaveChangesAsync();
+
+                        Presenca presenca = new Presenca
+                        {
+                            UsuCodi = usuarioOutraLoja.UsuCodi,
+                            SesCodi = objPresenca.sesCodi,
+                            LojCodi = objPresenca.objLojaConsulta.LojCodi > 0 ? objPresenca.objLojaConsulta.LojCodi : novoLojaId,
+                            PreAtiv = false
+                        };
+
+                        _context.Presencas.Add(presenca);
+                        await _context.SaveChangesAsync();
+                    }
+                    else //-> Caso a pesquisa venha null, insere o usuário
+                    {
+                        Usuario usuario = new Usuario
+                        {
+                            UsuCodi = _context.Usuarios.Max(p => (int?)p.UsuCodi) + 1 ?? 1,
+                            UsuNome = objPresenca.objUsuarioLoja.UsuNome!,
+                            UsuNcim = objPresenca.objUsuarioLoja.UsuNCIM!,
+                            UsuNasc = objPresenca.objUsuarioLoja.UsuNasc!,
+                            UsuEmai = objPresenca.objUsuarioLoja.UsuEmai!,
+                            UsuNcel = objPresenca.objUsuarioLoja.UsuNCel!,
+                            UsuStat = true
+                        };
+
+                        _context.Usuarios.Add(usuario);
+                        await _context.SaveChangesAsync();
+
+                        novoUsuarioId = usuario.UsuCodi;
+
+                        //-> Inserindo o perfil deste usuário como MEMBRO de sua Loja.
+                        PerfilUsuario perfilUsuario = new PerfilUsuario
+                        {
+                            PeUcodi = _context.PerfilUsuarios.Max(p => (int?)p.PeUcodi) + 1 ?? 1,
+                            PeUstat = true,
+                            PerCodi = 4, //-> Perfil selecionado como MEMBRO.
+                            UsuCodi = novoUsuarioId,
+                            LojCodi = objPresenca.objLojaConsulta.LojCodi > 0 ? objPresenca.objLojaConsulta.LojCodi : novoLojaId
+                        };
+
+                        _context.PerfilUsuarios.Add(perfilUsuario);
+                        await _context.SaveChangesAsync();
+
+                        //-> Insere a presença
+                        Presenca presenca = new Presenca
+                        {
+                            UsuCodi = novoUsuarioId,
+                            SesCodi = objPresenca.sesCodi,
+                            LojCodi = objPresenca.objLojaConsulta.LojCodi > 0 ? objPresenca.objLojaConsulta.LojCodi : novoLojaId,
+                            PreAtiv = false
+                        };
+
+                        _context.Presencas.Add(presenca);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                else //-> Se já existir usuário na pesquisa vindo da aplicação, insere na tabela de presença.
+                {
+                    Presenca presenca = new Presenca
+                    {
+                        UsuCodi = objPresenca.objUsuarioLoja.UsuCodi,
+                        SesCodi = objPresenca.sesCodi,
+                        LojCodi = objPresenca.objLojaConsulta.LojCodi > 0 ? objPresenca.objLojaConsulta.LojCodi : novoLojaId,
+                        PreAtiv = false
                     };
 
-                    _context.Usuarios.Add(usuario);
-                    await _context.SaveChangesAsync();
-
-                    novoUsuarioId = usuario.UsuCodi;
-
-                    //-> Inserindo o perfil deste usuário como membro de sua Loja.
-                    PerfilUsuario perfilUsuario = new PerfilUsuario
-                    {
-                        PeUcodi = _context.PerfilUsuarios.Max(p => (int?)p.PeUcodi) + 1 ?? 1,
-                        PeUstat = true,
-                        PerCodi = 4, //-> Perfil selecionado como Membro.
-                        UsuCodi = novoUsuarioId,
-                        LojCodi = objPresenca.objLojaConsulta.LojCodi > 0 ? objPresenca.objLojaConsulta.LojCodi : novoLojaId
-                    };
-
-                    _context.PerfilUsuarios.Add(perfilUsuario);
+                    _context.Presencas.Add(presenca);
                     await _context.SaveChangesAsync();
                 }
-
-                //-> Vincula esse usuário à Loja que informou
-                //UsuarioLoja usrLoja = new UsuarioLoja
-                //{
-                //    UsuCodi = objPresenca.objUsuarioLoja.UsuCodi > 0 ? objPresenca.objUsuarioLoja.UsuCodi : novoUsuarioId,
-                //    LojCodi = objPresenca.objLojaConsulta.LojCodi > 0 ? objPresenca.objLojaConsulta.LojCodi : novoLojaId,
-                //    UsLstat = true
-                //};
-
-                //_context.UsuarioLojas.Add(usrLoja);
-                //await _context.SaveChangesAsync();
-
-                //-> Agora insere na tabela de presença.
-                Presenca presenca = new Presenca
-                {
-                    UsuCodi = objPresenca.objUsuarioLoja.UsuCodi > 0 ? objPresenca.objUsuarioLoja.UsuCodi : novoUsuarioId,
-                    SesCodi = objPresenca.sesCodi
-                };
-
-                _context.Presencas.Add(presenca);
-                await _context.SaveChangesAsync();
 
                 // Commit da transação
                 await transaction.CommitAsync();
