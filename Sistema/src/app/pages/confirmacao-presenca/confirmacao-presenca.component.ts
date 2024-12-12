@@ -159,10 +159,10 @@ export class ConfirmacaoPresencaComponent implements OnInit {
 
     if (this.ValidaInformacoes()) {
       this.boolLoading = true;
-      console.warn(this.objConsultaUsrLj);
+      // console.warn(this.objConsultaUsrLj);
       this.http.PostConfirmaPresenca(this.objConsultaUsrLj).subscribe({
         next: (response) => {
-          console.warn(response);
+          // console.warn(response);
           this.boolLoading = false;
           if (response === 'Presença confirmada com sucesso.') {
             this.mensagem.titulo = 'Presença Confirmada!';

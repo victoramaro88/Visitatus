@@ -1,0 +1,147 @@
+<!-- ESTILOS CSS -->
+<style>
+  /* Estilo básico */
+.responsive-div {
+  padding: 1rem;
+  margin: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(199, 199, 199, 0.445);
+  background-color: rgb(255, 255, 255);
+  color: rgb(95, 95, 95);
+}
+@media (min-width: 768px) {
+  .responsive-div {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 2rem auto;
+  }
+
+  .responsive-title {
+    font-size: 2rem; /* Título maior em telas maiores */
+  }
+
+  .responsive-text {
+    font-size: 1.2rem; /* Texto maior em telas maiores */
+  }
+}
+@media (max-width: 767px) {
+  .responsive-div {
+    padding: 1rem;
+    max-width: 95%;
+    margin: 1rem auto;
+  }
+
+  .responsive-title {
+    font-size: 1.5rem; /* Tamanho do título ajustado */
+  }
+
+  .responsive-text {
+    font-size: 1rem; /* Tamanho do texto ajustado */
+  }
+}
+
+/* Centralização das imagens */
+.responsive-img-container {
+  display: flex; /* Ativa o Flexbox */
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+  height: 100%; /* Adapta a altura da div ao conteúdo pai */
+}
+
+.responsive-img {
+  max-width: 100%; /* Adapta ao tamanho da coluna */
+  height: auto; /* Mantém a proporção */
+  object-fit: cover; /* Adapta sem distorcer */
+}
+
+/* Aumentar imagens em telas menores */
+@media (max-width: 768px) {
+  .responsive-img {
+    max-width: 150%; /* Aumenta o tamanho máximo da imagem */
+  }
+}
+
+</style>
+
+<div class="responsive-div">
+  <!-- TOPO -->
+  <div class="grid">
+    <!-- Coluna Esquerda - BRASÃO DA LOJA -->
+    <div class="col-2">
+      <div class="responsive-img-container">
+        <img
+          src="data:image/png;base64,[LojLogo]"
+          alt="Brasão Loja"
+          class="responsive-img"
+        />
+      </div>
+    </div>
+
+    <!-- Conteúdo Central -->
+    <div class="col-8">
+      <div class="text-center p-1 font-bold">
+        <a class="responsive-title text-center">À G.D.G.A.D.U</a><br />
+        <a class="responsive-title text-center">Certificado de Presença</a>
+      </div>
+    </div>
+
+    <!-- Coluna Direita - BRASÃO DO RITO  -->
+    <div class="col-2">
+      <div class="responsive-img-container">
+        <img
+          src="data:image/png;base64,[PotLogo]"
+          alt="Brasão Potência"
+          class="responsive-img"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- CABEÇALHO -->
+  <div class="grid">
+    <div class="col-12 text-center">
+      <h2>
+        [LojNome]
+      </h2>
+      <h4>
+        [PotSigl] <br>
+        [PotNome]
+      </h4>
+    </div>
+  </div>
+
+  <!-- CORPO -->
+  <div class="grid">
+    <div class="col-12 text-left">
+      <p>
+        <b>Certificamos que o Ir.</b>&nbsp; Victor Valério Joaquim Amaro
+      </p>
+      <p>
+        <b>Da</b>&nbsp; A.R.L.S. Cavaleiros de Baalbek, 4024
+      </p>
+      <p>
+        <b>Nos honrou com sua visita em sessão:&nbsp;</b> Elevação
+      </p>
+      <p class="text-right mt-4">
+        <b>Oriente de São Paulo, 10/12/2024</b>
+      </p>
+    </div>
+  </div>
+
+  <!-- VENERÁVEL MESTRE -->
+  <div class="grid mt-3">
+    <div class="col-6 text-center">
+      <p>
+        <b>Fulano da Silva Sobreiro da Cruz</b><br>
+        Venerável Mestre
+      </p>
+    </div>
+    <div class="col-6 text-center">
+      <p>
+        <b>João da Silva</b><br>
+        Secretário
+      </p>
+    </div>
+  </div>
+</div>

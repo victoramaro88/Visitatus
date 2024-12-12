@@ -11,6 +11,7 @@ namespace API_Visitatus.Models
             PerfilUsuarios = new HashSet<PerfilUsuario>();
             Presencas = new HashSet<Presenca>();
             Sessaos = new HashSet<Sessao>();
+            TemplateCertificadoLojas = new HashSet<TemplateCertificadoLoja>();
             TemplateLojas = new HashSet<TemplateLoja>();
         }
 
@@ -33,6 +34,7 @@ namespace API_Visitatus.Models
         public virtual ICollection<PerfilUsuario> PerfilUsuarios { get; set; }
         public virtual ICollection<Presenca> Presencas { get; set; }
         public virtual ICollection<Sessao> Sessaos { get; set; }
+        public virtual ICollection<TemplateCertificadoLoja> TemplateCertificadoLojas { get; set; }
         public virtual ICollection<TemplateLoja> TemplateLojas { get; set; }
     }
 }

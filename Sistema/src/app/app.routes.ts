@@ -1,3 +1,4 @@
+import { TemplateCertificadoComponent } from './pages/template-certificado/template-certificado.component';
 import { ConfirmacaoPresencaComponent } from './pages/confirmacao-presenca/confirmacao-presenca.component';
 import { ConviteComponent } from './pages/convite/convite.component';
 import { SessaoComponent } from './pages/sessao/sessao.component';
@@ -14,6 +15,7 @@ export const routes: Routes = [
   { path: 'contato', component: ContatoComponent },
   { path: 'sessao', component: SessaoComponent },
   { path: 'template', component: TemplateConviteComponent },
+  { path: 'template-certificado', component: TemplateCertificadoComponent },
   { path: 'convite/:data', component: ConviteComponent },
   { path: 'confirmacao/:data', component: ConfirmacaoPresencaComponent },
   // { path: 'confirmacao', component: ConfirmacaoPresencaComponent }, //-> Temporário

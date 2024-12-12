@@ -32,6 +32,8 @@ namespace API_Visitatus.Models
         public virtual DbSet<Presenca> Presencas { get; set; } = null!;
         public virtual DbSet<Rito> Ritos { get; set; } = null!;
         public virtual DbSet<Sessao> Sessaos { get; set; } = null!;
+        public virtual DbSet<TemplateCertificadoLoja> TemplateCertificadoLojas { get; set; } = null!;
+        public virtual DbSet<TemplateCertificadoPresenca> TemplateCertificadoPresencas { get; set; } = null!;
         public virtual DbSet<TemplateConvite> TemplateConvites { get; set; } = null!;
         public virtual DbSet<TemplateLoja> TemplateLojas { get; set; } = null!;
         public virtual DbSet<TipoSessao> TipoSessaos { get; set; } = null!;
@@ -552,6 +554,55 @@ namespace API_Visitatus.Models
                     .HasForeignKey(d => d.TiScodi)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_SessTiS");
+            });
+
+            modelBuilder.Entity<TemplateCertificadoLoja>(entity =>
+            {
+                entity.HasKey(e => new { e.TmpCrtPreCodi, e.LojCodi })
+                    .HasName("PK__Template__5D9E926A953FBC6F");
+
+                entity.ToTable("TemplateCertificadoLoja", "dbo");
+
+                entity.Property(e => e.TmpCrtPreCodi).HasColumnName("tmpCrtPreCodi");
+
+                entity.Property(e => e.LojCodi).HasColumnName("lojCodi");
+
+                entity.Property(e => e.TmpCrtStat).HasColumnName("tmpCrtStat");
+
+                entity.HasOne(d => d.LojCodiNavigation)
+                    .WithMany(p => p.TemplateCertificadoLojas)
+                    .HasForeignKey(d => d.LojCodi)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__TemplateC__lojCo__18EBB532");
+
+                entity.HasOne(d => d.TmpCrtPreCodiNavigation)
+                    .WithMany(p => p.TemplateCertificadoLojas)
+                    .HasForeignKey(d => d.TmpCrtPreCodi)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__TemplateC__tmpCr__17F790F9");
+            });
+
+            modelBuilder.Entity<TemplateCertificadoPresenca>(entity =>
+            {
+                entity.HasKey(e => e.TmpCrtPreCodi)
+                    .HasName("PK__Template__354F32F93650EAA6");
+
+                entity.ToTable("TemplateCertificadoPresenca", "dbo");
+
+                entity.Property(e => e.TmpCrtPreCodi)
+                    .ValueGeneratedNever()
+                    .HasColumnName("tmpCrtPreCodi");
+
+                entity.Property(e => e.TmpCrtPreMode)
+                    .IsUnicode(false)
+                    .HasColumnName("tmpCrtPreMode");
+
+                entity.Property(e => e.TmpCrtPreNome)
+                    .HasMaxLength(250)
+                    .IsUnicode(false)
+                    .HasColumnName("tmpCrtPreNome");
+
+                entity.Property(e => e.TmpCrtPreStat).HasColumnName("tmpCrtPreStat");
             });
 
             modelBuilder.Entity<TemplateConvite>(entity =>
