@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
 import { environment } from '../environments/environment';
-import { MenuComponent } from "./pages/menu/menu.component";
+import { MenuComponent } from './pages/menu/menu.component';
 import { ImportsModule } from './imports';
 
 @Component({
@@ -10,18 +10,21 @@ import { ImportsModule } from './imports';
   standalone: true,
   imports: [RouterOutlet, MenuComponent, ImportsModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
   versionApp: string | undefined;
 
   isMenuHidden: boolean = false;
-  private hiddenRoutes = ['/login', '/template', '/convite', '/confirmacao']; // Rotas onde o menu será oculto
+  private hiddenRoutes = [
+    '/login',
+    '/template',
+    '/convite',
+    '/confirmacao',
+    '/certificado',
+  ]; // Rotas onde o menu será oculto
 
-  constructor(
-    private primengConfig: PrimeNGConfig,
-    private router: Router
-  ) { }
+  constructor(private primengConfig: PrimeNGConfig, private router: Router) {}
 
   ngOnInit(): void {
     this.primengConfig.ripple = true;
@@ -29,7 +32,9 @@ export class AppComponent {
 
     this.router.events.subscribe(() => {
       const currentRoute = this.router.url;
-      this.isMenuHidden = this.hiddenRoutes.some(route => currentRoute.startsWith(route));
+      this.isMenuHidden = this.hiddenRoutes.some((route) =>
+        currentRoute.startsWith(route)
+      );
     });
   }
 }

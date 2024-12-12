@@ -62,9 +62,16 @@
   }
 }
 
+#capture-area {
+  width: 800px;
+  padding: 20px;
+  background: white;
+  border: 1px solid #ccc;
+}
+
 </style>
 
-<div class="responsive-div">
+<div class="responsive-div" id="capture-area">
   <!-- TOPO -->
   <div class="grid">
     <!-- Coluna Esquerda - BRASÃO DA LOJA -->
@@ -115,16 +122,16 @@
   <div class="grid">
     <div class="col-12 text-left">
       <p>
-        <b>Certificamos que o Ir.</b>&nbsp; Victor Valério Joaquim Amaro
+        <b>Certificamos que o Ir.</b>&nbsp; [NomeUsuario]
       </p>
       <p>
-        <b>Da</b>&nbsp; A.R.L.S. Cavaleiros de Baalbek, 4024
+        <b>Da</b>&nbsp; [NomeLoja], [NumeroLoja]
       </p>
       <p>
-        <b>Nos honrou com sua visita em sessão:&nbsp;</b> Elevação
+        <b>Nos honrou com sua visita em sessão:&nbsp;</b> [TipoSessao]
       </p>
       <p class="text-right mt-4">
-        <b>Oriente de São Paulo, 10/12/2024</b>
+        <b>Oriente de [CidadeLoja], [DataSessao]</b>
       </p>
     </div>
   </div>
@@ -133,15 +140,18 @@
   <div class="grid mt-3">
     <div class="col-6 text-center">
       <p>
-        <b>Fulano da Silva Sobreiro da Cruz</b><br>
-        Venerável Mestre
+        <b>[NomeVM]</b><br>
+        [CargoVM]
       </p>
     </div>
     <div class="col-6 text-center">
       <p>
-        <b>João da Silva</b><br>
-        Secretário
+        <b>[NomeSecretario]</b><br>
+        [CargoSecretario]
       </p>
     </div>
   </div>
 </div>
+
+
+<button (click)="exportAsImage()">Exportar como Imagem</button>

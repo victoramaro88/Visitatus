@@ -1,3 +1,4 @@
+import { CertificadoComponent } from './pages/certificado/certificado.component';
 import { TemplateCertificadoComponent } from './pages/template-certificado/template-certificado.component';
 import { ConfirmacaoPresencaComponent } from './pages/confirmacao-presenca/confirmacao-presenca.component';
 import { ConviteComponent } from './pages/convite/convite.component';
@@ -18,12 +19,13 @@ export const routes: Routes = [
   { path: 'template-certificado', component: TemplateCertificadoComponent },
   { path: 'convite/:data', component: ConviteComponent },
   { path: 'confirmacao/:data', component: ConfirmacaoPresencaComponent },
+  { path: 'certificado/:data', component: CertificadoComponent },
   // { path: 'confirmacao', component: ConfirmacaoPresencaComponent }, //-> Temporário
-  { path: '**', redirectTo: 'login' }
+  { path: '**', redirectTo: 'login' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
