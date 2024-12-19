@@ -1,105 +1,192 @@
 import { GrauModel } from './../models/Grau.Model';
 import { TipoSessaoModel } from './../models/TipoSessao.Model';
-import { HttpClient } from "@angular/common/http";
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { environment } from "../../environments/environment";
-import { LoginModel } from "../models/Login.Model";
-import { UsuarioLogadoModel } from "../models/UsuarioLogado.Model";
-import { PermissaoPerfilListaModel } from "../models/PermissaoPerfilLista.Model ";
-import { SessaoModel } from "../models/Sessao.Model";
-import { SessaoListaModel } from "../models/SessaoLista.Model";
-import { LojaModel } from "../models/Loja.Model";
+import { environment } from '../../environments/environment';
+import { LoginModel } from '../models/Login.Model';
+import { UsuarioLogadoModel } from '../models/UsuarioLogado.Model';
+import { PermissaoPerfilListaModel } from '../models/PermissaoPerfilLista.Model ';
+import { SessaoModel } from '../models/Sessao.Model';
+import { SessaoListaModel } from '../models/SessaoLista.Model';
+import { LojaModel } from '../models/Loja.Model';
 import { SessaoConviteModel } from '../models/SessaoConvite.Model';
 import { TemplateLojaModel } from '../models/TemplateLoja.Model';
 import { PotenciaModel } from '../models/Potencia.Model';
 import { ConsultaUsuarioLojaModel } from '../models/ConsultaUsuarioLoja.Model';
+import { CryptoService } from './crypto.service';
+import { EncryptAPIModel } from '../models/EncryptAPI.Model';
 
 @Injectable({
-    providedIn: 'root'
-  })
-
+  providedIn: 'root',
+})
 export class HttpService {
-
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private encryptionService: CryptoService
+  ) {}
 
   // #region GET
 
-  public GetPermissaoPerfil(perCodi: number): Observable<PermissaoPerfilListaModel[]> {
-    return this.http.get<PermissaoPerfilListaModel[]>(`${environment.apiServicos}/Permissao/GetPermissaoPerfil/${perCodi}`);
+  public GetPermissaoPerfil(
+    perCodi: number
+  ): Observable<PermissaoPerfilListaModel[]> {
+    return this.http.get<PermissaoPerfilListaModel[]>(
+      `${environment.apiServicos}/Permissao/GetPermissaoPerfil/${perCodi}`
+    );
   }
 
   public GetSessao(perCodi: number): Observable<SessaoModel[]> {
-    return this.http.get<SessaoModel[]>(`${environment.apiServicos}/Sessao/GetSessao/${perCodi}`);
+    return this.http.get<SessaoModel[]>(
+      `${environment.apiServicos}/Sessao/GetSessao/${perCodi}`
+    );
   }
 
   public GetSessaoByLojCodi(lojCodi: number): Observable<SessaoListaModel[]> {
-    return this.http.get<SessaoListaModel[]>(`${environment.apiServicos}/Sessao/GetSessaoByLojCodi/${lojCodi}`);
+    return this.http.get<SessaoListaModel[]>(
+      `${environment.apiServicos}/Sessao/GetSessaoByLojCodi/${lojCodi}`
+    );
   }
 
   public GetLojaByIdUsuario(usuCodi: number): Observable<LojaModel[]> {
-    return this.http.get<LojaModel[]>(`${environment.apiServicos}/Loja/GetLojaByIdUsuario/${usuCodi}`);
+    return this.http.get<LojaModel[]>(
+      `${environment.apiServicos}/Loja/GetLojaByIdUsuario/${usuCodi}`
+    );
   }
 
   public GetTipoSessao(TiScodi: number): Observable<TipoSessaoModel[]> {
-    return this.http.get<TipoSessaoModel[]>(`${environment.apiServicos}/TipoSessao/GetTipoSessao/${TiScodi}`);
+    return this.http.get<TipoSessaoModel[]>(
+      `${environment.apiServicos}/TipoSessao/GetTipoSessao/${TiScodi}`
+    );
   }
 
   public GetGrau(GraCodi: number): Observable<GrauModel[]> {
-    return this.http.get<GrauModel[]>(`${environment.apiServicos}/Grau/GetGrau/${GraCodi}`);
+    return this.http.get<GrauModel[]>(
+      `${environment.apiServicos}/Grau/GetGrau/${GraCodi}`
+    );
   }
 
-  public GetValidaNumeroSessao(sesNume: number, lojCodi: number): Observable<SessaoModel> {
-    return this.http.get<SessaoModel>(`${environment.apiServicos}/Sessao/GetValidaNumeroSessao/${sesNume}/${lojCodi}`);
+  public GetValidaNumeroSessao(
+    sesNume: number,
+    lojCodi: number
+  ): Observable<SessaoModel> {
+    return this.http.get<SessaoModel>(
+      `${environment.apiServicos}/Sessao/GetValidaNumeroSessao/${sesNume}/${lojCodi}`
+    );
   }
 
   public GetSessaoBySesCodi(sesCodi: number): Observable<SessaoConviteModel> {
-    return this.http.get<SessaoConviteModel>(`${environment.apiServicos}/Sessao/GetSessaoBySesCodi/${sesCodi}`);
+    return this.http.get<SessaoConviteModel>(
+      `${environment.apiServicos}/Sessao/GetSessaoBySesCodi/${sesCodi}`
+    );
   }
 
   public GetTemplateLoja(lojCodi: number): Observable<TemplateLojaModel> {
-    return this.http.get<TemplateLojaModel>(`${environment.apiServicos}/TemplateLoja/GetTemplateLoja/${lojCodi}`);
+    return this.http.get<TemplateLojaModel>(
+      `${environment.apiServicos}/TemplateLoja/GetTemplateLoja/${lojCodi}`
+    );
   }
 
-  public GetPotenciaRegularByLojCodi(lojCodi: number): Observable<PotenciaModel[]> {
-    return this.http.get<PotenciaModel[]>(`${environment.apiServicos}/Potencia/GetPotenciaRegularByLojCodi/${lojCodi}`);
+  public GetPotenciaRegularByLojCodi(
+    lojCodi: number
+  ): Observable<PotenciaModel[]> {
+    return this.http.get<PotenciaModel[]>(
+      `${environment.apiServicos}/Potencia/GetPotenciaRegularByLojCodi/${lojCodi}`
+    );
   }
 
-  public GetLojaByPotLojNume(PotCodi: number, LojNumL: string): Observable<LojaModel> {
-    return this.http.get<LojaModel>(`${environment.apiServicos}/Loja/GetLojaByPotLojNume/${PotCodi}/${LojNumL}`);
+  public GetLojaByPotLojNume(
+    PotCodi: number,
+    LojNumL: string
+  ): Observable<LojaModel> {
+    return this.http.get<LojaModel>(
+      `${environment.apiServicos}/Loja/GetLojaByPotLojNume/${PotCodi}/${LojNumL}`
+    );
   }
 
-  public GetUsuarioByLoja(UsuNCIM: string, PotCodi: number, LojNumL: string): Observable<ConsultaUsuarioLojaModel> {
-    return this.http.get<ConsultaUsuarioLojaModel>(`${environment.apiServicos}/Usuario/GetUsuarioByLoja/${UsuNCIM}/${PotCodi}/${LojNumL}`);
+  public GetUsuarioByLoja(
+    UsuNCIM: string,
+    PotCodi: number,
+    LojNumL: string
+  ): Observable<ConsultaUsuarioLojaModel> {
+    return this.http.get<ConsultaUsuarioLojaModel>(
+      `${environment.apiServicos}/Usuario/GetUsuarioByLoja/${UsuNCIM}/${PotCodi}/${LojNumL}`
+    );
   }
 
   // #endregion
 
   // #region POST
 
-  public ValidarLogin(usuario: string, senha: string): Observable<UsuarioLogadoModel> {
+  public ValidarLogin(
+    usuario: string,
+    senha: string
+  ): Observable<UsuarioLogadoModel> {
     let objLogin: LoginModel = new LoginModel();
     objLogin.usuario = usuario;
     objLogin.senha = senha;
-    return this.http.post<UsuarioLogadoModel>(`${environment.apiServicos}/Util/Login`, objLogin);
+    return this.http.post<UsuarioLogadoModel>(
+      `${environment.apiServicos}/Util/Login`,
+      objLogin
+    );
   }
 
   public PostSessao(objSessao: SessaoListaModel): Observable<string> {
-    return this.http.post<string>(`${environment.apiServicos}/Sessao/PostSessao`, objSessao);
+    return this.http.post<string>(
+      `${environment.apiServicos}/Sessao/PostSessao`,
+      objSessao
+    );
   }
 
-  public PostConfirmaPresenca(objPresenca: ConsultaUsuarioLojaModel): Observable<string> {
-    return this.http.post<string>(`${environment.apiServicos}/Presenca/PostConfirmaPresenca`, objPresenca);
+  public PostConfirmaPresenca(
+    objPresenca: ConsultaUsuarioLojaModel
+  ): Observable<string> {
+    return this.http.post<string>(
+      `${environment.apiServicos}/Presenca/PostConfirmaPresenca`,
+      objPresenca
+    );
+  }
+
+  public encryptAPI(objMensagem: EncryptAPIModel): Observable<string> {
+    // let encryptedText = this.encryptionService.encryptAPI(
+    //   objMensagem.valorMensagem
+    // );
+    // console.log('Texto Encriptado:', encryptedText);
+
+    // Opcional: Enviar para o backend
+    return this.http.post<string>(
+      `${environment.apiServicos}/Util/Encrypt`,
+      objMensagem // Envia a string diretamente
+    );
+  }
+
+  public decryptAPI(objMensagem: EncryptAPIModel): Observable<string> {
+    // let decryptedText = this.encryptionService.decryptAPI(
+    //   objMensagem.valorMensagem
+    // );
+    // console.log('Texto Decriptado:', decryptedText);
+
+    // Opcional: Enviar para o backend
+    return this.http.post<string>(
+      `${environment.apiServicos}/Util/Decrypt`,
+      objMensagem,
+      { responseType: 'text' as 'json' }
+    );
   }
 
   // #endregion
 
   // #region PUT
 
-  public PutSessao(sesCodi: number, objSessao: SessaoModel): Observable<string> {
-    return this.http.put<string>(`${environment.apiServicos}/Sessao/PutSessao/${sesCodi}`, objSessao);
+  public PutSessao(
+    sesCodi: number,
+    objSessao: SessaoModel
+  ): Observable<string> {
+    return this.http.put<string>(
+      `${environment.apiServicos}/Sessao/PutSessao/${sesCodi}`,
+      objSessao
+    );
   }
 
   // #endregion
-
 }

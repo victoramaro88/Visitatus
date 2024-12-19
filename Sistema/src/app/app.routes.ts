@@ -19,7 +19,10 @@ export const routes: Routes = [
   { path: 'template-certificado', component: TemplateCertificadoComponent },
   { path: 'convite/:data', component: ConviteComponent },
   { path: 'confirmacao/:data', component: ConfirmacaoPresencaComponent },
-  { path: 'certificado/:data', component: CertificadoComponent },
+  {
+    path: 'certificado/:data',
+    component: CertificadoComponent,
+  },
   // { path: 'confirmacao', component: ConfirmacaoPresencaComponent }, //-> Temporário
   { path: '**', redirectTo: 'login' },
 ];

@@ -10,11 +10,13 @@ namespace API_Visitatus.Controllers
     {
         private readonly IPasswordHasher<object> _passwordHasher;
         private readonly AppDbContext _context;
+        private readonly EncryptionService _encryptionService;
 
-        public UtilController(AppDbContext context)
+        public UtilController(AppDbContext context, EncryptionService encryptionService)
         {
             _context = context;
             _passwordHasher = new PasswordHasher<object>();
+            _encryptionService = encryptionService;
         }
 
         [HttpPost]
@@ -107,6 +109,25 @@ namespace API_Visitatus.Controllers
             {
                 return Task.FromResult<ActionResult<UsuarioLogadoModel>>(BadRequest(e));
             }
+        }
+
+        [HttpPost]
+        public IActionResult Encrypt([FromBody] EncryptAPIModel objMensagem)
+        {
+            if(objMensagem == null && objMensagem?.valorMensagem?.Length == 0)
+            {
+                return BadRequest("Parâmetros Inválidos.");
+            }
+
+            var encrypted = _encryptionService.Encrypt(objMensagem!.valorMensagem!);
+            return Ok(encrypted);
+        }
+
+        [HttpPost]
+        public IActionResult Decrypt([FromBody] EncryptAPIModel objMensagem)
+        {
+            var decrypted = _encryptionService.Decrypt(objMensagem.valorMensagem!);
+            return Ok(decrypted);
         }
 
         [NonAction]

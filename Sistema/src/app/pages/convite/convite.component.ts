@@ -15,10 +15,11 @@ import { MessageService } from 'primeng/api';
   templateUrl: './convite.component.html',
   styleUrls: ['./convite.component.css'],
   imports: [ImportsModule],
-  providers: [MessageService]
+  providers: [MessageService],
 })
 export class ConviteComponent implements OnInit {
-  @ViewChild('dynamicContainer', { static: false }) dynamicContainer!: ElementRef;
+  @ViewChild('dynamicContainer', { static: false })
+  dynamicContainer!: ElementRef;
 
   boolLoading = true;
   parametroRota!: string | null;
@@ -41,7 +42,8 @@ export class ConviteComponent implements OnInit {
     try {
       this.parametroRota = this.route.snapshot.paramMap.get('data');
       let baseDecripto = this.cryptoService.decriptografar(this.parametroRota!);
-      this.idSessaoCrypto = this.base64Service.decodeBase64ToNumber(baseDecripto);
+      this.idSessaoCrypto =
+        this.base64Service.decodeBase64ToNumber(baseDecripto);
 
       this.GetSessaoBySesCodi(this.idSessaoCrypto);
     } catch (error) {
@@ -64,9 +66,13 @@ export class ConviteComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);
-        this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Falha ao realizar a operação, contate o suporte.'});
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro: ',
+          detail: 'Falha ao realizar a operação, contate o suporte.',
+        });
         this.boolLoading = false;
-      }
+      },
     });
   }
 
@@ -74,8 +80,10 @@ export class ConviteComponent implements OnInit {
     this.http.GetTemplateLoja(lojCodi).subscribe({
       next: (response) => {
         this.objTemplate = response;
-        const objHtmlReplace = this.objTemplate.TmpCvtMode
-          .replace('[LojLogo]', this.objSessaoConvite?.LojLogo!)
+        const objHtmlReplace = this.objTemplate.TmpCvtMode.replace(
+          '[LojLogo]',
+          this.objSessaoConvite?.LojLogo!
+        )
           .replace('[PotLogo]', this.objSessaoConvite?.PotLogo!)
           .replace('[LojNome]', this.objSessaoConvite?.LojNome!)
           .replace('[PotSigl]', this.objSessaoConvite?.PotSigl!)
@@ -83,15 +91,41 @@ export class ConviteComponent implements OnInit {
           .replace('[SesDesc]', this.objSessaoConvite?.SesDesc!)
           .replace('[RitNome]', this.objSessaoConvite?.RitNome!)
           .replace('[GraNome]', this.objSessaoConvite?.GraNome!)
-          .replace('[SesDtHr_DATA]', new Date(this.objSessaoConvite?.SesDtHr!).toLocaleDateString('pt-BR'))
-          .replace('[SesDtHr_HORA]', new Date(this.objSessaoConvite?.SesDtHr!).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }))
+          .replace('[TiSCodi]', this.objSessaoConvite?.TiSNome!)
+          .replace(
+            '[SesDtHr_DATA]',
+            new Date(this.objSessaoConvite?.SesDtHr!).toLocaleDateString(
+              'pt-BR'
+            )
+          )
+          .replace(
+            '[SesDtHr_HORA]',
+            new Date(this.objSessaoConvite?.SesDtHr!).toLocaleTimeString(
+              'pt-BR',
+              { hour: '2-digit', minute: '2-digit' }
+            )
+          )
           .replace('[LojLogr]', this.objSessaoConvite?.LojLogr!)
           .replace('[LojNume]', this.objSessaoConvite?.LojNume!)
           .replace('[LojBair]', this.objSessaoConvite?.LojBair!)
           .replace('[CidNome]', this.objSessaoConvite?.CidNome!)
           .replace('[EstSigl]', this.objSessaoConvite?.EstSigl!)
-          .replace('[UsuNome]', (this.objSessaoConvite?.lstGestaoAdmAtiva?.length! > 0 ? this.objSessaoConvite?.lstGestaoAdmAtiva?.find(u => u.CarCodi === 1)?.UsuNome! : ''))
-          .replace('[CarNome]', (this.objSessaoConvite?.lstGestaoAdmAtiva?.length! > 0 ? this.objSessaoConvite?.lstGestaoAdmAtiva?.find(u => u.CarCodi === 1)?.CarNome! : ''))
+          .replace(
+            '[UsuNome]',
+            this.objSessaoConvite?.lstGestaoAdmAtiva?.length! > 0
+              ? this.objSessaoConvite?.lstGestaoAdmAtiva?.find(
+                  (u) => u.CarCodi === 1
+                )?.UsuNome!
+              : ''
+          )
+          .replace(
+            '[CarNome]',
+            this.objSessaoConvite?.lstGestaoAdmAtiva?.length! > 0
+              ? this.objSessaoConvite?.lstGestaoAdmAtiva?.find(
+                  (u) => u.CarCodi === 1
+                )?.CarNome!
+              : ''
+          );
         console.warn(this.objSessaoConvite?.lstGestaoAdmAtiva);
         this.renderDynamicHtml(objHtmlReplace);
         this.boolLoading = false;
@@ -99,12 +133,20 @@ export class ConviteComponent implements OnInit {
       error: (error) => {
         console.error('Erro ao carregar dados:', error);
         if (error.status === 404) {
-          this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Loja sem modelo de Convite, contate o suporte.'});
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro: ',
+            detail: 'Loja sem modelo de Convite, contate o suporte.',
+          });
         } else {
-          this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Falha ao realizar a operação, contate o suporte.'});
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro: ',
+            detail: 'Falha ao realizar a operação, contate o suporte.',
+          });
         }
         this.boolLoading = false;
-      }
+      },
     });
   }
 
@@ -116,8 +158,14 @@ export class ConviteComponent implements OnInit {
   }
 
   ConfirmarPresenca() {
-    const path = ['/confirmacao', this.cryptoService.criptografar(this.base64Service.convertNumberToBase64(this.objSessaoConvite?.SesCodi!))];
+    const path = [
+      '/confirmacao',
+      this.cryptoService.criptografar(
+        this.base64Service.convertNumberToBase64(
+          this.objSessaoConvite?.SesCodi!
+        )
+      ),
+    ];
     this.router.navigate(path);
   }
-
 }

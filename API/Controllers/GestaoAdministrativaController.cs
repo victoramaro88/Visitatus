@@ -55,7 +55,7 @@ namespace API_Visitatus.Controllers
                               join gc in _context.GestaoCargos on ga.GstAdmCodi equals gc.GstAdmCodi
                               join c in _context.Cargos on gc.CarCodi equals c.CarCodi
                               join u in _context.Usuarios on gc.UsuCodi equals u.UsuCodi
-                              where l.LojCodi == 1 &&
+                              where l.LojCodi == lojCodi &&
                                     ga.GstAdmStat == true &&
                                     ga.GstAdmDtIn <= DateTime.Today &&
                                     ga.GstAdmDtFi >= DateTime.Today
