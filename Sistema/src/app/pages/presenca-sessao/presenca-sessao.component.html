@@ -1,0 +1,65 @@
+<p-blockUI [blocked]="boolLoading">
+  <i class="pi pi-spin pi-spinner-dotted" style="font-size: 3rem"></i>
+</p-blockUI>
+<p-toast />
+
+<h2>Presença da Sessão</h2>
+
+<div class="container">
+  <p-table
+    #dt
+    [value]="lstPresencaGrid"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    styleClass="p-datatable-sm p-datatable-striped"
+    responsiveLayout="stack"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[5, 10, 20, 50, 100]"
+    [globalFilterFields]="['UsuNome', 'LojNumL']"
+    >
+    <ng-template pTemplate="caption">
+      <div class="flex">
+          <p-iconField iconPosition="left" class="ml-auto">
+              <p-inputIcon>
+                  <i class="pi pi-search"></i>
+              </p-inputIcon>
+              <input
+                  pInputText
+                  type="text"
+                  (input)="onGlobalFilter(dt, $event)"
+                  placeholder="Pesquisa" />
+          </p-iconField>
+      </div>
+    </ng-template>
+      <ng-template pTemplate="header">
+          <tr>
+              <th style="text-align: center;">Nome</th>
+              <th style="text-align: center;">Loja</th>
+              <th style="text-align: center;">Presença</th>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+          <tr>
+              <td>{{ item.UsuNome }}, CIM {{ item.UsuNCIM }}</td>
+              <td>{{item.LojNome}}, {{item.LojNumL}}</td>
+              <!-- <td style="text-align: center;">{{ item.PreAtiv }}</td> -->
+              <td style="text-align: center;">
+                <p-checkbox
+                  [(ngModel)]="item.PreAtiv"
+                  [binary]="true"
+                  inputId="binary"/>
+              </td>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+            <td colspan="9" style="text-align: center;"><b>SEM RESULTADOS.</b></td>
+        </tr>
+    </ng-template>
+    </p-table>
+
+    <div class="text-center mt-3">
+      <p-button (click)="SalvarRegistro();" label="Salvar" [raised]="true" severity="success" /> &nbsp;
+      <p-button (click)="CancelaRegitro();" label="Cancelar" [raised]="true" severity="danger" />
+    </div>
+</div>

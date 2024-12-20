@@ -14,6 +14,33 @@ namespace API_Visitatus.Controllers
             _context = context;
         }
 
+        [HttpGet("{SesCodi}")]
+        public async Task<ActionResult<IEnumerable<ListaPresencaModel>>> GetListaPresencaBySesCodi(long SesCodi = 0)
+        {
+            if (SesCodi == 0)
+            {
+                return BadRequest("Parâmetros Inválidos.");
+            }
+
+            List<ListaPresencaModel> listaRetorno = await (from pre in _context.Presencas
+                                                           join usu in _context.Usuarios on pre.UsuCodi equals usu.UsuCodi
+                                                           join loj in _context.Lojas on pre.LojCodi equals loj.LojCodi
+                                                           join ses in _context.Sessaos on pre.SesCodi equals ses.SesCodi
+                                                           where pre.SesCodi == SesCodi
+                                                           select new ListaPresencaModel
+                                                           {
+                                                               SesCodi = pre.SesCodi,
+                                                               UsuCodi = usu.UsuCodi,
+                                                               UsuNome = usu.UsuNome,
+                                                               UsuNCIM = usu.UsuNcim,
+                                                               LojNome = loj.LojNome,
+                                                               LojNumL = loj.LojNumL,
+                                                               PreAtiv = pre.PreAtiv
+                                                           }).ToListAsync();
+
+            return Ok(listaRetorno);
+        }
+
         [HttpPost]
         public async Task<ActionResult<string>> PostConfirmaPresenca([FromBody] ConsultaUsuarioLojaModel objPresenca)
         {

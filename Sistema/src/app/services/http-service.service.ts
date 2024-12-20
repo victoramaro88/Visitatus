@@ -16,6 +16,7 @@ import { PotenciaModel } from '../models/Potencia.Model';
 import { ConsultaUsuarioLojaModel } from '../models/ConsultaUsuarioLoja.Model';
 import { CryptoService } from './crypto.service';
 import { EncryptAPIModel } from '../models/EncryptAPI.Model';
+import { ListaPresencaModel } from '../models/ListaPresenca.Model';
 
 @Injectable({
   providedIn: 'root',
@@ -111,6 +112,14 @@ export class HttpService {
   ): Observable<ConsultaUsuarioLojaModel> {
     return this.http.get<ConsultaUsuarioLojaModel>(
       `${environment.apiServicos}/Usuario/GetUsuarioByLoja/${UsuNCIM}/${PotCodi}/${LojNumL}`
+    );
+  }
+
+  public GetListaPresencaBySesCodi(
+    SesCodi: number
+  ): Observable<ListaPresencaModel[]> {
+    return this.http.get<ListaPresencaModel[]>(
+      `${environment.apiServicos}/Presenca/GetListaPresencaBySesCodi/${SesCodi}`
     );
   }
 
