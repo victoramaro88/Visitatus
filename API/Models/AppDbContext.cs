@@ -40,12 +40,26 @@ namespace API_Visitatus.Models
         public virtual DbSet<Usuario> Usuarios { get; set; } = null!;
         public virtual DbSet<UsuarioLogin> UsuarioLogins { get; set; } = null!;
 
+        //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //        {
+        //            if (!optionsBuilder.IsConfigured)
+        //            {
+        //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        //                optionsBuilder.UseSqlServer("Data Source=visitatus.com.br, 11433;Initial Catalog=DB_Visitatus_DEV;User ID=V1s1tAtu5D3v;Password=&i329cQs7");
+        //            }
+        //        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=visitatus.com.br, 11433;Initial Catalog=DB_Visitatus_DEV;User ID=V1s1tAtu5D3v;Password=&i329cQs7");
+                var configuration = new ConfigurationBuilder()
+                    .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+                var connectionString = configuration.GetConnectionString("DefaultConnection");
+                optionsBuilder.UseSqlServer(connectionString);
             }
         }
 
@@ -457,6 +471,8 @@ namespace API_Visitatus.Models
                 entity.Property(e => e.LojCodi).HasColumnName("lojCodi");
 
                 entity.Property(e => e.PreAtiv).HasColumnName("preAtiv");
+
+                entity.Property(e => e.PreEmai).HasColumnName("preEmai");
 
                 entity.HasOne(d => d.LojCodiNavigation)
                     .WithMany(p => p.Presencas)

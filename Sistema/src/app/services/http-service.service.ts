@@ -183,6 +183,15 @@ export class HttpService {
     );
   }
 
+  public PostLancamentoPresencaSessao(
+    objPresenca: ListaPresencaModel[]
+  ): Observable<string> {
+    return this.http.post<string>(
+      `${environment.apiServicos}/Presenca/PostLancamentoPresencaSessao`,
+      objPresenca
+    );
+  }
+
   // #endregion
 
   // #region PUT

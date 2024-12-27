@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ImportsModule } from '../../imports';
 import { HttpService } from '../../services/http-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,7 +12,7 @@ import { Table } from 'primeng/table';
   imports: [ImportsModule],
   templateUrl: './presenca-sessao.component.html',
   styleUrl: './presenca-sessao.component.css',
-  providers: [MessageService],
+  providers: [ConfirmationService, MessageService],
 })
 export class PresencaSessaoComponent implements OnInit {
   boolLoading = true;
@@ -25,7 +25,8 @@ export class PresencaSessaoComponent implements OnInit {
     private http: HttpService,
     private route: ActivatedRoute,
     private router: Router,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit(): void {
@@ -68,11 +69,65 @@ export class PresencaSessaoComponent implements OnInit {
   }
 
   SalvarRegistro() {
+    this.boolLoading = true;
     console.warn(this.lstPresencaGrid);
+
+    //-> Filtrando apenas as pessoas que receberam a presença
+    let listaPresentes: ListaPresencaModel[] = this.lstPresencaGrid.filter(
+      (p) => p.PreAtiv === true
+    );
+
+    if (listaPresentes) {
+      this.http.PostLancamentoPresencaSessao(listaPresentes).subscribe({
+        next: (response) => {
+          console.warn('Retorno Serviço', response);
+          this.boolLoading = false;
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Sucesso!',
+            detail: 'Certificados enviados com sucesso!',
+          });
+        },
+        error: (error) => {
+          console.error('Erro ao carregar dados:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro: ',
+            detail: 'Falha ao realizar a operação, contate o suporte.',
+          });
+          this.boolLoading = false;
+        },
+      });
+    }
   }
 
   CancelaRegitro() {
     this.router.navigate(['/sessao']);
+  }
+
+  ConfirmaEnvio(event: Event) {
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message:
+        'Deseja realmente confirmar a seleção de presença e enviar e-mail dos certificados?',
+      header: 'Atenção',
+      icon: 'pi pi-exclamation-triangle',
+      acceptIcon: 'none',
+      rejectIcon: 'none',
+      rejectButtonStyleClass: 'p-button-text',
+      accept: () => {
+        this.SalvarRegistro();
+      },
+      reject: () => {
+        // this.messageService.add({
+        //   severity: 'error',
+        //   summary: 'Rejected',
+        //   detail: 'You have rejected',
+        //   life: 3000,
+        // });
+      },
+    });
   }
 
   onGlobalFilter(table: Table, event: Event) {

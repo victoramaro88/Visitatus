@@ -8,10 +8,12 @@ namespace API_Visitatus.Controllers
     public class PresencaController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly EmailService _emailService;
 
-        public PresencaController(AppDbContext context)
+        public PresencaController(AppDbContext context, EmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         [HttpGet("{SesCodi}")]
@@ -33,9 +35,11 @@ namespace API_Visitatus.Controllers
                                                                UsuCodi = usu.UsuCodi,
                                                                UsuNome = usu.UsuNome,
                                                                UsuNCIM = usu.UsuNcim,
+                                                               LojCodi = loj.LojCodi,
                                                                LojNome = loj.LojNome,
                                                                LojNumL = loj.LojNumL,
-                                                               PreAtiv = pre.PreAtiv
+                                                               PreAtiv = pre.PreAtiv,
+                                                               PreEmai = pre.PreEmai
                                                            }).ToListAsync();
 
             return Ok(listaRetorno);
@@ -157,7 +161,8 @@ namespace API_Visitatus.Controllers
                             UsuCodi = novoUsuarioId,
                             SesCodi = objPresenca.sesCodi,
                             LojCodi = objPresenca.objLojaConsulta.LojCodi > 0 ? objPresenca.objLojaConsulta.LojCodi : novoLojaId,
-                            PreAtiv = false
+                            PreAtiv = false,
+                            PreEmai = false
                         };
 
                         _context.Presencas.Add(presenca);
@@ -171,7 +176,8 @@ namespace API_Visitatus.Controllers
                         UsuCodi = objPresenca.objUsuarioLoja.UsuCodi,
                         SesCodi = objPresenca.sesCodi,
                         LojCodi = objPresenca.objLojaConsulta.LojCodi > 0 ? objPresenca.objLojaConsulta.LojCodi : novoLojaId,
-                        PreAtiv = false
+                        PreAtiv = false,
+                        PreEmai = false
                     };
 
                     _context.Presencas.Add(presenca);
@@ -186,6 +192,122 @@ namespace API_Visitatus.Controllers
             {
                 // Rollback em caso de erro
                 await transaction.RollbackAsync();
+                return BadRequest($"Erro ao confirmar presença: {ex.Message} \n {ex.InnerException?.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<string>> PostLancamentoPresencaSessao([FromBody] List<ListaPresencaModel> listaPresentes)
+        {
+            if (listaPresentes.Count == 0)
+            {
+                return BadRequest("Parâmetros inválidos.");
+            }
+
+            string destinatario = "";
+            string assunto = "";
+            string htmlCorpo = "";
+
+            //using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                //-> Retornando as informações da Loja para emitir o certificado
+                var LojaCertificado = await (from ses in _context.Sessaos
+                                             join tip in _context.TipoSessaos on ses.TiScodi equals tip.TiScodi
+                                             join loj in _context.Lojas on ses.LojCodi equals loj.LojCodi
+                                             join pot in _context.Potencia on loj.PotCodi equals pot.PotCodi
+                                             join cid in _context.Cidades on loj.CidCodi equals cid.CidCodi
+                                             join est in _context.Estados on cid.EstCodi equals est.EstCodi
+                                             where ses.SesCodi == listaPresentes[0].SesCodi
+                                             select new
+                                             {
+                                                 loj.LojCodi,
+                                                 loj.LojNome,
+                                                 loj.LojNumL,
+                                                 tip.TiSnome,
+                                                 pot.PotSigl,
+                                                 pot.PotNome,
+                                                 cid.CidNome,
+                                                 est.EstSigl,
+                                                 ses.SesDtHr,
+                                                 loj.LojLogo,
+                                                 pot.PotLogo
+                                             }).FirstOrDefaultAsync();
+
+                assunto = "Certificado de Presença - "
+                    + LojaCertificado!.LojNome
+                    + ", " + LojaCertificado!.LojNumL
+                    + " - " + LojaCertificado!.SesDtHr.ToShortDateString();
+
+                //-> Retornando o template do certificado.
+                var templateCertificado = await (from cer in _context.TemplateCertificadoLojas
+                                                 join pre in _context.TemplateCertificadoPresencas on cer.TmpCrtPreCodi equals pre.TmpCrtPreCodi
+                                                 join loj in _context.Lojas on cer.LojCodi equals loj.LojCodi
+                                                 join ses in _context.Sessaos on loj.LojCodi equals ses.LojCodi
+                                                 where ses.SesCodi == listaPresentes[0].SesCodi
+                                                 select new
+                                                 {
+                                                     pre.TmpCrtPreMode
+                                                 }).FirstOrDefaultAsync();
+
+                if (templateCertificado != null)
+                {
+                    htmlCorpo = templateCertificado.TmpCrtPreMode
+                        .Replace("[LojLogo]", LojaCertificado.LojLogo)
+                        .Replace("[PotLogo]", LojaCertificado.PotLogo)
+                        .Replace("[LojNome]", LojaCertificado.LojNome)
+                        .Replace("[PotSigl]", LojaCertificado.PotSigl)
+                        .Replace("[PotNome]", LojaCertificado.PotNome)
+                        .Replace("[TipoSessao]", LojaCertificado.TiSnome)
+                        .Replace("[CidadeLoja]", LojaCertificado.CidNome + ", " + LojaCertificado.EstSigl)
+                        .Replace("[DataSessao]", LojaCertificado.SesDtHr.ToShortDateString())
+                        ;
+                }
+
+                foreach (var itemPresente in listaPresentes)
+                {
+                    //-> Retornando o e-mail do usuário
+                    var emailUsuario = await _context.Usuarios
+                        .Where(u => u.UsuCodi == itemPresente.UsuCodi).FirstOrDefaultAsync();
+
+                    if (emailUsuario != null && emailUsuario.UsuEmai.Length > 0)
+                    {
+                        htmlCorpo = htmlCorpo
+                            .Replace("[NomeUsuario]", itemPresente.UsuNome)
+                            .Replace("[NomeLoja]", itemPresente.LojNome)
+                            .Replace("[NumeroLoja]", itemPresente.LojNumL)
+                            ;
+
+                        destinatario = emailUsuario.UsuEmai;
+                        await _emailService.EnviarEmailAsync(destinatario, assunto, htmlCorpo);
+
+                        //-> Após o envio do e-mail, faz update da tabela de presença para e-mail enviado.
+                        Presenca objPresencaUpdate = new Presenca();
+                        objPresencaUpdate.UsuCodi = itemPresente.UsuCodi;
+                        objPresencaUpdate.SesCodi = itemPresente.SesCodi;
+                        objPresencaUpdate.PreAtiv = true;
+                        objPresencaUpdate.LojCodi = itemPresente.LojCodi;
+                        objPresencaUpdate.PreEmai = true;
+                        _context.Entry(objPresencaUpdate).State = EntityState.Modified;
+                        try
+                        {
+                            await _context.SaveChangesAsync();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            return BadRequest("Falha ao alterar o registro");
+                        }
+                    }
+                }
+
+                // Commit da transação
+                //await transaction.CommitAsync();
+                return Ok("Presença confirmada com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                // Rollback em caso de erro
+                //await transaction.RollbackAsync();
                 return BadRequest($"Erro ao confirmar presença: {ex.Message} \n {ex.InnerException?.Message}");
             }
         }

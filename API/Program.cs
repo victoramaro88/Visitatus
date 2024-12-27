@@ -9,6 +9,7 @@ string encryptionKey = "s$23lksJ%nfIr09P"; // 16 caracteres para AES-128
 string encryptionIV = "d0*23hDt8$as7Rv1"; // 16 caracteres para o IV
 
 builder.Services.AddSingleton(new EncryptionService(encryptionKey, encryptionIV));
+builder.Services.AddSingleton<EmailService>();
 
 // Configuração do CORS
 builder.Services.AddCors(options =>

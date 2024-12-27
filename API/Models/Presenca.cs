@@ -9,6 +9,7 @@ namespace API_Visitatus.Models
         public long SesCodi { get; set; }
         public bool PreAtiv { get; set; }
         public long LojCodi { get; set; }
+        public bool PreEmai { get; set; }
 
         public virtual Loja LojCodiNavigation { get; set; } = null!;
         public virtual Sessao SesCodiNavigation { get; set; } = null!;

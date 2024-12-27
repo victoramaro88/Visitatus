@@ -3,9 +3,11 @@ export class ListaPresencaModel {
   UsuCodi: number;
   UsuNome: string;
   UsuNCIM: string;
+  LojCodi: number;
   LojNome: string;
   LojNumL: string;
   PreAtiv: boolean;
+  PreEmai: boolean;
 
   constructor() {
     this.SesCodi = 0;
@@ -13,7 +15,9 @@ export class ListaPresencaModel {
     this.UsuNome = '';
     this.UsuNCIM = '';
     this.LojNome = '';
+    this.LojCodi = 0;
     this.LojNumL = '';
     this.PreAtiv = false;
+    this.PreEmai = false;
   }
 }

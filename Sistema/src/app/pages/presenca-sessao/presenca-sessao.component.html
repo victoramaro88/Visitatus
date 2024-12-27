@@ -2,6 +2,35 @@
   <i class="pi pi-spin pi-spinner-dotted" style="font-size: 3rem"></i>
 </p-blockUI>
 <p-toast />
+<!-- <p-confirmDialog /> -->
+<p-confirmDialog #cd>
+  <ng-template pTemplate="headless" let-message>
+      <div class="flex flex-column align-items-center p-5 surface-overlay border-round">
+          <div class="border-circle bg-primary inline-flex justify-content-center align-items-center h-6rem w-6rem">
+              <i class="pi pi-question text-5xl"></i>
+          </div>
+          <span class="font-bold text-2xl block mb-2 mt-4">
+              {{ message.header }}
+          </span>
+          <p class="mb-0">{{ message.message }}</p>
+          <div class="flex align-items-center gap-2 mt-4">
+              <button
+                  pButton
+                  label="Sim"
+                  (click)="cd.accept()"
+                  class="w-8rem">
+              </button>
+              <button
+                  pButton
+                  label="Cancelar"
+                  (click)="cd.reject()"
+                  class="p-button-outlined w-8rem ">
+              </button>
+          </div>
+      </div>
+  </ng-template>
+</p-confirmDialog>
+<!-- <p-button (onClick)="confirm()" icon="pi pi-check" label="Confirm" /> -->
 
 <h2>Presença da Sessão</h2>
 
@@ -59,7 +88,7 @@
     </p-table>
 
     <div class="text-center mt-3">
-      <p-button (click)="SalvarRegistro();" label="Salvar" [raised]="true" severity="success" /> &nbsp;
+      <p-button (click)="ConfirmaEnvio($event);" label="Salvar" [raised]="true" severity="success" /> &nbsp;
       <p-button (click)="CancelaRegitro();" label="Cancelar" [raised]="true" severity="danger" />
     </div>
 </div>
