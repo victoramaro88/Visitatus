@@ -266,36 +266,60 @@ namespace API_Visitatus.Controllers
 
                 foreach (var itemPresente in listaPresentes)
                 {
-                    //-> Retornando o e-mail do usuário
-                    var emailUsuario = await _context.Usuarios
-                        .Where(u => u.UsuCodi == itemPresente.UsuCodi).FirstOrDefaultAsync();
-
-                    if (emailUsuario != null && emailUsuario.UsuEmai.Length > 0)
+                    if(itemPresente.PreAtiv && !itemPresente.PreEmai)
                     {
-                        htmlCorpo = htmlCorpo
-                            .Replace("[NomeUsuario]", itemPresente.UsuNome)
-                            .Replace("[NomeLoja]", itemPresente.LojNome)
-                            .Replace("[NumeroLoja]", itemPresente.LojNumL)
-                            ;
+                        //-> Retornando o e-mail do usuário
+                        var emailUsuario = await _context.Usuarios
+                            .Where(u => u.UsuCodi == itemPresente.UsuCodi).FirstOrDefaultAsync();
 
-                        destinatario = emailUsuario.UsuEmai;
-                        await _emailService.EnviarEmailAsync(destinatario, assunto, htmlCorpo);
-
-                        //-> Após o envio do e-mail, faz update da tabela de presença para e-mail enviado.
-                        Presenca objPresencaUpdate = new Presenca();
-                        objPresencaUpdate.UsuCodi = itemPresente.UsuCodi;
-                        objPresencaUpdate.SesCodi = itemPresente.SesCodi;
-                        objPresencaUpdate.PreAtiv = true;
-                        objPresencaUpdate.LojCodi = itemPresente.LojCodi;
-                        objPresencaUpdate.PreEmai = true;
-                        _context.Entry(objPresencaUpdate).State = EntityState.Modified;
-                        try
+                        if (emailUsuario != null && emailUsuario.UsuEmai.Length > 0)
                         {
-                            await _context.SaveChangesAsync();
+                            htmlCorpo = htmlCorpo
+                                .Replace("[NomeUsuario]", itemPresente.UsuNome)
+                                .Replace("[NomeLoja]", itemPresente.LojNome)
+                                .Replace("[NumeroLoja]", itemPresente.LojNumL)
+                                ;
+
+                            destinatario = emailUsuario.UsuEmai;
+                            await _emailService.EnviarEmailAsync(destinatario, assunto, htmlCorpo);
+
+                            //-> Após o envio do e-mail, faz update da tabela de presença para e-mail enviado.
+                            Presenca objPresencaUpdate = new Presenca();
+                            objPresencaUpdate.UsuCodi = itemPresente.UsuCodi;
+                            objPresencaUpdate.SesCodi = itemPresente.SesCodi;
+                            objPresencaUpdate.PreAtiv = true;
+                            objPresencaUpdate.LojCodi = itemPresente.LojCodi;
+                            objPresencaUpdate.PreEmai = true;
+                            _context.Entry(objPresencaUpdate).State = EntityState.Modified;
+                            try
+                            {
+                                await _context.SaveChangesAsync();
+                            }
+                            catch (DbUpdateConcurrencyException)
+                            {
+                                return BadRequest("Falha ao alterar o registro");
+                            }
                         }
-                        catch (DbUpdateConcurrencyException)
+                    }
+                    else
+                    {
+                        if(!itemPresente.PreAtiv)
                         {
-                            return BadRequest("Falha ao alterar o registro");
+                            Presenca objPresencaUpdate = new Presenca();
+                            objPresencaUpdate.UsuCodi = itemPresente.UsuCodi;
+                            objPresencaUpdate.SesCodi = itemPresente.SesCodi;
+                            objPresencaUpdate.PreAtiv = itemPresente.PreAtiv;
+                            objPresencaUpdate.LojCodi = itemPresente.LojCodi;
+                            objPresencaUpdate.PreEmai = false;
+                            _context.Entry(objPresencaUpdate).State = EntityState.Modified;
+                            try
+                            {
+                                await _context.SaveChangesAsync();
+                            }
+                            catch (DbUpdateConcurrencyException)
+                            {
+                                return BadRequest("Falha ao alterar o registro");
+                            }
                         }
                     }
                 }

@@ -45,6 +45,8 @@ export class PresencaSessaoComponent implements OnInit {
     this.boolLoading = true;
     this.http.GetListaPresencaBySesCodi(SesCodi).subscribe({
       next: (response) => {
+        this.lstPresenca = [];
+        this.lstPresencaGrid = [];
         this.lstPresenca = response;
         response.forEach((itemPresenca) => {
           let exiteUsuario = this.lstPresencaGrid.findIndex(
@@ -73,12 +75,12 @@ export class PresencaSessaoComponent implements OnInit {
     console.warn(this.lstPresencaGrid);
 
     //-> Filtrando apenas as pessoas que receberam a presença
-    let listaPresentes: ListaPresencaModel[] = this.lstPresencaGrid.filter(
-      (p) => p.PreAtiv === true
-    );
+    // let listaPresentes: ListaPresencaModel[] = this.lstPresencaGrid.filter(
+    //   (p) => p.PreAtiv === true
+    // );
 
-    if (listaPresentes) {
-      this.http.PostLancamentoPresencaSessao(listaPresentes).subscribe({
+    if (this.lstPresencaGrid) {
+      this.http.PostLancamentoPresencaSessao(this.lstPresencaGrid).subscribe({
         next: (response) => {
           console.warn('Retorno Serviço', response);
           this.boolLoading = false;
@@ -88,6 +90,8 @@ export class PresencaSessaoComponent implements OnInit {
             summary: 'Sucesso!',
             detail: 'Certificados enviados com sucesso!',
           });
+
+          this.GetListaPresencaBySesCodi(this.parâmetroURL);
         },
         error: (error) => {
           console.error('Erro ao carregar dados:', error);

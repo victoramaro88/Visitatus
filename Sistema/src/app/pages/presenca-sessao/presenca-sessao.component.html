@@ -2,7 +2,8 @@
   <i class="pi pi-spin pi-spinner-dotted" style="font-size: 3rem"></i>
 </p-blockUI>
 <p-toast />
-<!-- <p-confirmDialog /> -->
+
+<!-- DIALOG DE CONFIRMAÇÃO PARA SALVAMENTO -->
 <p-confirmDialog #cd>
   <ng-template pTemplate="headless" let-message>
       <div class="flex flex-column align-items-center p-5 surface-overlay border-round">
@@ -30,7 +31,6 @@
       </div>
   </ng-template>
 </p-confirmDialog>
-<!-- <p-button (onClick)="confirm()" icon="pi pi-check" label="Confirm" /> -->
 
 <h2>Presença da Sessão</h2>
 
@@ -65,6 +65,7 @@
               <th style="text-align: center;">Nome</th>
               <th style="text-align: center;">Loja</th>
               <th style="text-align: center;">Presença</th>
+              <th style="text-align: center;">E-mail Enviado?</th>
           </tr>
       </ng-template>
       <ng-template pTemplate="body" let-item>
@@ -78,6 +79,7 @@
                   [binary]="true"
                   inputId="binary"/>
               </td>
+              <td style="text-align: center;">{{item.PreEmai ? 'Sim' : 'Não'}}</td>
           </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
