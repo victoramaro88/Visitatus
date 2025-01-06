@@ -24,11 +24,19 @@ namespace API_Visitatus.Controllers
                 return BadRequest("Parâmetros Inválidos.");
             }
 
+            //-> Pegando o código da Loja, pelo código da Sessão
+            var lojCodi = await _context.Sessaos
+                            .Where(s => s.SesCodi == SesCodi)
+                            .Select(s => s.LojCodi)
+                            .FirstOrDefaultAsync();
+
             List<ListaPresencaModel> listaRetorno = await (from pre in _context.Presencas
                                                            join usu in _context.Usuarios on pre.UsuCodi equals usu.UsuCodi
                                                            join loj in _context.Lojas on pre.LojCodi equals loj.LojCodi
                                                            join ses in _context.Sessaos on pre.SesCodi equals ses.SesCodi
+                                                           join per in _context.PerfilUsuarios on usu.UsuCodi equals per.UsuCodi
                                                            where pre.SesCodi == SesCodi
+                                                                && per.PerCodi == 4 //-> Percodi = 4: Membro
                                                            select new ListaPresencaModel
                                                            {
                                                                SesCodi = pre.SesCodi,
@@ -39,8 +47,17 @@ namespace API_Visitatus.Controllers
                                                                LojNome = loj.LojNome,
                                                                LojNumL = loj.LojNumL,
                                                                PreAtiv = pre.PreAtiv,
-                                                               PreEmai = pre.PreEmai
-                                                           }).ToListAsync();
+                                                               PreEmai = pre.PreEmai,
+                                                               MembroLoja = _context.Presencas.Any(preSub =>
+                                                                   preSub.UsuCodi == pre.UsuCodi &&
+                                                                   preSub.LojCodi == lojCodi &&
+                                                                   _context.PerfilUsuarios.Any(perSub =>
+                                                                       perSub.UsuCodi == preSub.UsuCodi &&
+                                                                       perSub.PerCodi == 4)) //-> Percodi = 4: Membro
+                                                           })
+                                                            .OrderBy(r => r.MembroLoja)
+                                                            .ThenBy(r => r.UsuNome)
+                                                            .ToListAsync();
 
             return Ok(listaRetorno);
         }
@@ -239,6 +256,31 @@ namespace API_Visitatus.Controllers
                     + ", " + LojaCertificado!.LojNumL
                     + " - " + LojaCertificado!.SesDtHr.ToShortDateString();
 
+                //-> Retornando a Gestão Administrativa atual (cargos)
+                List<GestaoAdmAtivaModel> gestaoAdmAtual = await (from l in _context.Lojas
+                                                          join ga in _context.GestaoAdministrativas on l.LojCodi equals ga.LojCodi
+                                                          join gc in _context.GestaoCargos on ga.GstAdmCodi equals gc.GstAdmCodi
+                                                          join c in _context.Cargos on gc.CarCodi equals c.CarCodi
+                                                          join u in _context.Usuarios on gc.UsuCodi equals u.UsuCodi
+                                                          where l.LojCodi == LojaCertificado.LojCodi &&
+                                                                ga.GstAdmStat == true &&
+                                                                ga.GstAdmDtIn <= DateTime.Today &&
+                                                                ga.GstAdmDtFi >= DateTime.Today
+                                                          orderby ga.GstAdmDtFi descending
+                                                          select new GestaoAdmAtivaModel
+                                                          {
+                                                              LojCodi = l.LojCodi,
+                                                              LojNome = l.LojNome,
+                                                              LojNumL = l.LojNumL,
+                                                              GstAdmNome = ga.GstAdmNome,
+                                                              GstAdmDtIn = ga.GstAdmDtIn,
+                                                              GstAdmDtFi = ga.GstAdmDtFi,
+                                                              GstAdmStat = ga.GstAdmStat,
+                                                              CarNome = c.CarNome,
+                                                              UsuNome = u.UsuNome,
+                                                              CarCodi = c.CarCodi
+                                                          }).ToListAsync();
+
                 //-> Retornando o template do certificado.
                 var templateCertificado = await (from cer in _context.TemplateCertificadoLojas
                                                  join pre in _context.TemplateCertificadoPresencas on cer.TmpCrtPreCodi equals pre.TmpCrtPreCodi
@@ -261,65 +303,86 @@ namespace API_Visitatus.Controllers
                         .Replace("[TipoSessao]", LojaCertificado.TiSnome)
                         .Replace("[CidadeLoja]", LojaCertificado.CidNome + ", " + LojaCertificado.EstSigl)
                         .Replace("[DataSessao]", LojaCertificado.SesDtHr.ToShortDateString())
+                        .Replace("[NomeVM]", gestaoAdmAtual.Where(g => g.CarCodi == 1).FirstOrDefault()!.UsuNome)
+                        .Replace("[CargoVM]", gestaoAdmAtual.Where(g => g.CarCodi == 1).FirstOrDefault()!.CarNome)
+                        .Replace("[NomeSecretario]", gestaoAdmAtual.Where(g => g.CarCodi == 4).FirstOrDefault()!.UsuNome)
+                        .Replace("[CargoSecretario]", gestaoAdmAtual.Where(g => g.CarCodi == 4).FirstOrDefault()!.CarNome)
                         ;
                 }
 
                 foreach (var itemPresente in listaPresentes)
                 {
-                    if(itemPresente.PreAtiv && !itemPresente.PreEmai)
+                    if (itemPresente.PreAtiv && !itemPresente.PreEmai)
                     {
-                        //-> Retornando o e-mail do usuário
-                        var emailUsuario = await _context.Usuarios
-                            .Where(u => u.UsuCodi == itemPresente.UsuCodi).FirstOrDefaultAsync();
-
-                        if (emailUsuario != null && emailUsuario.UsuEmai.Length > 0)
+                        if (!itemPresente.MembroLoja) //-> Se não for membro da Loja, envia e-mail, senão apenas salva a presença.
                         {
-                            htmlCorpo = htmlCorpo
-                                .Replace("[NomeUsuario]", itemPresente.UsuNome)
-                                .Replace("[NomeLoja]", itemPresente.LojNome)
-                                .Replace("[NumeroLoja]", itemPresente.LojNumL)
-                                ;
+                            //-> Retornando o e-mail do usuário
+                            var emailUsuario = await _context.Usuarios
+                                .Where(u => u.UsuCodi == itemPresente.UsuCodi).FirstOrDefaultAsync();
 
-                            destinatario = emailUsuario.UsuEmai;
-                            await _emailService.EnviarEmailAsync(destinatario, assunto, htmlCorpo);
+                            if (emailUsuario != null && emailUsuario.UsuEmai.Length > 0)
+                            {
+                                string htmlCorpoTmp = htmlCorpo
+                                     .Replace("[NomeUsuario]", itemPresente.UsuNome)
+                                     .Replace("[NomeLoja]", itemPresente.LojNome)
+                                     .Replace("[NumeroLoja]", itemPresente.LojNumL)
+                                     ;
 
-                            //-> Após o envio do e-mail, faz update da tabela de presença para e-mail enviado.
-                            Presenca objPresencaUpdate = new Presenca();
-                            objPresencaUpdate.UsuCodi = itemPresente.UsuCodi;
-                            objPresencaUpdate.SesCodi = itemPresente.SesCodi;
-                            objPresencaUpdate.PreAtiv = true;
-                            objPresencaUpdate.LojCodi = itemPresente.LojCodi;
-                            objPresencaUpdate.PreEmai = true;
-                            _context.Entry(objPresencaUpdate).State = EntityState.Modified;
-                            try
-                            {
-                                await _context.SaveChangesAsync();
-                            }
-                            catch (DbUpdateConcurrencyException)
-                            {
-                                return BadRequest("Falha ao alterar o registro");
+                                destinatario = emailUsuario.UsuEmai;
+                                await _emailService.EnviarEmailAsync(destinatario, assunto, htmlCorpoTmp);
                             }
                         }
-                    }
-                    else
-                    {
-                        if(!itemPresente.PreAtiv)
+
+                        Presenca objPresencaUpdate = new Presenca();
+                        objPresencaUpdate.UsuCodi = itemPresente.UsuCodi;
+                        objPresencaUpdate.SesCodi = itemPresente.SesCodi;
+                        objPresencaUpdate.PreAtiv = true;
+                        objPresencaUpdate.LojCodi = itemPresente.LojCodi;
+                        objPresencaUpdate.PreEmai = itemPresente.MembroLoja ? false : true;
+                        _context.Entry(objPresencaUpdate).State = EntityState.Modified;
+                        try
                         {
-                            Presenca objPresencaUpdate = new Presenca();
-                            objPresencaUpdate.UsuCodi = itemPresente.UsuCodi;
-                            objPresencaUpdate.SesCodi = itemPresente.SesCodi;
-                            objPresencaUpdate.PreAtiv = itemPresente.PreAtiv;
-                            objPresencaUpdate.LojCodi = itemPresente.LojCodi;
-                            objPresencaUpdate.PreEmai = false;
-                            _context.Entry(objPresencaUpdate).State = EntityState.Modified;
-                            try
-                            {
-                                await _context.SaveChangesAsync();
-                            }
-                            catch (DbUpdateConcurrencyException)
-                            {
-                                return BadRequest("Falha ao alterar o registro");
-                            }
+                            await _context.SaveChangesAsync();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            return BadRequest("Falha ao alterar o registro");
+                        }
+                    }
+                    else if(!itemPresente.PreAtiv && itemPresente.MembroLoja)
+                    {
+                        Presenca objPresencaUpdate = new Presenca();
+                        objPresencaUpdate.UsuCodi = itemPresente.UsuCodi;
+                        objPresencaUpdate.SesCodi = itemPresente.SesCodi;
+                        objPresencaUpdate.PreAtiv = false;
+                        objPresencaUpdate.LojCodi = itemPresente.LojCodi;
+                        objPresencaUpdate.PreEmai = itemPresente.MembroLoja ? false : true;
+                        _context.Entry(objPresencaUpdate).State = EntityState.Modified;
+                        try
+                        {
+                            await _context.SaveChangesAsync();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            return BadRequest("Falha ao alterar o registro");
+                        }
+                    }
+                    else if (!itemPresente.PreAtiv && itemPresente.PreEmai)
+                    {
+                        Presenca objPresencaUpdate = new Presenca();
+                        objPresencaUpdate.UsuCodi = itemPresente.UsuCodi;
+                        objPresencaUpdate.SesCodi = itemPresente.SesCodi;
+                        objPresencaUpdate.PreAtiv = itemPresente.PreAtiv;
+                        objPresencaUpdate.LojCodi = itemPresente.LojCodi;
+                        objPresencaUpdate.PreEmai = false;
+                        _context.Entry(objPresencaUpdate).State = EntityState.Modified;
+                        try
+                        {
+                            await _context.SaveChangesAsync();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            return BadRequest("Falha ao alterar o registro");
                         }
                     }
                 }

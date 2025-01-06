@@ -79,7 +79,7 @@
                   [binary]="true"
                   inputId="binary"/>
               </td>
-              <td style="text-align: center;">{{item.PreEmai ? 'Sim' : 'Não'}}</td>
+              <td style="text-align: center;">{{item.MembroLoja ? 'Membro' : item.PreEmai ? 'Sim' : 'Não'}}</td>
           </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">

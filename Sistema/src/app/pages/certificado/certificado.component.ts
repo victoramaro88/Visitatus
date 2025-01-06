@@ -37,7 +37,7 @@ export class CertificadoComponent implements OnInit {
   ngOnInit(): void {
     try {
       this.parâmetroURL = this.route.snapshot.paramMap.get('data')!;
-      console.warn('Parâmetro recebido:', this.parâmetroURL);
+      // console.warn('Parâmetro recebido:', this.parâmetroURL);
 
       // this.GetSessaoBySesCodi(this.idSessaoCrypto);
     } catch (error) {
@@ -53,7 +53,7 @@ export class CertificadoComponent implements OnInit {
     this.boolLoading = true;
     this.http.encryptAPI(textoEncriptar).subscribe({
       next: (response) => {
-        console.warn('Retorno encriptado:', response);
+        // console.warn('Retorno encriptado:', response);
         let objDecrypt: EncryptAPIModel = { valorMensagem: response };
         this.Decriptar(objDecrypt);
       },
@@ -73,7 +73,7 @@ export class CertificadoComponent implements OnInit {
     this.boolLoading = true;
     this.http.decryptAPI(textoDecriptar).subscribe({
       next: (response) => {
-        console.warn('Retorno Decriptado:', response);
+        // console.warn('Retorno Decriptado:', response);
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);

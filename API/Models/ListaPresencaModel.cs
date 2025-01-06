@@ -11,5 +11,6 @@
         public string? LojNumL { get; set; }
         public bool PreAtiv { get; set; }
         public bool PreEmai { get; set; }
+        public bool MembroLoja { get; set; }
     }
 }

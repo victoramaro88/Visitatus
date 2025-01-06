@@ -61,7 +61,7 @@ export class ConviteComponent implements OnInit {
     this.http.GetSessaoBySesCodi(sesCodi).subscribe({
       next: (response) => {
         this.objSessaoConvite = response;
-        console.warn('Sessão Retorno:', this.objSessaoConvite);
+        // console.warn('Sessão Retorno:', this.objSessaoConvite);
         this.GetTemplateLoja(response.LojCodi);
       },
       error: (error) => {
@@ -126,7 +126,7 @@ export class ConviteComponent implements OnInit {
                 )?.CarNome!
               : ''
           );
-        console.warn(this.objSessaoConvite?.lstGestaoAdmAtiva);
+        // console.warn(this.objSessaoConvite?.lstGestaoAdmAtiva);
         this.renderDynamicHtml(objHtmlReplace);
         this.boolLoading = false;
       },

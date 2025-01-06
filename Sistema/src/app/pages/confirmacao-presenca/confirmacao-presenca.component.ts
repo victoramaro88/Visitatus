@@ -27,14 +27,26 @@ interface Mensagem {
   imports: [ImportsModule],
   templateUrl: './confirmacao-presenca.component.html',
   styleUrl: './confirmacao-presenca.component.css',
-  providers: [MessageService]
+  providers: [MessageService],
 })
 export class ConfirmacaoPresencaComponent implements OnInit {
-
   boolLoading = false;
   parametroRota!: string | null;
   idSessaoCrypto: number = 0;
-  objSessao: SessaoListaModel = new SessaoListaModel(0, '', new Date(), false, true, 0, 0, '', 0, '', 0, '');
+  objSessao: SessaoListaModel = new SessaoListaModel(
+    0,
+    '',
+    new Date(),
+    false,
+    true,
+    0,
+    0,
+    '',
+    0,
+    '',
+    0,
+    ''
+  );
   objUsuarioLogado: UsuarioLogadoModel = new UsuarioLogadoModel();
   objUsuario: UsuarioModel = new UsuarioModel();
 
@@ -45,7 +57,12 @@ export class ConfirmacaoPresencaComponent implements OnInit {
   boolBlockIntputsLoja: boolean = true;
   boolBlockIntputsUsuario: boolean = true;
   boolDialogMensagem: boolean = false;
-  mensagem: Mensagem = {titulo: '', corpoMensagem: '', icone: '', corIcone: ''};
+  mensagem: Mensagem = {
+    titulo: '',
+    corpoMensagem: '',
+    icone: '',
+    corIcone: '',
+  };
 
   constructor(
     private http: HttpService,
@@ -57,7 +74,9 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     private cryptoService: CryptoService,
     private cd: ChangeDetectorRef
   ) {
-    this.objUsuarioLogado = JSON.parse(this.cryptoService.lerDoSessionStorage("usr"));
+    this.objUsuarioLogado = JSON.parse(
+      this.cryptoService.lerDoSessionStorage('usr')
+    );
     // console.warn("Usuário Logado: ", this.objUsuarioLogado);
   }
 
@@ -65,7 +84,8 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     try {
       this.parametroRota = this.route.snapshot.paramMap.get('data');
       let baseDecripto = this.cryptoService.decriptografar(this.parametroRota!);
-      this.idSessaoCrypto = this.base64Service.decodeBase64ToNumber(baseDecripto);
+      this.idSessaoCrypto =
+        this.base64Service.decodeBase64ToNumber(baseDecripto);
 
       this.GetSessaoBySesCodi(this.idSessaoCrypto);
     } catch (error) {
@@ -79,14 +99,18 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     this.http.GetSessaoBySesCodi(sesCodi).subscribe({
       next: (response) => {
         this.objSessaoConvite = response;
-        console.warn('Sessão:', this.objSessaoConvite);
+        // console.warn('Sessão:', this.objSessaoConvite);
         this.GetPotenciaRegularByLojCodi(this.objSessaoConvite.LojCodi);
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);
-        this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Falha ao realizar a operação, contate o suporte.'});
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro: ',
+          detail: 'Falha ao realizar a operação, contate o suporte.',
+        });
         this.boolLoading = false;
-      }
+      },
     });
   }
 
@@ -94,7 +118,7 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     this.http.GetPotenciaRegularByLojCodi(lojCodi).subscribe({
       next: (response) => {
         this.lstPotencia = [];
-        response.forEach(itemPotencia => {
+        response.forEach((itemPotencia) => {
           if (itemPotencia.PotStat === true) {
             let objPot: PotenciaModel = {
               PotCodi: itemPotencia.PotCodi,
@@ -102,7 +126,7 @@ export class ConfirmacaoPresencaComponent implements OnInit {
               PotLogo: itemPotencia.PotLogo,
               PotRegu: itemPotencia.PotRegu,
               PotStat: itemPotencia.PotStat,
-              PotSigl: itemPotencia.PotSigl + ' - ' + itemPotencia.PotNome
+              PotSigl: itemPotencia.PotSigl + ' - ' + itemPotencia.PotNome,
             };
             this.lstPotencia.push(objPot);
           }
@@ -112,9 +136,13 @@ export class ConfirmacaoPresencaComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);
-        this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Falha ao realizar a operação, contate o suporte.'});
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro: ',
+          detail: 'Falha ao realizar a operação, contate o suporte.',
+        });
         this.boolLoading = false;
-      }
+      },
     });
   }
 
@@ -127,34 +155,46 @@ export class ConfirmacaoPresencaComponent implements OnInit {
       this.objConsultaUsrLj.objLojaConsulta.PotCodi = PotCodi;
       this.objConsultaUsrLj.objLojaConsulta.LojNumL = LojNumL;
       this.objConsultaUsrLj.objUsuarioLoja.UsuNCIM = UsuNCIM;
-      this.http.GetUsuarioByLoja(UsuNCIM, PotCodi, LojNumL.toString()).subscribe({
-        next: (response) => {
-          if (response.objUsuarioLoja) {
-            this.objConsultaUsrLj.objUsuarioLoja = response.objUsuarioLoja;
-            this.objConsultaUsrLj.objUsuarioLoja.UsuNasc = new Date(response.objUsuarioLoja.UsuNasc.toString());
-          } else {
-            this.boolBlockIntputsUsuario = false;
-          }
-          if (response.objLojaConsulta) {
-            this.objConsultaUsrLj.objLojaConsulta = response.objLojaConsulta;
-          } else {
-            this.boolBlockIntputsLoja = false;
-          }
+      this.http
+        .GetUsuarioByLoja(UsuNCIM, PotCodi, LojNumL.toString())
+        .subscribe({
+          next: (response) => {
+            if (response.objUsuarioLoja) {
+              this.objConsultaUsrLj.objUsuarioLoja = response.objUsuarioLoja;
+              this.objConsultaUsrLj.objUsuarioLoja.UsuNasc = new Date(
+                response.objUsuarioLoja.UsuNasc.toString()
+              );
+            } else {
+              this.boolBlockIntputsUsuario = false;
+            }
+            if (response.objLojaConsulta) {
+              this.objConsultaUsrLj.objLojaConsulta = response.objLojaConsulta;
+            } else {
+              this.boolBlockIntputsLoja = false;
+            }
 
-          this.boolLoading = false;
-        },
-        error: (error) => {
-          console.error('Erro ao carregar dados:', error);
-          this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Falha ao realizar a operação, contate o suporte.'});
-          this.boolLoading = false;
-        }
-      });
+            this.boolLoading = false;
+          },
+          error: (error) => {
+            console.error('Erro ao carregar dados:', error);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Erro: ',
+              detail: 'Falha ao realizar a operação, contate o suporte.',
+            });
+            this.boolLoading = false;
+          },
+        });
     }
   }
 
   ConfirmarPresenca() {
-    this.objConsultaUsrLj.objUsuarioLoja.UsuNCel = this.utils.RemoveMascaraTelefone(this.objConsultaUsrLj.objUsuarioLoja.UsuNCel);
-    this.objConsultaUsrLj.objLojaConsulta.PotCodi = this.objPotenciaIrmao.PotCodi;
+    this.objConsultaUsrLj.objUsuarioLoja.UsuNCel =
+      this.utils.RemoveMascaraTelefone(
+        this.objConsultaUsrLj.objUsuarioLoja.UsuNCel
+      );
+    this.objConsultaUsrLj.objLojaConsulta.PotCodi =
+      this.objPotenciaIrmao.PotCodi;
     this.objConsultaUsrLj.sesCodi = this.idSessaoCrypto;
 
     if (this.ValidaInformacoes()) {
@@ -172,55 +212,98 @@ export class ConfirmacaoPresencaComponent implements OnInit {
             this.boolDialogMensagem = true;
           } else if (response === 'Presença já confirmada.') {
             this.mensagem.titulo = 'Presença já Confirmada!';
-            this.mensagem.corpoMensagem = 'Sua presença já foi confirmada para esta sessão.';
+            this.mensagem.corpoMensagem =
+              'Sua presença já foi confirmada para esta sessão.';
             this.mensagem.icone = 'pi-exclamation-triangle';
             this.mensagem.corIcone = 'yellow';
             this.boolDialogMensagem = true;
-          }else {
+          } else {
             console.error('Erro ao confirmar a presença:', response);
-            this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Falha ao realizar a operação, contate o suporte.'});
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Erro: ',
+              detail: 'Falha ao realizar a operação, contate o suporte.',
+            });
           }
         },
         error: (error) => {
           console.error('Erro ao carregar dados:', error);
-          this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Falha ao realizar a operação, contate o suporte.'});
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro: ',
+            detail: 'Falha ao realizar a operação, contate o suporte.',
+          });
           this.boolLoading = false;
-        }
+        },
       });
     }
   }
 
   ValidaInformacoes() {
     if (this.objConsultaUsrLj.objLojaConsulta.PotCodi === 0) {
-      this.messageService.add({ severity: 'warn', summary: 'Atenção: ', detail: 'Selecione uma potência.' });
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção: ',
+        detail: 'Selecione uma potência.',
+      });
       return false;
     }
     if (this.objConsultaUsrLj.objLojaConsulta.LojNumL.length === 0) {
-      this.messageService.add({ severity: 'warn', summary: 'Atenção: ', detail: 'Insira o número da Loja.' });
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção: ',
+        detail: 'Insira o número da Loja.',
+      });
       return false;
     }
     if (this.objConsultaUsrLj.objUsuarioLoja.UsuNCIM.length === 0) {
-      this.messageService.add({ severity: 'warn', summary: 'Atenção: ', detail: 'Insira o seu CIM.' });
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção: ',
+        detail: 'Insira o seu CIM.',
+      });
       return false;
     }
     if (this.objConsultaUsrLj.objUsuarioLoja.UsuNome.length === 0) {
-      this.messageService.add({ severity: 'warn', summary: 'Atenção: ', detail: 'Insira o seu nome.' });
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção: ',
+        detail: 'Insira o seu nome.',
+      });
       return false;
     }
     if (this.objConsultaUsrLj.objLojaConsulta.LojNome.length === 0) {
-      this.messageService.add({ severity: 'warn', summary: 'Atenção: ', detail: 'Insira o nome de sua Loja.' });
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção: ',
+        detail: 'Insira o nome de sua Loja.',
+      });
       return false;
     }
     if (this.objConsultaUsrLj.objUsuarioLoja.UsuNCel.length === 0) {
-      this.messageService.add({ severity: 'warn', summary: 'Atenção: ', detail: 'Insira o seu número do celular.' });
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção: ',
+        detail: 'Insira o seu número do celular.',
+      });
       return false;
     }
     if (this.objConsultaUsrLj.objUsuarioLoja.UsuEmai.length === 0) {
-      this.messageService.add({ severity: 'warn', summary: 'Atenção: ', detail: 'Insira o seu e-mail.' });
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção: ',
+        detail: 'Insira o seu e-mail.',
+      });
       return false;
     }
-    if (!this.utils.ValidarEmail(this.objConsultaUsrLj.objUsuarioLoja.UsuEmai)) {
-      this.messageService.add({ severity: 'warn', summary: 'Atenção: ', detail: 'E-mail inválido, verifique.' });
+    if (
+      !this.utils.ValidarEmail(this.objConsultaUsrLj.objUsuarioLoja.UsuEmai)
+    ) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção: ',
+        detail: 'E-mail inválido, verifique.',
+      });
       return false;
     }
 

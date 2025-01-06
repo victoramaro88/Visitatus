@@ -70,7 +70,8 @@ namespace API_Visitatus.Controllers
                                   GstAdmDtFi = ga.GstAdmDtFi,
                                   GstAdmStat = ga.GstAdmStat,
                                   CarNome = c.CarNome,
-                                  UsuNome = u.UsuNome
+                                  UsuNome = u.UsuNome,
+                                  CarCodi = c.CarCodi
                               }).ToListAsync();
 
 

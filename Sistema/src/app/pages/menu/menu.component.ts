@@ -13,10 +13,9 @@ import { Base64Service } from '../../services/base64.service';
   imports: [ImportsModule],
   templateUrl: './menu.component.html',
   styleUrl: './menu.component.css',
-  providers: [MessageService]
+  providers: [MessageService],
 })
 export class MenuComponent implements OnInit {
-
   items: MenuItem[] | undefined;
   objPerfilUsuario: PerfilUsuarioListaModel = new PerfilUsuarioListaModel();
   objUsuarioLogado: UsuarioLogadoModel = new UsuarioLogadoModel();
@@ -27,91 +26,100 @@ export class MenuComponent implements OnInit {
     private router: Router,
     private base64Service: Base64Service
   ) {
-    this.objUsuarioLogado = JSON.parse(this.cryptoService.lerDoSessionStorage("usr"));
+    this.objUsuarioLogado = JSON.parse(
+      this.cryptoService.lerDoSessionStorage('usr')
+    );
     // console.warn("Usuário Logado: ", this.objPerfilUsuario);
-    this.objPerfilUsuario = JSON.parse(this.cryptoService.lerDoSessionStorage("prf"));
+    this.objPerfilUsuario = JSON.parse(
+      this.cryptoService.lerDoSessionStorage('prf')
+    );
     // console.warn("Perfil (Menu): ", this.objPerfilUsuario);
   }
 
   ngOnInit() {
-    this.objPerfilUsuario = JSON.parse(this.cryptoService.lerDoSessionStorage("prf"));
+    this.objPerfilUsuario = JSON.parse(
+      this.cryptoService.lerDoSessionStorage('prf')
+    );
     this.items = [
-        {
-          label: 'Home',
-          icon: 'pi pi-home',
-          command: () => {
-            this.router.navigate(['/home']);
-          }
+      {
+        label: 'Home',
+        icon: 'pi pi-home',
+        command: () => {
+          this.router.navigate(['/home']);
         },
-        {
-            label: 'Cadastros',
-            icon: 'pi pi-book',
-            items: [
-                {
-                    label: 'Loja',
-                    icon: 'pi pi-warehouse'
-                },
-                {
-                    label: 'Usuario',
-                    icon: 'pi pi-users'
-                },
-                {
-                    label: 'Sessão',
-                    icon: 'pi pi-pencil',
-                    command: () => {
-                      this.router.navigate(['/sessao']);
-                    }
-                },
-                {
-                    separator: true
-                },
-                {
-                    label: 'Templates',
-                    icon: 'pi pi-palette',
-                    items: [
-                        {
-                            label: 'Apollo',
-                            icon: 'pi pi-palette',
-                            badge: '2'
-                        },
-                        {
-                            label: 'Ultima',
-                            icon: 'pi pi-palette',
-                            badge: '3'
-                        }
-                    ]
-                }
-            ]
-        },
-        // {
-        //     label: 'Features',
-        //     icon: 'pi pi-star'
-        // },
-        {
-          label: 'Contato',
-          icon: 'pi pi-envelope',
-          command: () => {
-            this.router.navigate(['/contato']);
-          }
-        },
-        {
-            label: 'Temporários',
-            // icon: 'pi pi-book',
+      },
+      {
+        label: 'Cadastros',
+        icon: 'pi pi-book',
+        items: [
+          {
+            label: 'Loja',
+            icon: 'pi pi-warehouse',
+          },
+          {
+            label: 'Usuario',
+            icon: 'pi pi-users',
+            command: () => {
+              this.router.navigate(['/usuario']);
+            },
+          },
+          {
+            label: 'Sessão',
+            icon: 'pi pi-pencil',
+            command: () => {
+              this.router.navigate(['/sessao']);
+            },
+          },
+          {
+            separator: true,
+          },
+          {
+            label: 'Templates',
+            icon: 'pi pi-palette',
             items: [
               {
-                label: 'Templates',
-                command: () => {
-                  this.router.navigate(['/template']);
-                }
+                label: 'Apollo',
+                icon: 'pi pi-palette',
+                badge: '2',
               },
               {
-                label: 'Confirmação de Presença',
-                command: () => {
-                  this.GetSessaoBySesCodi(4); // -> Código da sessão para testes: 4
-                }
+                label: 'Ultima',
+                icon: 'pi pi-palette',
+                badge: '3',
+              },
+            ],
+          },
+        ],
+      },
+      // {
+      //     label: 'Features',
+      //     icon: 'pi pi-star'
+      // },
+      {
+        label: 'Contato',
+        icon: 'pi pi-envelope',
+        command: () => {
+          this.router.navigate(['/contato']);
+        },
+      },
+      {
+        label: 'Temporários',
+        // icon: 'pi pi-book',
+        items: [
+          {
+            label: 'Templates',
+            command: () => {
+              this.router.navigate(['/template']);
             },
-          ]
-        }
+          },
+          {
+            label: 'Confirmação de Presença',
+            command: () => {
+              this.GetSessaoBySesCodi(4); // -> Código da sessão para testes: 4
+            },
+          },
+        ],
+      },
     ];
   }
 
@@ -125,7 +133,12 @@ export class MenuComponent implements OnInit {
     // this.router.navigate(['/convite', this.cryptoService.criptografar(this.base64Service.convertNumberToBase64(lojCodi))]);
 
     // Criar a árvore da URL corretamente
-    const urlTree = this.router.createUrlTree(['/confirmacao', this.cryptoService.criptografar(this.base64Service.convertNumberToBase64(lojCodi))]);
+    const urlTree = this.router.createUrlTree([
+      '/confirmacao',
+      this.cryptoService.criptografar(
+        this.base64Service.convertNumberToBase64(lojCodi)
+      ),
+    ]);
 
     // Serializar a URL com base na rota configurada
     const url = this.router.serializeUrl(urlTree);

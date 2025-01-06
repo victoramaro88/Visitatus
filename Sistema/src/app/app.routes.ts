@@ -10,6 +10,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { NgModule } from '@angular/core';
 import { TemplateConviteComponent } from './pages/template-convite/template-convite.component';
 import { PresencaSessaoComponent } from './pages/presenca-sessao/presenca-sessao.component';
+import { UsuarioComponent } from './pages/usuario/usuario.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -20,11 +21,9 @@ export const routes: Routes = [
   { path: 'template-certificado', component: TemplateCertificadoComponent },
   { path: 'convite/:data', component: ConviteComponent },
   { path: 'confirmacao/:data', component: ConfirmacaoPresencaComponent },
-  {
-    path: 'certificado/:data',
-    component: CertificadoComponent,
-  },
+  { path: 'certificado/:data', component: CertificadoComponent },
   { path: 'presenca-sessao/:data', component: PresencaSessaoComponent },
+  { path: 'usuario', component: UsuarioComponent },
   // { path: 'confirmacao', component: ConfirmacaoPresencaComponent }, //-> Temporário
   { path: '**', redirectTo: 'login' },
 ];

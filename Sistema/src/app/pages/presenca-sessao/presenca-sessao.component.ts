@@ -45,6 +45,7 @@ export class PresencaSessaoComponent implements OnInit {
     this.boolLoading = true;
     this.http.GetListaPresencaBySesCodi(SesCodi).subscribe({
       next: (response) => {
+        // console.warn('Retorno confirmação', response);
         this.lstPresenca = [];
         this.lstPresencaGrid = [];
         this.lstPresenca = response;
@@ -72,7 +73,7 @@ export class PresencaSessaoComponent implements OnInit {
 
   SalvarRegistro() {
     this.boolLoading = true;
-    console.warn(this.lstPresencaGrid);
+    // console.warn(this.lstPresencaGrid);
 
     //-> Filtrando apenas as pessoas que receberam a presença
     // let listaPresentes: ListaPresencaModel[] = this.lstPresencaGrid.filter(
@@ -82,7 +83,7 @@ export class PresencaSessaoComponent implements OnInit {
     if (this.lstPresencaGrid) {
       this.http.PostLancamentoPresencaSessao(this.lstPresencaGrid).subscribe({
         next: (response) => {
-          console.warn('Retorno Serviço', response);
+          // console.warn('Retorno Serviço', response);
           this.boolLoading = false;
 
           this.messageService.add({

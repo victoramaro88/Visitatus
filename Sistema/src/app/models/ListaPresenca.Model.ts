@@ -8,6 +8,7 @@ export class ListaPresencaModel {
   LojNumL: string;
   PreAtiv: boolean;
   PreEmai: boolean;
+  MembroLoja: boolean;
 
   constructor() {
     this.SesCodi = 0;
@@ -19,5 +20,6 @@ export class ListaPresencaModel {
     this.LojNumL = '';
     this.PreAtiv = false;
     this.PreEmai = false;
+    this.MembroLoja = false;
   }
 }
