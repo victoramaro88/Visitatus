@@ -116,6 +116,42 @@ namespace API_Visitatus.Controllers
             }
         }
 
+        [HttpGet("{lojCodi}")]
+        public async Task<ActionResult<IEnumerable<ConsultaUsuarioLojaModel>>> GetUsuarioByLojCodi(long lojCodi)
+        {
+            List<UsuarioLojaModel> lstConsultaUsuarioLoja = new List<UsuarioLojaModel>();
+
+            if (lojCodi > 0)
+            {
+                lstConsultaUsuarioLoja = await (from pu in _context.PerfilUsuarios
+                                       join p in _context.Perfils on pu.PerCodi equals p.PerCodi
+                                       join l in _context.Lojas on pu.LojCodi equals l.LojCodi
+                                       join u in _context.Usuarios on pu.UsuCodi equals u.UsuCodi
+                                       where l.LojCodi == lojCodi
+                                       orderby u.UsuNome
+                                       select new UsuarioLojaModel
+                                       {
+                                           UsuCodi = u.UsuCodi,
+                                           UsuNome = u.UsuNome,
+                                           UsuNCIM = u.UsuNcim,
+                                           UsuNCel = u.UsuNcel,
+                                           UsuEmai = u.UsuEmai,
+                                           UsuNasc = u.UsuNasc,
+                                           UsuStat = u.UsuStat,
+                                           PerCodi = p.PerCodi,
+                                           PerNome = p.PerNome,
+                                           PeUStat = pu.PeUstat
+                                       }).ToListAsync();
+
+
+                return Ok(lstConsultaUsuarioLoja);
+            }
+            else
+            {
+                return BadRequest("Parâmetros inválidos.");
+            }
+        }
+
         [HttpPut("{usuCodi}")]
         public async Task<IActionResult> PutUsuario(int usuCodi, Usuario usuario)
         {
