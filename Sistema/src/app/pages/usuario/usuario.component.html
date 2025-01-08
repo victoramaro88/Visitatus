@@ -77,19 +77,19 @@
   <div class="formgrid grid">
     <div class="field col-12 md:col-2 p-fluid">
       <label for="UsuNCIM">Nº CIM</label><br>
-      <input id="UsuNCIM" type="text" pInputText [(ngModel)]="this.objUsuarioLoja.UsuNCIM" style="text-align: center;"/>
+      <input (blur)="ConsultaUsuarioExistente(objUsuarioLoja.UsuNCIM);" id="UsuNCIM" type="text" pInputText [(ngModel)]="objUsuarioLoja.UsuNCIM" style="text-align: center;"/>
     </div>
     <div class="field col-12 md:col-6 p-fluid">
       <label for="UsuNome">Nome Completo</label><br>
-      <input id="UsuNome" type="text" pInputText [(ngModel)]="this.objUsuarioLoja.UsuNome" />
+      <input id="UsuNome" type="text" pInputText [(ngModel)]="objUsuarioLoja.UsuNome" />
     </div>
     <div class="field col-12 md:col-4 p-fluid">
       <label for="UsuEmai">E-mail</label><br>
-      <input id="UsuEmai" type="text" pInputText [(ngModel)]="this.objUsuarioLoja.UsuEmai" />
+      <input id="UsuEmai" type="text" pInputText [(ngModel)]="objUsuarioLoja.UsuEmai" />
     </div>
     <div class="field col-12 md:col-3 p-fluid">
       <label for="UsuNCel">Celular</label>
-      <p-inputMask id="UsuNCel" mask="(99) 99999-9999" [(ngModel)]="this.objUsuarioLoja.UsuNCel" placeholder="(00) 00000-0000"></p-inputMask>
+      <p-inputMask id="UsuNCel" mask="(99) 99999-9999" [(ngModel)]="objUsuarioLoja.UsuNCel" placeholder="(00) 00000-0000"></p-inputMask>
     </div>
     <div class="field col-12 md:col-3">
         <label for="dataHora">Data Nascimento</label><br>

@@ -49,7 +49,7 @@ export class UsuarioComponent implements OnInit {
     this.objPerfilSelecionado = JSON.parse(
       this.cryptoService.lerDoSessionStorage('prf')
     );
-    // console.warn('Perfil Selecionado (Sessão): ', this.objPerfilSelecionado);
+    console.warn('Perfil Selecionado (Sessão): ', this.objPerfilSelecionado);
   }
 
   ngOnInit() {
@@ -64,7 +64,7 @@ export class UsuarioComponent implements OnInit {
       this.http.GetPerfilByPerCodi(idsPerfil).subscribe({
         next: (response) => {
           this.lstPerfil = response;
-          console.warn('Lista de Perfis:', this.lstPerfil);
+          // console.warn('Lista de Perfis:', this.lstPerfil);
           this.boolLoading = false;
         },
         error: (error) => {
@@ -95,9 +95,8 @@ export class UsuarioComponent implements OnInit {
               this.lstUsuarioLojaGrid.push(item);
             }
           });
-
-          console.warn('Lista de Usuarios:', this.lstUsuarioLoja);
-          console.warn('Lista de Usuarios da Grid:', this.lstUsuarioLojaGrid);
+          // console.warn('Lista de Usuarios:', this.lstUsuarioLoja);
+          // console.warn('Lista de Usuarios da Grid:', this.lstUsuarioLojaGrid);
           this.boolLoading = false;
         },
         error: (error) => {
@@ -126,13 +125,55 @@ export class UsuarioComponent implements OnInit {
   }
 
   AddPerfil(objPerfil: PerfilModel) {
-    this.lstPerfilSelecionado.push(objPerfil);
+    if (objPerfil.PerCodi > 0) {
+      let existe = this.lstPerfilSelecionado.find(
+        (p) => p.PerCodi === objPerfil.PerCodi
+      );
+      if (!existe) {
+        this.lstPerfilSelecionado.push(objPerfil);
+      }
+      this.objPerfil = new PerfilModel();
+    }
   }
 
   DelPerfil(objPerfil: PerfilModel) {
     this.lstPerfilSelecionado = this.lstPerfilSelecionado.filter(
       (item) => item.PerCodi !== objPerfil.PerCodi
     );
+  }
+
+  //-> PRECISA ALTERAR ESTA CONSULTA, PARA VERIFICAR SE EXISTE NÃO SÓ NA LOJA,
+  // MAS SIM EM OUTRA LOJA DA MESMA POTÊNCIA, A CONSULTA DEVE SER SEM O NÚMERO DA LOJA.
+  ConsultaUsuarioExistente(nCIM: string) {
+    this.boolLoading = true;
+    try {
+      this.http
+        .GetUsuarioByLoja(
+          nCIM,
+          this.objPerfilSelecionado.potCodi,
+          this.objPerfilSelecionado.lojNumL
+        )
+        .subscribe({
+          next: (response) => {
+            console.warn('Usuário Existente:', response);
+            if (response.objUsuarioLoja) {
+              this.messageService.add({
+                severity: 'warn',
+                summary: 'Atenção: ',
+                detail: 'Este número de CIM já consta cadastrado.',
+              });
+            }
+            this.boolLoading = false;
+          },
+          error: (error) => {
+            console.error('Erro ao carregar dados:', error);
+            this.boolLoading = false;
+          },
+        });
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+      this.boolLoading = false;
+    }
   }
 
   onGlobalFilter(table: Table, event: Event) {

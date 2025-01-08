@@ -74,7 +74,8 @@ namespace API_Visitatus.Controllers
                               p.PerStat,
                               pu_u_l.l.LojNome,
                               pu_u_l.l.LojNumL,
-                              pu_u_l.l.LojStat
+                              pu_u_l.l.LojStat,
+                              pu_u_l.l.PotCodi
                           })
                     .Where(joined => joined.UsuCodi == 1)
                     .Select(result => new PerfilUsuarioListaModel
@@ -88,7 +89,8 @@ namespace API_Visitatus.Controllers
                         perStat = result.PerStat,
                         lojNome = result.LojNome,
                         lojNumL = result.LojNumL,
-                        lojStat = result.LojStat
+                        lojStat = result.LojStat,
+                        potCodi = result.PotCodi
                     })
                     .ToList();
 
@@ -114,7 +116,7 @@ namespace API_Visitatus.Controllers
         [HttpPost]
         public IActionResult Encrypt([FromBody] EncryptAPIModel objMensagem)
         {
-            if(objMensagem == null && objMensagem?.valorMensagem?.Length == 0)
+            if (objMensagem == null && objMensagem?.valorMensagem?.Length == 0)
             {
                 return BadRequest("Parâmetros Inválidos.");
             }

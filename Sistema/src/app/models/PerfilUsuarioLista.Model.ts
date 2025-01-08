@@ -9,6 +9,7 @@ export class PerfilUsuarioListaModel {
   lojNome: string;
   lojNumL: string;
   lojStat: boolean;
+  potCodi: number;
 
   constructor() {
     this.peUCodi = 0;
@@ -21,5 +22,6 @@ export class PerfilUsuarioListaModel {
     this.lojNome = '';
     this.lojNumL = '';
     this.lojStat = false;
+    this.potCodi = 0;
   }
 }

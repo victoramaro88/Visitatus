@@ -12,5 +12,6 @@
         public string? lojNome { get; set; }
         public string? lojNumL { get; set; }
         public bool lojStat { get; set; }
+        public int potCodi { get; set; }
     }
 }
