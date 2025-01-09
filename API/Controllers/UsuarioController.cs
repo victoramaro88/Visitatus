@@ -17,7 +17,7 @@ namespace API_Visitatus.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuario(int id = 0)
+        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuario(long id = 0)
         {
             if (id > 0)
             {
@@ -29,7 +29,7 @@ namespace API_Visitatus.Controllers
                 }
                 else
                 {
-                    return Ok(new List<Usuario> { result });
+                    return Ok(result);
                 }
             }
             else
@@ -124,27 +124,92 @@ namespace API_Visitatus.Controllers
             if (lojCodi > 0)
             {
                 lstConsultaUsuarioLoja = await (from pu in _context.PerfilUsuarios
-                                       join p in _context.Perfils on pu.PerCodi equals p.PerCodi
-                                       join l in _context.Lojas on pu.LojCodi equals l.LojCodi
-                                       join u in _context.Usuarios on pu.UsuCodi equals u.UsuCodi
-                                       where l.LojCodi == lojCodi
-                                       orderby u.UsuNome
-                                       select new UsuarioLojaModel
-                                       {
-                                           UsuCodi = u.UsuCodi,
-                                           UsuNome = u.UsuNome,
-                                           UsuNCIM = u.UsuNcim,
-                                           UsuNCel = u.UsuNcel,
-                                           UsuEmai = u.UsuEmai,
-                                           UsuNasc = u.UsuNasc,
-                                           UsuStat = u.UsuStat,
-                                           PerCodi = p.PerCodi,
-                                           PerNome = p.PerNome,
-                                           PeUStat = pu.PeUstat
-                                       }).ToListAsync();
+                                                join p in _context.Perfils on pu.PerCodi equals p.PerCodi
+                                                join l in _context.Lojas on pu.LojCodi equals l.LojCodi
+                                                join u in _context.Usuarios on pu.UsuCodi equals u.UsuCodi
+                                                where l.LojCodi == lojCodi
+                                                orderby u.UsuNome
+                                                select new UsuarioLojaModel
+                                                {
+                                                    UsuCodi = u.UsuCodi,
+                                                    UsuNome = u.UsuNome,
+                                                    UsuNCIM = u.UsuNcim,
+                                                    UsuNCel = u.UsuNcel,
+                                                    UsuEmai = u.UsuEmai,
+                                                    UsuNasc = u.UsuNasc,
+                                                    UsuStat = u.UsuStat,
+                                                    PerCodi = p.PerCodi,
+                                                    PerNome = p.PerNome,
+                                                    PeUStat = pu.PeUstat
+                                                }).ToListAsync();
 
 
                 return Ok(lstConsultaUsuarioLoja);
+            }
+            else
+            {
+                return BadRequest("Parâmetros inválidos.");
+            }
+        }
+
+        [HttpGet("{potCodi}/{usuNCIM}")]
+        public async Task<ActionResult<IEnumerable<UsuarioPotenciaModel>>> GetUsuarioByPotCodi(long potCodi, string usuNCIM)
+        {
+            UsuarioPotenciaModel objUsrPot = new UsuarioPotenciaModel();
+            objUsrPot.lstLjUsrPot = new List<LojaUsuarioPotenciaModel>();
+
+            if (potCodi > 0 && usuNCIM.Length > 0)
+            {
+                var lstConsultaUsuarioLoja = await (from usr in _context.Usuarios
+                                                    join perUsu in _context.PerfilUsuarios on usr.UsuCodi equals perUsu.UsuCodi
+                                                    join loj in _context.Lojas on perUsu.LojCodi equals loj.LojCodi
+                                                    join perf in _context.Perfils on perUsu.PerCodi equals perf.PerCodi
+                                                    where usr.UsuNcim == usuNCIM && loj.PotCodi == potCodi
+                                                    orderby loj.LojNome
+                                                    select new
+                                                    {
+                                                        usr.UsuCodi,
+                                                        usr.UsuNome,
+                                                        usr.UsuNasc,
+                                                        usr.UsuEmai,
+                                                        usr.UsuNcel,
+                                                        usr.UsuStat,
+                                                        usr.UsuNcim,
+                                                        loj.LojCodi,
+                                                        loj.LojNome,
+                                                        loj.LojNumL,
+                                                        loj.PotCodi,
+                                                        perf.PerCodi,
+                                                        perf.PerNome,
+                                                        perf.PerStat
+                                                    }).ToListAsync();
+
+                if (lstConsultaUsuarioLoja.Count > 0)
+                {
+                    objUsrPot.UsuCodi = lstConsultaUsuarioLoja[0].UsuCodi;
+                    objUsrPot.UsuNome = lstConsultaUsuarioLoja[0].UsuNome;
+                    objUsrPot.UsuNCIM = lstConsultaUsuarioLoja[0].UsuNcim;
+                    objUsrPot.UsuNasc = lstConsultaUsuarioLoja[0].UsuNasc;
+                    objUsrPot.UsuEmai = lstConsultaUsuarioLoja[0].UsuEmai;
+                    objUsrPot.UsuNCel = lstConsultaUsuarioLoja[0].UsuNcel;
+                    objUsrPot.UsuStat = lstConsultaUsuarioLoja[0].UsuStat;
+
+                    foreach (var itemUsr in lstConsultaUsuarioLoja)
+                    {
+                        LojaUsuarioPotenciaModel objUsrLjPot = new LojaUsuarioPotenciaModel();
+                        objUsrLjPot.LojCodi = itemUsr.LojCodi;
+                        objUsrLjPot.LojNome = itemUsr.LojNome;
+                        objUsrLjPot.LojNumL = itemUsr.LojNumL;
+                        objUsrLjPot.PotCodi = itemUsr.PotCodi;
+                        objUsrLjPot.PerCodi = itemUsr.PerCodi;
+                        objUsrLjPot.PerNome = itemUsr.PerNome;
+                        objUsrLjPot.PerStat = itemUsr.PerStat;
+
+                        objUsrPot.lstLjUsrPot.Add(objUsrLjPot);
+                    }
+                }
+
+                return Ok(objUsrPot);
             }
             else
             {

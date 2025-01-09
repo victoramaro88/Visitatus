@@ -11,6 +11,10 @@ import { PerfilUsuarioListaModel } from '../../models/PerfilUsuarioLista.Model';
 import { UsuarioLojaModel } from '../../models/UsuarioLoja.Model';
 import { Table } from 'primeng/table';
 import { PerfilModel } from '../../models/Perfil.Model';
+import {
+  LojaUsuarioPotenciaModel,
+  UsuarioPotenciaModel,
+} from '../../models/UsuarioPotencia.Model ';
 
 @Component({
   selector: 'app-usuario',
@@ -25,14 +29,15 @@ export class UsuarioComponent implements OnInit {
   objUsuarioLogado: UsuarioLogadoModel = new UsuarioLogadoModel();
   objPerfilSelecionado: PerfilUsuarioListaModel = new PerfilUsuarioListaModel();
 
-  boolManterRegistro: boolean = true;
+  boolManterRegistro: boolean = false;
 
   lstPerfil: PerfilModel[] = [];
   lstPerfilSelecionado: PerfilModel[] = [];
   objPerfil: PerfilModel = new PerfilModel();
-  objUsuarioLoja: UsuarioLojaModel = new UsuarioLojaModel();
   lstUsuarioLoja: UsuarioLojaModel[] = [];
   lstUsuarioLojaGrid: UsuarioLojaModel[] = [];
+  objUsuarioRegistro: UsuarioPotenciaModel = new UsuarioPotenciaModel();
+  lstOutrasLojas: LojaUsuarioPotenciaModel[] = [];
 
   constructor(
     private http: HttpService,
@@ -110,17 +115,39 @@ export class UsuarioComponent implements OnInit {
     }
   }
 
+  GetUsuarioByPotCodi(potCodi: number, usuNCIM: string) {
+    this.boolLoading = true;
+    try {
+      this.http.GetUsuarioByPotCodi(potCodi, usuNCIM).subscribe({
+        next: (response) => {
+          console.warn('Lista de Usuarios:', response);
+          this.boolLoading = false;
+        },
+        error: (error) => {
+          console.error('Erro ao carregar dados:', error);
+          this.boolLoading = false;
+        },
+      });
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+      this.boolLoading = false;
+    }
+  }
+
   NovoRegistro() {
     this.boolManterRegistro = true;
   }
 
-  EditarRegistro(objUsuarioLoja: UsuarioLojaModel) {
-    console.warn(objUsuarioLoja);
+  EditarRegistro(nCIM: string) {
+    this.ConsultaUsuarioExistente(nCIM);
+    this.boolManterRegistro = true;
   }
 
   SalvarRegistro() {}
 
   CancelaRegitro() {
+    this.lstPerfilSelecionado = [];
+    this.objUsuarioRegistro = new UsuarioPotenciaModel();
     this.boolManterRegistro = false;
   }
 
@@ -142,25 +169,36 @@ export class UsuarioComponent implements OnInit {
     );
   }
 
-  //-> PRECISA ALTERAR ESTA CONSULTA, PARA VERIFICAR SE EXISTE NÃO SÓ NA LOJA,
   // MAS SIM EM OUTRA LOJA DA MESMA POTÊNCIA, A CONSULTA DEVE SER SEM O NÚMERO DA LOJA.
   ConsultaUsuarioExistente(nCIM: string) {
     this.boolLoading = true;
     try {
       this.http
-        .GetUsuarioByLoja(
-          nCIM,
-          this.objPerfilSelecionado.potCodi,
-          this.objPerfilSelecionado.lojNumL
-        )
+        .GetUsuarioByPotCodi(this.objPerfilSelecionado.potCodi, nCIM)
         .subscribe({
           next: (response) => {
-            console.warn('Usuário Existente:', response);
-            if (response.objUsuarioLoja) {
-              this.messageService.add({
-                severity: 'warn',
-                summary: 'Atenção: ',
-                detail: 'Este número de CIM já consta cadastrado.',
+            // console.warn('Lista de Usuarios:', response);
+            if (response) {
+              //-> SE EXISTIR USUÁRIO, PREENCHE OS DADOS DELE
+              this.lstPerfilSelecionado = [];
+              this.objUsuarioRegistro = new UsuarioPotenciaModel();
+              this.objUsuarioRegistro = response;
+              this.objUsuarioRegistro.UsuNasc = new Date(
+                response.UsuNasc.toString()
+              );
+              console.warn('Lista de Usuarios:', this.objUsuarioRegistro);
+
+              //-> PREENCHENDO OS PERFIS CADASTRADOS
+              this.objUsuarioRegistro.lstLjUsrPot.forEach((itemPerfil) => {
+                if (itemPerfil.LojCodi === this.objPerfilSelecionado.lojCodi) {
+                  let item = this.lstPerfil.find(
+                    (p) => p.PerCodi === itemPerfil.PerCodi
+                  );
+                  this.lstPerfilSelecionado.push(item!);
+                } else {
+                  this.lstOutrasLojas.push(itemPerfil);
+                }
+                console.warn('Outras Lojas: ', this.lstOutrasLojas);
               });
             }
             this.boolLoading = false;

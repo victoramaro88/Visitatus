@@ -19,6 +19,7 @@ import { EncryptAPIModel } from '../models/EncryptAPI.Model';
 import { ListaPresencaModel } from '../models/ListaPresenca.Model';
 import { UsuarioLojaModel } from '../models/UsuarioLoja.Model';
 import { PerfilModel } from '../models/Perfil.Model';
+import { UsuarioPotenciaModel } from '../models/UsuarioPotencia.Model ';
 
 @Injectable({
   providedIn: 'root',
@@ -134,6 +135,15 @@ export class HttpService {
   public GetPerfilByPerCodi(idsPerfil: string): Observable<PerfilModel[]> {
     return this.http.get<PerfilModel[]>(
       `${environment.apiServicos}/Perfil/GetPerfilByPerCodi/${idsPerfil}`
+    );
+  }
+
+  public GetUsuarioByPotCodi(
+    potCodi: number,
+    usuNCIM: string
+  ): Observable<UsuarioPotenciaModel> {
+    return this.http.get<UsuarioPotenciaModel>(
+      `${environment.apiServicos}/Usuario/GetUsuarioByPotCodi/${potCodi}/${usuNCIM}`
     );
   }
 

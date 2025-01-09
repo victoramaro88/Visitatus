@@ -14,10 +14,9 @@ import { PerfilUsuarioListaModel } from '../../models/PerfilUsuarioLista.Model';
   imports: [ImportsModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
-  providers: [MessageService]
+  providers: [MessageService],
 })
 export class LoginComponent implements OnInit {
-
   formulario: FormGroup;
   boolLoading = false;
   objUsuarioLogado: UsuarioLogadoModel = new UsuarioLogadoModel();
@@ -33,13 +32,11 @@ export class LoginComponent implements OnInit {
   ) {
     this.formulario = this.formBuilder.group({
       usr: ['', Validators.required],
-      senha: ['', [Validators.required]]
+      senha: ['', [Validators.required]],
     });
   }
 
-  ngOnInit(): void {
-
-  }
+  ngOnInit(): void {}
 
   ValidaFormulario(): void {
     if (this.formulario.valid) {
@@ -52,44 +49,83 @@ export class LoginComponent implements OnInit {
   Login(): void {
     this.boolLoading = true;
     try {
-      this.http.ValidarLogin(this.formulario.value.usr.replace('.', '').replace('.', '').replace('-', ''), this.formulario.value.senha).subscribe({
-        next: (response) => {
-          // console.warn('Lista de Perfis:', response);
-          this.objUsuarioLogado = response;
-          let perfisAtivos = response.lstPerfil.filter(p => p.peUStat === true);
-          // console.warn("Perfis Ativos Pesquisa:", perfisAtivos);
-          this.objUsuarioLogado.lstPerfil = perfisAtivos;
-          // console.warn("Perfis Ativos Final:", perfisAtivos);
-          this.cryptoService.salvarNoSessionStorage("usr", JSON.stringify(this.objUsuarioLogado));
-          // console.warn(this.cryptoService.lerDoSessionStorage("usr"));
-          this.boolLoading = false;
+      this.http
+        .ValidarLogin(
+          this.formulario.value.usr
+            .replace('.', '')
+            .replace('.', '')
+            .replace('-', ''),
+          this.formulario.value.senha
+        )
+        .subscribe({
+          next: (response) => {
+            // console.warn('Lista de Perfis:', response);
+            this.objUsuarioLogado = response;
+            let perfisAtivos = response.lstPerfil.filter(
+              (p) => p.peUStat === true
+            );
+            // console.warn("Perfis Ativos Pesquisa:", perfisAtivos);
+            this.objUsuarioLogado.lstPerfil = perfisAtivos;
+            // console.warn("Perfis Ativos Final:", perfisAtivos);
+            this.cryptoService.salvarNoSessionStorage(
+              'usr',
+              JSON.stringify(this.objUsuarioLogado)
+            );
+            // console.warn(this.cryptoService.lerDoSessionStorage("usr"));
+            this.boolLoading = false;
 
-          //-> Verifica se possui mais de um perfil para selecionar, senão já manda o único perfil direto.
-          if (this.objUsuarioLogado.lstPerfil.length > 1) {
-            this.boolDialogPerfil = true;
-          } else if (this.objUsuarioLogado.lstPerfil.length === 1){
-            this.objPerfilSelecionado = this.objUsuarioLogado.lstPerfil[0];
-            this.SelecionaPerfilUsuario();
-          } else {
-            this.messageService.add({severity:'error', summary:'Atenção: ', detail: 'Usuário sem perfil ativo para acesso.'});
-          }
-        },
-        error: (error) => {
-          this.boolLoading = false;
-          if(error.error ==='Senha incorreta.') {
-            this.messageService.add({severity:'error', summary:'Erro: ', detail: error.error});
-          } else if(error.error ==='Usuário não encontrado.') {
-            this.messageService.add({severity:'error', summary:'Erro: ', detail: error.error});
-          } else if(error.error === 'Usuário sem vínculo com nenhuma Loja ou Perfil.') {
-            this.messageService.add({severity:'error', summary:'Erro: ', detail: error.error});
-          } else if(error.error === 'Usuário sem perfil cadsatrado.') {
-            this.messageService.add({severity:'error', summary:'Erro: ', detail: error.error});
-          } else {
-            console.error(error.error);
-            this.messageService.add({severity:'error', summary:'Erro: ', detail: 'Falha ao realizar a operação, contate o suporte.'});
-          }
-        }
-      });
+            //-> Verifica se possui mais de um perfil para selecionar, senão já manda o único perfil direto.
+            if (this.objUsuarioLogado.lstPerfil.length > 1) {
+              this.boolDialogPerfil = true;
+            } else if (this.objUsuarioLogado.lstPerfil.length === 1) {
+              this.objPerfilSelecionado = this.objUsuarioLogado.lstPerfil[0];
+              this.SelecionaPerfilUsuario();
+            } else {
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Atenção: ',
+                detail: 'Usuário sem perfil ativo para acesso.',
+              });
+            }
+          },
+          error: (error) => {
+            this.boolLoading = false;
+            if (error.error === 'Senha incorreta.') {
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Erro: ',
+                detail: error.error,
+              });
+            } else if (error.error === 'Usuário não encontrado.') {
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Erro: ',
+                detail: error.error,
+              });
+            } else if (
+              error.error === 'Usuário sem vínculo com nenhuma Loja ou Perfil.'
+            ) {
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Erro: ',
+                detail: error.error,
+              });
+            } else if (error.error === 'Usuário sem perfil cadsatrado.') {
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Erro: ',
+                detail: error.error,
+              });
+            } else {
+              console.error(error.error);
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Erro: ',
+                detail: 'Falha ao realizar a operação, contate o suporte.',
+              });
+            }
+          },
+        });
     } catch (error) {
       console.error(error);
     }
@@ -99,14 +135,20 @@ export class LoginComponent implements OnInit {
     this.boolLoading = true;
     if (this.objPerfilSelecionado.perCodi > 0) {
       this.boolDialogPerfil = false;
-      console.warn("Perfil Selecionado", this.objPerfilSelecionado);
-      this.cryptoService.salvarNoSessionStorage("prf", JSON.stringify(this.objPerfilSelecionado));
+      // console.warn("Perfil Selecionado", this.objPerfilSelecionado);
+      this.cryptoService.salvarNoSessionStorage(
+        'prf',
+        JSON.stringify(this.objPerfilSelecionado)
+      );
       this.router.navigate(['/home']);
       this.boolLoading = false;
     } else {
       this.boolLoading = false;
-      this.messageService.add({severity:'warn', summary:'Atenção: ', detail: 'Selecione um perfil para continuar.'});
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção: ',
+        detail: 'Selecione um perfil para continuar.',
+      });
     }
   }
-
 }
