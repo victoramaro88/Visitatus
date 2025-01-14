@@ -180,6 +180,15 @@ export class HttpService {
     );
   }
 
+  public PostUsuarioCompleto(
+    objPresenca: UsuarioPotenciaModel
+  ): Observable<string> {
+    return this.http.post<string>(
+      `${environment.apiServicos}/Usuario/PostUsuarioCompleto`,
+      objPresenca
+    );
+  }
+
   public encryptAPI(objMensagem: EncryptAPIModel): Observable<string> {
     // let encryptedText = this.encryptionService.encryptAPI(
     //   objMensagem.valorMensagem
@@ -227,6 +236,16 @@ export class HttpService {
     return this.http.put<string>(
       `${environment.apiServicos}/Sessao/PutSessao/${sesCodi}`,
       objSessao
+    );
+  }
+
+  public PutUsuarioCompleto(
+    usuCodi: number,
+    usuarioCompleto: UsuarioPotenciaModel
+  ): Observable<string> {
+    return this.http.put<string>(
+      `${environment.apiServicos}/Usuario/PutUsuarioCompleto/${usuCodi}`,
+      usuarioCompleto
     );
   }
 

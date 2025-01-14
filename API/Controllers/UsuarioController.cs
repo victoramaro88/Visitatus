@@ -1,4 +1,5 @@
 ﻿using API_Visitatus.Models;
+using API_Visitatus.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -10,10 +11,12 @@ namespace API_Visitatus.Controllers
     public class UsuarioController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IUtilService _utilService;
 
-        public UsuarioController(AppDbContext context)
+        public UsuarioController(AppDbContext context, IUtilService utilService)
         {
             _context = context;
+            _utilService = utilService;
         }
 
         [HttpGet("{id}")]
@@ -164,6 +167,8 @@ namespace API_Visitatus.Controllers
                                                     join perUsu in _context.PerfilUsuarios on usr.UsuCodi equals perUsu.UsuCodi
                                                     join loj in _context.Lojas on perUsu.LojCodi equals loj.LojCodi
                                                     join perf in _context.Perfils on perUsu.PerCodi equals perf.PerCodi
+                                                    join login in _context.UsuarioLogins on usr.UsuCodi equals login.UsuCodi into loginGroup
+                                                    from login in loginGroup.DefaultIfEmpty() // Left join aqui
                                                     where usr.UsuNcim == usuNCIM && loj.PotCodi == potCodi
                                                     orderby loj.LojNome
                                                     select new
@@ -181,7 +186,10 @@ namespace API_Visitatus.Controllers
                                                         loj.PotCodi,
                                                         perf.PerCodi,
                                                         perf.PerNome,
-                                                        perf.PerStat
+                                                        perf.PerStat,
+                                                        UsLuser = login != null ? login.UsLuser : "",
+                                                        UsLpass = login != null ? login.UsLpass : "",
+                                                        UsLstat = login != null ? login.UsLstat : false
                                                     }).ToListAsync();
 
                 if (lstConsultaUsuarioLoja.Count > 0)
@@ -193,6 +201,9 @@ namespace API_Visitatus.Controllers
                     objUsrPot.UsuEmai = lstConsultaUsuarioLoja[0].UsuEmai;
                     objUsrPot.UsuNCel = lstConsultaUsuarioLoja[0].UsuNcel;
                     objUsrPot.UsuStat = lstConsultaUsuarioLoja[0].UsuStat;
+                    objUsrPot.UsLUser = lstConsultaUsuarioLoja[0].UsLuser;
+                    objUsrPot.UsLPass = lstConsultaUsuarioLoja[0].UsLpass;
+                    objUsrPot.UsLStat = lstConsultaUsuarioLoja[0].UsLstat;
 
                     foreach (var itemUsr in lstConsultaUsuarioLoja)
                     {
@@ -246,6 +257,66 @@ namespace API_Visitatus.Controllers
             return Ok("Alterado com sucesso!");
         }
 
+        [HttpPut("{usuCodi}")]
+        public async Task<ActionResult<UsuarioPotenciaModel>> PutUsuarioCompleto(long usuCodi, [FromBody] UsuarioPotenciaModel usuarioCompleto)
+        {
+            if (usuCodi != usuarioCompleto.UsuCodi)
+            {
+                return BadRequest();
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync(); // Inicia a transação
+            try
+            {
+                //-> INSERINDO O USUÁRIO
+                Usuario usuario = new Usuario
+                {
+                    UsuCodi = usuarioCompleto.UsuCodi,
+                    UsuNome = usuarioCompleto.UsuNome!,
+                    UsuNcim = usuarioCompleto.UsuNCIM!,
+                    UsuNasc = usuarioCompleto.UsuNasc,
+                    UsuEmai = usuarioCompleto.UsuEmai!,
+                    UsuNcel = usuarioCompleto.UsuNCel!,
+                    UsuStat = usuarioCompleto.UsuStat
+                };
+
+                _context.Entry(usuario).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                //-> APAGA TODOS OS PERFIS RELACIONADO AO USUÁRIO, PARA INSERIR NOVAMENTE ATUALIZADO
+                // Obter os registros que atendem à condição
+                var usuariosParaExcluir = _context.PerfilUsuarios.Where(p => p.UsuCodi == usuCodi && p.LojCodi != 0).ToList();
+                // Remover os registros
+                _context.PerfilUsuarios.RemoveRange(usuariosParaExcluir);
+                await _context.SaveChangesAsync();
+
+                //-> INSERINDO OS PERFIS DO USUÁRIO
+                foreach (var item in usuarioCompleto.lstLjUsrPot!)
+                {
+                    PerfilUsuario perfilUsuario = new PerfilUsuario
+                    {
+                        PeUcodi = _context.PerfilUsuarios.Max(p => (int?)p.PeUcodi) + 1 ?? 1,
+                        PeUstat = true,
+                        PerCodi = item.PerCodi,
+                        UsuCodi = usuario.UsuCodi,
+                        LojCodi = item.LojCodi
+                    };
+
+                    _context.PerfilUsuarios.Add(perfilUsuario);
+                    await _context.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync(); // Confirma a transação
+
+                return Ok(usuarioCompleto);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(); // Reverte a transação em caso de erro
+                return BadRequest(ex.Message + " \n " + ex.InnerException?.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<ActionResult<Usuario>> PostUsuario(Usuario usuario)
         {
@@ -260,6 +331,68 @@ namespace API_Visitatus.Controllers
             }
             catch (Exception ex)
             {
+                return BadRequest(ex.Message + " \n " + ex.InnerException?.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<UsuarioPotenciaModel>> PostUsuarioCompleto([FromBody] UsuarioPotenciaModel usuarioCompleto)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync(); // Inicia a transação
+            try
+            {
+                //-> INSERINDO O USUÁRIO
+                Usuario usuario = new Usuario
+                {
+                    UsuCodi = _context.Usuarios.Max(p => (int?)p.UsuCodi) + 1 ?? 1,
+                    UsuNome = usuarioCompleto.UsuNome!,
+                    UsuNcim = usuarioCompleto.UsuNCIM!,
+                    UsuNasc = usuarioCompleto.UsuNasc,
+                    UsuEmai = usuarioCompleto.UsuEmai!,
+                    UsuNcel = usuarioCompleto.UsuNCel!,
+                    UsuStat = usuarioCompleto.UsuStat
+                };
+
+                _context.Usuarios.Add(usuario);
+                await _context.SaveChangesAsync();
+
+                //-> INSERINDO O LOGIN, CASO VENHA CADASTRADO
+                if(usuarioCompleto.UsLUser?.Length > 0 && usuarioCompleto.UsLPass?.Length > 0) {
+                    UsuarioLogin usrLogin = new UsuarioLogin
+                    {
+                        UsLcodi = _context.UsuarioLogins.Max(p => (long?)p.UsLcodi) + 1 ?? 1,
+                        UsLuser = usuarioCompleto.UsLUser,
+                        UsLpass = _utilService.CriptografarSenha(usuarioCompleto.UsLPass),
+                        UsLstat = true,
+                        UsuCodi = usuario.UsuCodi
+                    };
+                    _context.UsuarioLogins.Add(usrLogin);
+                    await _context.SaveChangesAsync();
+                }
+
+                //-> INSERINDO OS PERFIS DO USUÁRIO
+                foreach (var item in usuarioCompleto.lstLjUsrPot!)
+                {
+                    PerfilUsuario perfilUsuario = new PerfilUsuario
+                    {
+                        PeUcodi = _context.PerfilUsuarios.Max(p => (int?)p.PeUcodi) + 1 ?? 1,
+                        PeUstat = true,
+                        PerCodi = item.PerCodi,
+                        UsuCodi = usuario.UsuCodi,
+                        LojCodi = item.LojCodi
+                    };
+
+                    _context.PerfilUsuarios.Add(perfilUsuario);
+                    await _context.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync(); // Confirma a transação
+
+                return Ok(usuarioCompleto);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(); // Reverte a transação em caso de erro
                 return BadRequest(ex.Message + " \n " + ex.InnerException?.Message);
             }
         }

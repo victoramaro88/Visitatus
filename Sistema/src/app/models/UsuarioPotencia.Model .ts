@@ -26,6 +26,9 @@ export class UsuarioPotenciaModel {
   UsuNCel: string;
   UsuStat: boolean;
   UsuNCIM: string;
+  UsLUser: string;
+  UsLPass: string;
+  UsLStat: boolean;
   lstLjUsrPot: LojaUsuarioPotenciaModel[];
 
   constructor() {
@@ -36,6 +39,9 @@ export class UsuarioPotenciaModel {
     this.UsuNCel = '';
     this.UsuStat = false;
     this.UsuNCIM = '';
+    this.UsLUser = '';
+    this.UsLPass = '';
+    this.UsLStat = false;
     this.lstLjUsrPot = [];
   }
 }

@@ -103,40 +103,14 @@
           >
         </p-calendar>
     </div>
-    <!-- <div class="field col-12 md:col-5">
-        <label for="state">Loja</label><br>
-        <p-dropdown
-          [disabled]="true"
-          [options]="lstLoja"
-          optionLabel="displayName"
-          placeholder="{{objPerfilSelecionado.lojNome}} - {{objPerfilSelecionado.lojNumL}}"
-          [style]="{ width: '100%' }"
-          />
-    </div> -->
-    <!-- <div class="field col-12 md:col-6">
-        <label for="liberarSessao">Liberar Sessão?
-          <small> ({{objSessao.SesLibe ? 'Sim' : 'Não'}})</small>
-        </label><br>
-        <p-selectButton
-          id="liberarSessao"
-          [options]="opcoesSelect"
-          [(ngModel)]="objSessao.SesLibe"
-          optionLabel="label"
-          optionValue="value"
-          aria-describedby="liberarSessao"
-          unselectable = "false"
-         />
-         <small id="liberarSessao">Libera a sessão para confirmação de presença.</small>
-    </div> -->
   </div>
   <hr>
   <div class="formgrid grid mt-3">
-    <!-- <b>Perfis:</b><br><br> -->
     <div class="field col-12 md:col-6">
       <div class="flex align-items-center gap-2 mb-2">
         <div class="grid">
           <div class="flex flex-column flex-grow-1 col-8 md:col-10">
-            <label for="PerCodi">Perfil</label>
+            <label for="PerCodi"><b>Perfil</b></label>
             <p-dropdown
               placeholder="Selecione"
               id="PerCodi"
@@ -182,10 +156,25 @@
       </p-table>
     </div>
     <div class="field col-12 md:col-6">
-      <b>Outras Lojas:</b><br>
-      <span *ngFor="let item of lstOutrasLojas">
-        <a>{{item.LojNome}} - {{item.PerNome}}</a>
-      </span>
+      <label *ngIf="boolResponsavelLoja"><b>Login</b></label><br>
+      <div *ngIf="boolResponsavelLoja" class="formgrid grid">
+        <div class="field col-12 md:col-6 p-fluid">
+          <label for="usLUser">Usuário</label><br>
+          <input id="usLUser" type="text" pInputText [(ngModel)]="objUsuarioRegistro.UsLUser" style="text-align: center;"/>
+        </div>
+        <div class="field col-12 md:col-6 p-fluid">
+          <label for="usLPass">Senha</label><br>
+          <!-- <input id="usLPass" type="text" pInputText [(ngModel)]="objUsuarioRegistro.UsuNome" /> -->
+          <p-password [(ngModel)]="objUsuarioRegistro.UsLPass" [feedback]="false" [toggleMask]="true"/>
+        </div>
+      </div>
+      <hr *ngIf="boolResponsavelLoja">
+      <div *ngIf="lstOutrasLojas.length > 0" class="field col-12">
+        <b>Outras Lojas / Função:</b><br>
+        <span *ngFor="let item of lstOutrasLojas">
+          <a>{{item.LojNome}} - {{item.PerNome}}</a><br>
+        </span>
+      </div>
     </div>
   </div>
 

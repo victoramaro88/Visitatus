@@ -77,7 +77,7 @@ namespace API_Visitatus.Controllers
                               pu_u_l.l.LojStat,
                               pu_u_l.l.PotCodi
                           })
-                    .Where(joined => joined.UsuCodi == 1)
+                    .Where(joined => joined.UsuCodi == objUsuario.UsuCodi)
                     .Select(result => new PerfilUsuarioListaModel
                     {
                         peUCodi = result.PeUcodi,

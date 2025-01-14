@@ -9,6 +9,9 @@
         public string? UsuNCel { get; set; }
         public bool UsuStat { get; set; }
         public string? UsuNCIM { get; set; }
+        public string? UsLUser { get; set; }
+        public string? UsLPass { get; set; }
+        public bool UsLStat { get; set; }
 
         public List<LojaUsuarioPotenciaModel>? lstLjUsrPot { get; set; }
 
