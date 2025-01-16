@@ -91,7 +91,7 @@ export class SessaoComponent implements OnInit {
       this.http.GetSessaoByLojCodi(lojCodi).subscribe({
         next: (response) => {
           this.lstSessao = response;
-          // console.warn('Lista de Sessões:', this.lstSessao);
+          console.warn('Lista de Sessões:', this.lstSessao);
           this.boolLoading = false;
         },
         error: (error) => {

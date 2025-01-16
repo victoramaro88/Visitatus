@@ -61,7 +61,6 @@ export class UsuarioComponent implements OnInit {
 
   ngOnInit() {
     this.GetPerfilByPerCodi('2,4,5');
-    this.GetUsuarioByLojCodi(this.objPerfilSelecionado.lojCodi);
 
     //-> Se o usuário possuir perfil de Responsável, habilita a opção de cadastro de Login
     if (this.objPerfilSelecionado.perCodi === 2) {
@@ -77,7 +76,7 @@ export class UsuarioComponent implements OnInit {
         next: (response) => {
           this.lstPerfil = response;
           // console.warn('Lista de Perfis:', this.lstPerfil);
-          this.boolLoading = false;
+          this.GetUsuarioByLojCodi(this.objPerfilSelecionado.lojCodi);
         },
         error: (error) => {
           console.error('Erro ao carregar dados:', error);
@@ -295,7 +294,7 @@ export class UsuarioComponent implements OnInit {
             .GetUsuarioByPotCodi(this.objPerfilSelecionado.potCodi, nCIM)
             .subscribe({
               next: (response) => {
-                // console.warn('Usuário Selecionado:', response);
+                console.warn('Usuário Selecionado:', response);
                 if (response.UsuCodi > 0) {
                   this.boolEditarRegistro = false;
                   //-> SE EXISTIR USUÁRIO, PREENCHE OS DADOS DELE

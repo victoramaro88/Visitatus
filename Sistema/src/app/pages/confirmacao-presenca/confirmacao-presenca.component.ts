@@ -173,7 +173,31 @@ export class ConfirmacaoPresencaComponent implements OnInit {
               this.boolBlockIntputsLoja = false;
             }
 
-            this.boolLoading = false;
+            //this.boolLoading = false;
+            //-> VERIFICANDO SE O USUÁRIO EXISTE NA BASE, PELO CIM E POTÊNCIA
+            this.http.GetUsuarioByPotCodi(PotCodi, UsuNCIM).subscribe({
+              next: (response) => {
+                console.warn('Usuário 2:', response);
+                this.objConsultaUsrLj.objUsuarioLoja.UsuCodi = response.UsuCodi;
+                this.objConsultaUsrLj.objUsuarioLoja.UsuNome = response.UsuNome;
+                this.objConsultaUsrLj.objUsuarioLoja.UsuNCel = response.UsuNCel;
+                this.objConsultaUsrLj.objUsuarioLoja.UsuEmai = response.UsuEmai;
+                this.objConsultaUsrLj.objUsuarioLoja.UsuNasc = new Date(
+                  response.UsuNasc.toString()
+                );
+
+                this.boolLoading = false;
+              },
+              error: (error) => {
+                console.error('Erro ao carregar dados:', error);
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Erro: ',
+                  detail: 'Falha ao realizar a operação, contate o suporte.',
+                });
+                this.boolLoading = false;
+              },
+            });
           },
           error: (error) => {
             console.error('Erro ao carregar dados:', error);

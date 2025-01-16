@@ -268,7 +268,7 @@ namespace API_Visitatus.Controllers
             using var transaction = await _context.Database.BeginTransactionAsync(); // Inicia a transação
             try
             {
-                //-> INSERINDO O USUÁRIO
+                //-> ALTERANDO O USUÁRIO
                 Usuario usuario = new Usuario
                 {
                     UsuCodi = usuarioCompleto.UsuCodi,
@@ -282,6 +282,31 @@ namespace API_Visitatus.Controllers
 
                 _context.Entry(usuario).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
+
+                //-> ALTERANDO / INSERINDO O LOGIN DO USUÁRIO
+                if (usuarioCompleto.UsLUser?.Length > 0 && usuarioCompleto.UsLPass?.Length > 0)
+                {
+                    UsuarioLogin usrLogin = new UsuarioLogin
+                    {
+                        UsLcodi = usuarioCompleto.UsuCodi,
+                        UsLuser = usuarioCompleto.UsLUser,
+                        UsLpass = _utilService.CriptografarSenha(usuarioCompleto.UsLPass),
+                        UsLstat = true,
+                        UsuCodi = usuario.UsuCodi
+                    };
+
+                    if (UsuarioLoginExists(usuarioCompleto.UsuCodi))
+                    {
+                        _context.Entry(usrLogin).State = EntityState.Modified;
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        usrLogin.UsLcodi = _context.UsuarioLogins.Max(p => (long?)p.UsLcodi) + 1 ?? 1;
+                        _context.UsuarioLogins.Add(usrLogin);
+                        await _context.SaveChangesAsync();
+                    }
+                }
 
                 //-> APAGA TODOS OS PERFIS RELACIONADO AO USUÁRIO, PARA INSERIR NOVAMENTE ATUALIZADO
                 // Obter os registros que atendem à condição
@@ -357,7 +382,8 @@ namespace API_Visitatus.Controllers
                 await _context.SaveChangesAsync();
 
                 //-> INSERINDO O LOGIN, CASO VENHA CADASTRADO
-                if(usuarioCompleto.UsLUser?.Length > 0 && usuarioCompleto.UsLPass?.Length > 0) {
+                if (usuarioCompleto.UsLUser?.Length > 0 && usuarioCompleto.UsLPass?.Length > 0)
+                {
                     UsuarioLogin usrLogin = new UsuarioLogin
                     {
                         UsLcodi = _context.UsuarioLogins.Max(p => (long?)p.UsLcodi) + 1 ?? 1,
@@ -397,9 +423,14 @@ namespace API_Visitatus.Controllers
             }
         }
 
-        private bool UsuarioExists(int id)
+        private bool UsuarioExists(long id)
         {
             return _context.Usuarios.Any(e => e.UsuCodi == id);
+        }
+
+        private bool UsuarioLoginExists(long id)
+        {
+            return _context.UsuarioLogins.Any(e => e.UsuCodi == id);
         }
     }
 }

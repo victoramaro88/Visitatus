@@ -5,7 +5,8 @@
 
 <h2>Cadastro de Sessão</h2>
 
-<div *ngIf="!boolManterRegistro && (lstSessao.length > 0)">
+<!-- <div *ngIf="!boolManterRegistro && (lstSessao.length > 0)"> -->
+  <div *ngIf="!boolManterRegistro">
   <div class="text-right mb-3">
     <p-button (click)="NovaSessao();" label="Nova Sessão" [raised]="true" severity="primary" /> &nbsp;
   </div>
