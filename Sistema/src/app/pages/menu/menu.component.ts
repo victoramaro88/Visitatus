@@ -113,6 +113,12 @@ export class MenuComponent implements OnInit {
             },
           },
           {
+            label: 'Certificado',
+            command: () => {
+              this.router.navigate(['/certificado']);
+            },
+          },
+          {
             label: 'Confirmação de Presença',
             command: () => {
               this.GetSessaoBySesCodi(4); // -> Código da sessão para testes: 4

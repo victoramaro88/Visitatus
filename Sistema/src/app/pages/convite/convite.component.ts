@@ -8,6 +8,7 @@ import { SessaoConviteModel } from '../../models/SessaoConvite.Model';
 import { TemplateLojaModel } from '../../models/TemplateLoja.Model';
 import { ImportsModule } from '../../imports';
 import { MessageService } from 'primeng/api';
+import { Title, Meta } from '@angular/platform-browser';
 
 interface Mensagem {
   titulo: string;
@@ -49,20 +50,31 @@ export class ConviteComponent implements OnInit {
     private cryptoService: CryptoService,
     private base64Service: Base64Service,
     private messageService: MessageService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private titleService: Title,
+    private metaService: Meta
   ) {}
 
   ngOnInit(): void {
     try {
-      this.parametroRota = this.route.snapshot.paramMap.get('data');
-      let baseDecripto = this.cryptoService.decriptografar(this.parametroRota!);
-      this.idSessaoCrypto =
-        this.base64Service.decodeBase64ToNumber(baseDecripto);
+      //-> NOVA FORMA DE CAPTURA DE PARÂMETRO
+      this.route.queryParams.subscribe((params) => {
+        this.parametroRota = params['data'];
+        // console.warn('PARÂMETRO RECEBIDO: ', this.parametroRota);
+
+        let baseDecripto = this.cryptoService.decriptografar(
+          this.parametroRota!
+        );
+
+        this.idSessaoCrypto =
+          this.base64Service.decodeBase64ToNumber(baseDecripto);
+      });
 
       this.GetSessaoBySesCodi(this.idSessaoCrypto);
     } catch (error) {
       this.boolLoading = false;
       console.warn('Falha ao receber os parâmetros.');
+      console.error(error);
     }
   }
 
@@ -83,6 +95,7 @@ export class ConviteComponent implements OnInit {
           this.mensagem.titulo = 'Convite não encontrado.';
           this.mensagem.corpoMensagem =
             'Sessão não encontrada. Contate o responsável da Loja.';
+
           this.boolDialogMensagem = true;
           this.boolLoading = false;
         } else {
@@ -111,6 +124,7 @@ export class ConviteComponent implements OnInit {
         )
           .replace('[PotLogo]', this.objSessaoConvite?.PotLogo!)
           .replace('[LojNome]', this.objSessaoConvite?.LojNome!)
+          .replace('[LojNumL]', this.objSessaoConvite?.LojNumL!)
           .replace('[PotSigl]', this.objSessaoConvite?.PotSigl!)
           .replace('[PotNome]', this.objSessaoConvite?.PotNome!)
           .replace('[SesDesc]', this.objSessaoConvite?.SesDesc!)
@@ -151,6 +165,20 @@ export class ConviteComponent implements OnInit {
                 )?.CarNome!
               : ''
           );
+
+        //-> AJUSTANDO O TÍTULO, IMAGEM E DESCRIÇÃO DO ATALHO DA PÁGINA:
+        this.titleService.setTitle(
+          'Convite - ' +
+            this.objSessaoConvite?.LojNome +
+            ' - ' +
+            this.objSessaoConvite?.LojNumL
+        );
+        // this.metaService.updateTag({
+        //   name: 'description',
+        //   content:
+        //     'Esta é a página inicial do nosso site. Compartilhe no WhatsApp!',
+        // });
+
         // console.warn(this.objSessaoConvite?.lstGestaoAdmAtiva);
         this.renderDynamicHtml(objHtmlReplace);
         this.boolLoading = false;

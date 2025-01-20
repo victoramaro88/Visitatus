@@ -19,9 +19,11 @@ export const routes: Routes = [
   { path: 'sessao', component: SessaoComponent },
   { path: 'template', component: TemplateConviteComponent },
   { path: 'template-certificado', component: TemplateCertificadoComponent },
-  { path: 'convite/:data', component: ConviteComponent },
+  // { path: 'convite/:data', component: ConviteComponent },
+  { path: 'convite', component: ConviteComponent },
   { path: 'confirmacao/:data', component: ConfirmacaoPresencaComponent },
-  { path: 'certificado/:data', component: CertificadoComponent },
+  // { path: 'certificado/:data', component: CertificadoComponent },
+  { path: 'certificado', component: CertificadoComponent },
   { path: 'presenca-sessao/:data', component: PresencaSessaoComponent },
   { path: 'usuario', component: UsuarioComponent },
   // { path: 'confirmacao', component: ConfirmacaoPresencaComponent }, //-> Temporário

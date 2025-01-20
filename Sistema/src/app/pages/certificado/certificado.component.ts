@@ -24,6 +24,8 @@ export class CertificadoComponent implements OnInit {
   parâmetroURL: string = '';
   objCryptAPI: EncryptAPIModel = new EncryptAPIModel();
 
+  parametroRota!: string | null;
+
   constructor(
     private http: HttpService,
     private route: ActivatedRoute,
@@ -36,8 +38,54 @@ export class CertificadoComponent implements OnInit {
 
   ngOnInit(): void {
     try {
-      this.parâmetroURL = this.route.snapshot.paramMap.get('data')!;
-      // console.warn('Parâmetro recebido:', this.parâmetroURL);
+      //-> URL TESTE DE RECEBIMENTO:
+      // http://localhost:4200/certificado?data=VTJGc2RHVmtYMTlmRThWOFRCOFRZZWU2SXVXaHBTQkFPOUk1VTlxY2Fraz0%3D
+
+      //-> ID's PARA TESTES:
+      let parametroRecebidoTESTE: string =
+        'VTJGc2RHVmtYMTlmRThWOFRCOFRZZWU2SXVXaHBTQkFPOUk1VTlxY2Fraz0=';
+      //#region TESTE PARA CRIPTOGRAFIA DE USUCODI E SESCODI
+      /*
+      let usuCodi: number = 1;
+      let sesCodi: number = 4;
+      let paramConcat: string = usuCodi.toString() + '|' + sesCodi;
+      console.warn('PARÂMETROS CONCATENADOS: ', paramConcat);
+      let paramCripto: string = this.cryptoService.criptografar(paramConcat);
+      console.warn('PARÂMETROS ENCRIPTADOS: ', paramCripto);
+      let paramBase64: string =
+        this.base64Service.convertStringToBase64(paramCripto);
+      console.warn('PARÂMETROS CRIPTO E CONVERTIDO BASE64: ', paramBase64);
+      */
+      //#endregion
+
+      console.warn('========================================');
+      let paramBase64Convert: string = this.base64Service.decodeBase64ToString(
+        parametroRecebidoTESTE
+      );
+      console.warn(
+        'PARAMETRO RECEBIDO DESCONVERTIDO DO BASE64',
+        paramBase64Convert
+      );
+      let paramDecripto: string =
+        this.cryptoService.decriptografar(paramBase64Convert);
+      console.warn('PARAMETRO RECEBIDO FINAL', paramDecripto);
+      let usuCodiDecripto: number = +paramDecripto.split('|')[0];
+      console.warn('USUCODI DECRIPTO', usuCodiDecripto);
+      let sesCodiDecripto: number = +paramDecripto.split('|')[1];
+      console.warn('SESCODI DECRIPTO', sesCodiDecripto);
+
+      this.route.queryParams.subscribe((params) => {
+        this.parametroRota = params['data'];
+        console.warn('PARÂMETRO RECEBIDO: ', this.parametroRota);
+        let paramDecripto: string =
+          this.cryptoService.decriptografar(paramBase64Convert);
+        console.warn('PARAMETRO RECEBIDO FINAL', paramDecripto);
+
+        let usuCodiDecripto: number = +paramDecripto.split('|')[0];
+        console.warn('USUCODI DECRIPTO', usuCodiDecripto);
+        let sesCodiDecripto: number = +paramDecripto.split('|')[1];
+        console.warn('SESCODI DECRIPTO', sesCodiDecripto);
+      });
 
       // this.GetSessaoBySesCodi(this.idSessaoCrypto);
     } catch (error) {

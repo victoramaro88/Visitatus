@@ -26,6 +26,7 @@ export class CryptoService {
   decriptografar(dadoCriptografado: string): any {
     const bytes = CryptoJS.AES.decrypt(dadoCriptografado, this.chaveSecreta);
     const dadoString = bytes.toString(CryptoJS.enc.Utf8);
+    // console.warn(dadoString);
     return JSON.parse(dadoString);
   }
 
