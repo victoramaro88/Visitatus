@@ -177,7 +177,7 @@ export class ConfirmacaoPresencaComponent implements OnInit {
             //-> VERIFICANDO SE O USUÁRIO EXISTE NA BASE, PELO CIM E POTÊNCIA
             this.http.GetUsuarioByPotCodi(PotCodi, UsuNCIM).subscribe({
               next: (response) => {
-                console.warn('Usuário 2:', response);
+                // console.warn('Usuário 2:', response);
                 this.objConsultaUsrLj.objUsuarioLoja.UsuCodi = response.UsuCodi;
                 this.objConsultaUsrLj.objUsuarioLoja.UsuNome = response.UsuNome;
                 this.objConsultaUsrLj.objUsuarioLoja.UsuNCel = response.UsuNCel;

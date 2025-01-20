@@ -303,10 +303,10 @@ namespace API_Visitatus.Controllers
                         .Replace("[TipoSessao]", LojaCertificado.TiSnome)
                         .Replace("[CidadeLoja]", LojaCertificado.CidNome + ", " + LojaCertificado.EstSigl)
                         .Replace("[DataSessao]", LojaCertificado.SesDtHr.ToShortDateString())
-                        .Replace("[NomeVM]", gestaoAdmAtual.Where(g => g.CarCodi == 1).FirstOrDefault()!.UsuNome)
-                        .Replace("[CargoVM]", gestaoAdmAtual.Where(g => g.CarCodi == 1).FirstOrDefault()!.CarNome)
-                        .Replace("[NomeSecretario]", gestaoAdmAtual.Where(g => g.CarCodi == 4).FirstOrDefault()!.UsuNome)
-                        .Replace("[CargoSecretario]", gestaoAdmAtual.Where(g => g.CarCodi == 4).FirstOrDefault()!.CarNome)
+                        .Replace("[NomeVM]", gestaoAdmAtual.Count > 0 ? gestaoAdmAtual.Where(g => g.CarCodi == 1).FirstOrDefault()!.UsuNome : "")
+                        .Replace("[CargoVM]", gestaoAdmAtual.Count > 0 ? gestaoAdmAtual.Where(g => g.CarCodi == 1).FirstOrDefault()!.CarNome : "")
+                        .Replace("[NomeSecretario]", gestaoAdmAtual.Count > 0 ? gestaoAdmAtual.Where(g => g.CarCodi == 4).FirstOrDefault()!.UsuNome : "")
+                        .Replace("[CargoSecretario]", gestaoAdmAtual.Count > 0 ? gestaoAdmAtual.Where(g => g.CarCodi == 4).FirstOrDefault()!.CarNome : "")
                         ;
                 }
 

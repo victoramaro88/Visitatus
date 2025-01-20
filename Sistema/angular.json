@@ -25,7 +25,8 @@
                 "glob": "**/*",
                 "input": "public",
                 "output": "/assets"
-              }
+              },
+              "src/web.config"
             ],
             "styles": [
               "primeng/resources/themes/bootstrap4-dark-blue/theme.css",

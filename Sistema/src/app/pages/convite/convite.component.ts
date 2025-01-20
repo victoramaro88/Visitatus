@@ -9,6 +9,13 @@ import { TemplateLojaModel } from '../../models/TemplateLoja.Model';
 import { ImportsModule } from '../../imports';
 import { MessageService } from 'primeng/api';
 
+interface Mensagem {
+  titulo: string;
+  corpoMensagem: string;
+  icone: string;
+  corIcone: string;
+}
+
 @Component({
   selector: 'app-convite',
   standalone: true,
@@ -27,6 +34,13 @@ export class ConviteComponent implements OnInit {
   htmlContent: SafeHtml | undefined;
   objSessaoConvite: SessaoConviteModel | undefined;
   objTemplate: TemplateLojaModel | undefined;
+  boolDialogMensagem: boolean = false;
+  mensagem: Mensagem = {
+    titulo: '',
+    corpoMensagem: '',
+    icone: '',
+    corIcone: '',
+  };
 
   constructor(
     private http: HttpService,
@@ -62,7 +76,18 @@ export class ConviteComponent implements OnInit {
       next: (response) => {
         this.objSessaoConvite = response;
         // console.warn('Sessão Retorno:', this.objSessaoConvite);
-        this.GetTemplateLoja(response.LojCodi);
+        if (!this.objSessaoConvite.SesLibe || !this.objSessaoConvite.SesStat) {
+          // alert('Sessão não encontrada. Contate o responsável da Loja.');
+          this.mensagem.corIcone = 'yellow';
+          this.mensagem.icone = 'pi-exclamation-triangle';
+          this.mensagem.titulo = 'Convite não encontrado.';
+          this.mensagem.corpoMensagem =
+            'Sessão não encontrada. Contate o responsável da Loja.';
+          this.boolDialogMensagem = true;
+          this.boolLoading = false;
+        } else {
+          this.GetTemplateLoja(response.LojCodi);
+        }
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);
@@ -148,6 +173,10 @@ export class ConviteComponent implements OnInit {
         this.boolLoading = false;
       },
     });
+  }
+
+  FechaDialog() {
+    this.boolDialogMensagem = false;
   }
 
   onContainerClick(event: Event): void {

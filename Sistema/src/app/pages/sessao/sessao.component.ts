@@ -97,11 +97,21 @@ export class SessaoComponent implements OnInit {
         error: (error) => {
           console.error('Erro ao carregar dados:', error);
           this.boolLoading = false;
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro: ',
+            detail: 'Falha ao realizar a operação, contate o suporte.',
+          });
         },
       });
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       this.boolLoading = false;
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro: ',
+        detail: 'Falha ao realizar a operação, contate o suporte.',
+      });
     }
   }
 

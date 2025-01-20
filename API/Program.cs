@@ -16,7 +16,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
         builder => builder
-            .WithOrigins("http://localhost:4200", "https://www.victoramaro.com.br/")
+            .WithOrigins(
+            "http://localhost:4200",
+            "https://dev.visitatus.com.br/",
+            "https://visitatus.com.br/"
+            )
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
