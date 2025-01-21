@@ -62,6 +62,129 @@ namespace API_Visitatus.Controllers
             return Ok(listaRetorno);
         }
 
+        [HttpGet("{usuCodi}/{sesCodi}")]
+        public async Task<ActionResult<IEnumerable<string>>> GetCertificado(long usuCodi = 0, long sesCodi = 0)
+        {
+            if (usuCodi == 0 || sesCodi == 0)
+            {
+                return BadRequest("Parâmetros Inválidos.");
+            }
+
+            string htmlCorpo = "";
+
+            try
+            {
+                //-> Retornando as informações da Loja para emitir o certificado
+                var LojaCertificado = await (from ses in _context.Sessaos
+                                             join tip in _context.TipoSessaos on ses.TiScodi equals tip.TiScodi
+                                             join loj in _context.Lojas on ses.LojCodi equals loj.LojCodi
+                                             join pot in _context.Potencia on loj.PotCodi equals pot.PotCodi
+                                             join cid in _context.Cidades on loj.CidCodi equals cid.CidCodi
+                                             join est in _context.Estados on cid.EstCodi equals est.EstCodi
+                                             where ses.SesCodi == sesCodi
+                                             select new
+                                             {
+                                                 loj.LojCodi,
+                                                 loj.LojNome,
+                                                 loj.LojNumL,
+                                                 tip.TiSnome,
+                                                 pot.PotSigl,
+                                                 pot.PotNome,
+                                                 cid.CidNome,
+                                                 est.EstSigl,
+                                                 ses.SesDtHr,
+                                                 loj.LojLogo,
+                                                 pot.PotLogo
+                                             }).FirstOrDefaultAsync();
+
+                //-> Retornando a Gestão Administrativa atual (cargos)
+                if(LojaCertificado == null)
+                {
+                    return BadRequest("Sem informações da Loja para emissão do certificado.");
+                }
+                List<GestaoAdmAtivaModel> gestaoAdmAtual = await (from l in _context.Lojas
+                                                                  join ga in _context.GestaoAdministrativas on l.LojCodi equals ga.LojCodi
+                                                                  join gc in _context.GestaoCargos on ga.GstAdmCodi equals gc.GstAdmCodi
+                                                                  join c in _context.Cargos on gc.CarCodi equals c.CarCodi
+                                                                  join u in _context.Usuarios on gc.UsuCodi equals u.UsuCodi
+                                                                  where l.LojCodi == LojaCertificado!.LojCodi &&
+                                                                        ga.GstAdmStat == true &&
+                                                                        ga.GstAdmDtIn <= DateTime.Today &&
+                                                                        ga.GstAdmDtFi >= DateTime.Today
+                                                                  orderby ga.GstAdmDtFi descending
+                                                                  select new GestaoAdmAtivaModel
+                                                                  {
+                                                                      LojCodi = l.LojCodi,
+                                                                      LojNome = l.LojNome,
+                                                                      LojNumL = l.LojNumL,
+                                                                      GstAdmNome = ga.GstAdmNome,
+                                                                      GstAdmDtIn = ga.GstAdmDtIn,
+                                                                      GstAdmDtFi = ga.GstAdmDtFi,
+                                                                      GstAdmStat = ga.GstAdmStat,
+                                                                      CarNome = c.CarNome,
+                                                                      UsuNome = u.UsuNome,
+                                                                      CarCodi = c.CarCodi
+                                                                  }).ToListAsync();
+
+                //-> Retornando o template do certificado.
+                var templateCertificado = await (from cer in _context.TemplateCertificadoLojas
+                                                 join pre in _context.TemplateCertificadoPresencas on cer.TmpCrtPreCodi equals pre.TmpCrtPreCodi
+                                                 join loj in _context.Lojas on cer.LojCodi equals loj.LojCodi
+                                                 join ses in _context.Sessaos on loj.LojCodi equals ses.LojCodi
+                                                 where ses.SesCodi == sesCodi
+                                                 select new
+                                                 {
+                                                     pre.TmpCrtPreMode
+                                                 }).FirstOrDefaultAsync();
+
+                if (templateCertificado != null)
+                {
+                    htmlCorpo = templateCertificado.TmpCrtPreMode
+                        .Replace("[LojLogo]", LojaCertificado!.LojLogo)
+                        .Replace("[PotLogo]", LojaCertificado.PotLogo)
+                        .Replace("[LojNome]", LojaCertificado.LojNome)
+                        .Replace("[PotSigl]", LojaCertificado.PotSigl)
+                        .Replace("[PotNome]", LojaCertificado.PotNome)
+                        .Replace("[TipoSessao]", LojaCertificado.TiSnome)
+                        .Replace("[CidadeLoja]", LojaCertificado.CidNome + ", " + LojaCertificado.EstSigl)
+                        .Replace("[DataSessao]", LojaCertificado.SesDtHr.ToShortDateString())
+                        .Replace("[NomeVM]", gestaoAdmAtual.Count > 0 ? gestaoAdmAtual.Where(g => g.CarCodi == 1).FirstOrDefault()!.UsuNome : "")
+                        .Replace("[CargoVM]", gestaoAdmAtual.Count > 0 ? gestaoAdmAtual.Where(g => g.CarCodi == 1).FirstOrDefault()!.CarNome : "")
+                        .Replace("[NomeSecretario]", gestaoAdmAtual.Count > 0 ? gestaoAdmAtual.Where(g => g.CarCodi == 4).FirstOrDefault()!.UsuNome : "")
+                        .Replace("[CargoSecretario]", gestaoAdmAtual.Count > 0 ? gestaoAdmAtual.Where(g => g.CarCodi == 4).FirstOrDefault()!.CarNome : "")
+                        ;
+                }
+
+                //-> Retornando os dados do usuário
+                var dadosUsuario = await (from usr in _context.Usuarios
+                                          join per in _context.PerfilUsuarios on usr.UsuCodi equals per.UsuCodi
+                                          join loj in _context.Lojas on per.LojCodi equals loj.LojCodi
+                                          join ses in _context.Sessaos on loj.LojCodi equals ses.LojCodi
+                                          where ses.SesCodi == sesCodi && usr.UsuCodi == usuCodi
+                                          select new
+                                          {
+                                              usr.UsuNome,
+                                              loj.LojNome,
+                                              loj.LojNumL
+                                          }).FirstOrDefaultAsync();
+
+                if(dadosUsuario != null && dadosUsuario.UsuNome.Length > 0)
+                {
+                    htmlCorpo = htmlCorpo
+                                     .Replace("[NomeUsuario]", dadosUsuario.UsuNome)
+                                     .Replace("[NomeLoja]", dadosUsuario.LojNome)
+                                     .Replace("[NumeroLoja]", dadosUsuario.LojNumL)
+                                     ;
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Erro ao confirmar presença: {ex.Message} \n {ex.InnerException?.Message}");
+            }
+
+            return Ok(htmlCorpo);
+        }
+
         [HttpPost]
         public async Task<ActionResult<string>> PostConfirmaPresenca([FromBody] ConsultaUsuarioLojaModel objPresenca)
         {
@@ -258,28 +381,28 @@ namespace API_Visitatus.Controllers
 
                 //-> Retornando a Gestão Administrativa atual (cargos)
                 List<GestaoAdmAtivaModel> gestaoAdmAtual = await (from l in _context.Lojas
-                                                          join ga in _context.GestaoAdministrativas on l.LojCodi equals ga.LojCodi
-                                                          join gc in _context.GestaoCargos on ga.GstAdmCodi equals gc.GstAdmCodi
-                                                          join c in _context.Cargos on gc.CarCodi equals c.CarCodi
-                                                          join u in _context.Usuarios on gc.UsuCodi equals u.UsuCodi
-                                                          where l.LojCodi == LojaCertificado.LojCodi &&
-                                                                ga.GstAdmStat == true &&
-                                                                ga.GstAdmDtIn <= DateTime.Today &&
-                                                                ga.GstAdmDtFi >= DateTime.Today
-                                                          orderby ga.GstAdmDtFi descending
-                                                          select new GestaoAdmAtivaModel
-                                                          {
-                                                              LojCodi = l.LojCodi,
-                                                              LojNome = l.LojNome,
-                                                              LojNumL = l.LojNumL,
-                                                              GstAdmNome = ga.GstAdmNome,
-                                                              GstAdmDtIn = ga.GstAdmDtIn,
-                                                              GstAdmDtFi = ga.GstAdmDtFi,
-                                                              GstAdmStat = ga.GstAdmStat,
-                                                              CarNome = c.CarNome,
-                                                              UsuNome = u.UsuNome,
-                                                              CarCodi = c.CarCodi
-                                                          }).ToListAsync();
+                                                                  join ga in _context.GestaoAdministrativas on l.LojCodi equals ga.LojCodi
+                                                                  join gc in _context.GestaoCargos on ga.GstAdmCodi equals gc.GstAdmCodi
+                                                                  join c in _context.Cargos on gc.CarCodi equals c.CarCodi
+                                                                  join u in _context.Usuarios on gc.UsuCodi equals u.UsuCodi
+                                                                  where l.LojCodi == LojaCertificado.LojCodi &&
+                                                                        ga.GstAdmStat == true &&
+                                                                        ga.GstAdmDtIn <= DateTime.Today &&
+                                                                        ga.GstAdmDtFi >= DateTime.Today
+                                                                  orderby ga.GstAdmDtFi descending
+                                                                  select new GestaoAdmAtivaModel
+                                                                  {
+                                                                      LojCodi = l.LojCodi,
+                                                                      LojNome = l.LojNome,
+                                                                      LojNumL = l.LojNumL,
+                                                                      GstAdmNome = ga.GstAdmNome,
+                                                                      GstAdmDtIn = ga.GstAdmDtIn,
+                                                                      GstAdmDtFi = ga.GstAdmDtFi,
+                                                                      GstAdmStat = ga.GstAdmStat,
+                                                                      CarNome = c.CarNome,
+                                                                      UsuNome = u.UsuNome,
+                                                                      CarCodi = c.CarCodi
+                                                                  }).ToListAsync();
 
                 //-> Retornando o template do certificado.
                 var templateCertificado = await (from cer in _context.TemplateCertificadoLojas
@@ -349,7 +472,7 @@ namespace API_Visitatus.Controllers
                             return BadRequest("Falha ao alterar o registro");
                         }
                     }
-                    else if(!itemPresente.PreAtiv && itemPresente.MembroLoja)
+                    else if (!itemPresente.PreAtiv && itemPresente.MembroLoja)
                     {
                         Presenca objPresencaUpdate = new Presenca();
                         objPresencaUpdate.UsuCodi = itemPresente.UsuCodi;

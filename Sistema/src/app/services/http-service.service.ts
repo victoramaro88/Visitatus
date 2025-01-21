@@ -147,6 +147,12 @@ export class HttpService {
     );
   }
 
+  public GetCertificado(usuCodi: number, sesCodi: number): Observable<string> {
+    return this.http.get<string>(
+      `${environment.apiServicos}/Presenca/GetCertificado/${usuCodi}/${sesCodi}`
+    );
+  }
+
   // #endregion
 
   // #region POST

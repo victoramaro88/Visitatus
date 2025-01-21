@@ -1,1 +1,12 @@
-<p>certificado works!</p>
+<p-blockUI [blocked]="boolLoading">
+  <i class="pi pi-spin pi-spinner-dotted" style="font-size: 3rem"></i>
+</p-blockUI>
+<p-toast></p-toast>
+
+<div>
+  <div #contentDiv [innerHTML]="htmlContent"></div>
+</div>
+
+<div class="text-center">
+  <button (click)="saveAsImage()">Salvar como Imagem</button>
+</div>
