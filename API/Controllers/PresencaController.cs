@@ -1,4 +1,5 @@
 ﻿using API_Visitatus.Models;
+using API_Visitatus.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,11 +10,13 @@ namespace API_Visitatus.Controllers
     {
         private readonly AppDbContext _context;
         private readonly EmailService _emailService;
+        private readonly EncryptionService _encryptService;
 
-        public PresencaController(AppDbContext context, EmailService emailService)
+        public PresencaController(AppDbContext context, EmailService emailService, EncryptionService encryptService)
         {
             _context = context;
             _emailService = emailService;
+            _encryptService = encryptService;
         }
 
         [HttpGet("{SesCodi}")]
@@ -181,6 +184,8 @@ namespace API_Visitatus.Controllers
             {
                 return BadRequest($"Erro ao confirmar presença: {ex.Message} \n {ex.InnerException?.Message}");
             }
+
+            //string testeURL = RetornaUrlCertificado(usuCodi, sesCodi);
 
             return Ok(htmlCorpo);
         }
@@ -520,6 +525,22 @@ namespace API_Visitatus.Controllers
                 //await transaction.RollbackAsync();
                 return BadRequest($"Erro ao confirmar presença: {ex.Message} \n {ex.InnerException?.Message}");
             }
+        }
+
+        [NonAction]
+        public string RetornaUrlCertificado(long usuCodi = 0, long sesCodi = 0)
+        {
+            string urlRetorno = "";
+
+            if(usuCodi > 0  && sesCodi > 0)
+            {
+                string paramConcat = usuCodi.ToString() + "|" + sesCodi.ToString();
+                string paramCrypto = _encryptService.Encrypt(paramConcat);
+                string paramBase64 = _encryptService.ConvertToBase64(paramCrypto);
+                urlRetorno = "http://localhost:4200/certificado?data=" + paramBase64;
+            }
+
+            return urlRetorno;
         }
     }
 }

@@ -132,6 +132,30 @@ namespace API_Visitatus.Controllers
             return Ok(decrypted);
         }
 
+        [HttpPost]
+        public IActionResult ConvertToBase64([FromBody] EncryptAPIModel objMensagem)
+        {
+            if (objMensagem == null && objMensagem?.valorMensagem?.Length == 0)
+            {
+                return BadRequest("Parâmetros Inválidos.");
+            }
+
+            var encrypted = _encryptionService.ConvertToBase64(objMensagem!.valorMensagem!);
+            return Ok(encrypted);
+        }
+
+        [HttpPost]
+        public IActionResult ConvertFromBase64([FromBody] EncryptAPIModel objMensagem)
+        {
+            if (objMensagem == null && objMensagem?.valorMensagem?.Length == 0)
+            {
+                return BadRequest("Parâmetros Inválidos.");
+            }
+
+            var encrypted = _encryptionService.ConvertFromBase64(objMensagem!.valorMensagem!);
+            return Ok(encrypted);
+        }
+
         [NonAction]
         public PasswordVerificationResult VerifyPassword(string hashedPassword, string plainPassword)
         {

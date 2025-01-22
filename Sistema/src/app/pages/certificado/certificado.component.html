@@ -7,6 +7,6 @@
   <div #contentDiv [innerHTML]="htmlContent"></div>
 </div>
 
-<div class="text-center">
+<div *ngIf="boolButtonSaveImg" class="text-center">
   <button (click)="saveAsImage()">Salvar como Imagem</button>
 </div>

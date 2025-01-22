@@ -28,6 +28,7 @@ export class CertificadoComponent implements OnInit {
   objCryptAPI: EncryptAPIModel = new EncryptAPIModel();
 
   parametroRota!: string | null;
+  boolButtonSaveImg: boolean = false;
 
   constructor(
     private http: HttpService,
@@ -41,8 +42,10 @@ export class CertificadoComponent implements OnInit {
 
   ngOnInit(): void {
     try {
+      this.boolButtonSaveImg = false;
       //-> URL TESTE DE RECEBIMENTO:
       // http://localhost:4200/certificado?data=VTJGc2RHVmtYMTk1Z3pIRXhlM2FUZWZxUjVLcmhTVVRSTENvRGJpR2RWOD0=
+      // http://localhost:4200/certificado?data=ODJObWdWNFA3UExISDVUNnY4VFNzdz09
 
       //-> ID's PARA TESTES:
       //#region TESTE PARA CRIPTOGRAFIA DE USUCODI E SESCODI
@@ -51,7 +54,8 @@ export class CertificadoComponent implements OnInit {
       let sesCodi: number = 1;
       let paramConcat: string = usuCodi.toString() + '|' + sesCodi;
       console.warn('PARÂMETROS CONCATENADOS: ', paramConcat);
-      let paramCripto: string = this.cryptoService.criptografar(paramConcat);
+      // let paramCripto: string = this.cryptoService.criptografar(paramConcat);
+      let paramCripto: string = this.cryptoService.encryptAPI(paramConcat);
       console.warn('PARÂMETROS ENCRIPTADOS: ', paramCripto);
       let paramBase64: string =
         this.base64Service.convertStringToBase64(paramCripto);
@@ -78,13 +82,20 @@ export class CertificadoComponent implements OnInit {
       //
       this.route.queryParams.subscribe((params) => {
         this.parametroRota = params['data'];
+        // console.warn('PARÂMETROS RECEBIDOS:', this.parametroRota);
         let paramBase64Convert: string =
           this.base64Service.decodeBase64ToString(this.parametroRota!);
+        // let paramDecripto: string =
+        //   this.cryptoService.decriptografar(paramBase64Convert);
         let paramDecripto: string =
-          this.cryptoService.decriptografar(paramBase64Convert);
+          this.cryptoService.decryptAPI(paramBase64Convert);
 
         let usuCodiDecripto: number = +paramDecripto.split('|')[0];
         let sesCodiDecripto: number = +paramDecripto.split('|')[1];
+        // console.warn(
+        //   'UsuCodi / SesCodi: ',
+        //   usuCodiDecripto + ' / ' + sesCodiDecripto
+        // );
 
         this.GetCertificado(usuCodiDecripto, sesCodiDecripto);
       });
@@ -93,17 +104,18 @@ export class CertificadoComponent implements OnInit {
       console.warn('Falha ao receber os parâmetros.');
     }
 
-    this.objCryptAPI.valorMensagem = 'Teste Amaro';
-    this.Encriptar(this.objCryptAPI);
+    // this.objCryptAPI.valorMensagem = 'Teste Amaro';
+    // this.Encriptar(this.objCryptAPI);
   }
 
   GetCertificado(usuCodi: number, sesCodi: number) {
     this.boolLoading = true;
     this.http.GetCertificado(usuCodi, sesCodi).subscribe({
       next: (response) => {
-        console.warn('HTML Retorno:', response);
+        // console.warn('HTML Retorno:', response);
         this.htmlContent = this.sanitizer.bypassSecurityTrustHtml(response);
         this.boolLoading = false;
+        this.boolButtonSaveImg = true;
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);

@@ -42,4 +42,24 @@ public class EncryptionService
             return sr.ReadToEnd();
         }
     }
+
+    // Converte uma string para Base64
+    public string ConvertToBase64(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            throw new ArgumentException("A string de entrada não pode ser nula ou vazia.");
+
+        byte[] byteArray = Encoding.UTF8.GetBytes(input);
+        return Convert.ToBase64String(byteArray);
+    }
+
+    // Converte uma string Base64 de volta para texto
+    public string ConvertFromBase64(string base64Input)
+    {
+        if (string.IsNullOrEmpty(base64Input))
+            throw new ArgumentException("A string Base64 de entrada não pode ser nula ou vazia.");
+
+        byte[] byteArray = Convert.FromBase64String(base64Input);
+        return Encoding.UTF8.GetString(byteArray);
+    }
 }
