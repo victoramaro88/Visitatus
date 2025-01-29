@@ -52,10 +52,10 @@ export class MenuComponent implements OnInit {
         label: 'Cadastros',
         icon: 'pi pi-book',
         items: [
-          {
-            label: 'Loja',
-            icon: 'pi pi-warehouse',
-          },
+          // {
+          //   label: 'Loja',
+          //   icon: 'pi pi-warehouse',
+          // },
           {
             label: 'Usuario',
             icon: 'pi pi-users',
@@ -70,62 +70,57 @@ export class MenuComponent implements OnInit {
               this.router.navigate(['/sessao']);
             },
           },
-          {
-            separator: true,
-          },
-          {
-            label: 'Templates',
-            icon: 'pi pi-palette',
-            items: [
-              {
-                label: 'Apollo',
-                icon: 'pi pi-palette',
-                badge: '2',
-              },
-              {
-                label: 'Ultima',
-                icon: 'pi pi-palette',
-                badge: '3',
-              },
-            ],
-          },
+          // {
+          //   separator: true,
+          // },
+          // {
+          //   label: 'Templates',
+          //   icon: 'pi pi-palette',
+          //   items: [
+          //     {
+          //       label: 'Apollo',
+          //       icon: 'pi pi-palette',
+          //       badge: '2',
+          //     },
+          //     {
+          //       label: 'Ultima',
+          //       icon: 'pi pi-palette',
+          //       badge: '3',
+          //     },
+          //   ],
+          // },
         ],
       },
       // {
-      //     label: 'Features',
-      //     icon: 'pi pi-star'
+      //   label: 'Contato',
+      //   icon: 'pi pi-envelope',
+      //   command: () => {
+      //     this.router.navigate(['/contato']);
+      //   },
       // },
-      {
-        label: 'Contato',
-        icon: 'pi pi-envelope',
-        command: () => {
-          this.router.navigate(['/contato']);
-        },
-      },
-      {
-        label: 'Temporários',
-        // icon: 'pi pi-book',
-        items: [
-          {
-            label: 'Templates',
-            command: () => {
-              this.router.navigate(['/template']);
-            },
-          },
-          {
-            label: 'Certificado',
-            command: () => {
-              this.router.navigate(['/certificado']);
-            },
-          },
-          {
-            label: 'Confirmação de Presença',
-            command: () => {
-              this.GetSessaoBySesCodi(4); // -> Código da sessão para testes: 4
-            },
-          },
-        ],
-      },
+      // {
+      //   label: 'Temporários',
+      //   items: [
+      //     {
+      //       label: 'Templates',
+      //       command: () => {
+      //         this.router.navigate(['/template']);
+      //       },
+      //     },
+      //     {
+      //       label: 'Certificado',
+      //       command: () => {
+      //         this.router.navigate(['/certificado']);
+      //       },
+      //     },
+      //     {
+      //       label: 'Confirmação de Presença',
+      //       command: () => {
+      //         this.GetSessaoBySesCodi(4); // -> Código da sessão para testes: 4
+      //       },
+      //     },
+      //   ],
+      // },
     ];
   }
 

@@ -4,8 +4,9 @@
 <p-toast />
 
 <div *ngIf="objSessaoConvite" class="responsive-div">
-  <p-card header="Confirmação de Presença">
+  <p-card>
     <!-- CABEÇALHO -->
+    <h2 class="text-center">Confirmação de Presença</h2>
     <div class="text-center">
       <p class="m-0">Confirme sua presença para a sessão:</p><br>
       <!-- <div class="grid">
@@ -41,7 +42,7 @@
       <b>Sessão: </b> {{objSessaoConvite.TiSNome}}<br>
       <b>Grau: </b> {{objSessaoConvite.GraNome}}<br>
       <b>Dia:</b> {{objSessaoConvite.SesDtHr | date: 'dd/MM/yyyy'}}<br>
-      <b>Hora: </b> {{objSessaoConvite.SesDtHr | date: 'HH:mm'}}<br>
+      <b>Horário: </b> {{objSessaoConvite.SesDtHr | date: 'HH:mm'}}<br>
       <!-- <b>Descrição: </b>
       <br>
       <div class="m-3 text-center">
@@ -92,7 +93,7 @@
           </div>
           <div class="field col-12 md:col-6 p-fluid">
             <label for="nomeUser">Nome da Loja</label><br>
-            <input [disabled]="boolBlockIntputsLoja" id="nomeUser" type="text" pInputText [(ngModel)]="this.objConsultaUsrLj.objLojaConsulta.LojNome" />
+            <input [disabled]="boolBlockIntputsLoja" id="nomeUser" type="text" pInputText [(ngModel)]="this.objConsultaUsrLj.objLojaConsulta.LojNome" placeholder="Ex.: A.R.L.S. Nome da Sua Loja"/>
           </div>
           <div class="field col-12 md:col-3 p-fluid">
             <label for="usuNasc">Data de Nascimento</label>

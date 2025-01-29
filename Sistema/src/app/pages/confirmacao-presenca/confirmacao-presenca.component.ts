@@ -178,13 +178,20 @@ export class ConfirmacaoPresencaComponent implements OnInit {
             this.http.GetUsuarioByPotCodi(PotCodi, UsuNCIM).subscribe({
               next: (response) => {
                 // console.warn('Usuário 2:', response);
-                this.objConsultaUsrLj.objUsuarioLoja.UsuCodi = response.UsuCodi;
-                this.objConsultaUsrLj.objUsuarioLoja.UsuNome = response.UsuNome;
-                this.objConsultaUsrLj.objUsuarioLoja.UsuNCel = response.UsuNCel;
-                this.objConsultaUsrLj.objUsuarioLoja.UsuEmai = response.UsuEmai;
-                this.objConsultaUsrLj.objUsuarioLoja.UsuNasc = new Date(
-                  response.UsuNasc.toString()
-                );
+                if (response.UsuCodi > 0) {
+                  this.objConsultaUsrLj.objUsuarioLoja.UsuCodi =
+                    response.UsuCodi;
+                  this.objConsultaUsrLj.objUsuarioLoja.UsuNome =
+                    response.UsuNome;
+                  this.objConsultaUsrLj.objUsuarioLoja.UsuNCel =
+                    response.UsuNCel;
+                  this.objConsultaUsrLj.objUsuarioLoja.UsuEmai =
+                    response.UsuEmai;
+                  this.objConsultaUsrLj.objUsuarioLoja.UsuNasc = new Date(
+                    response.UsuNasc.toString()
+                  );
+                  this.boolBlockIntputsUsuario = true;
+                }
 
                 this.boolLoading = false;
               },

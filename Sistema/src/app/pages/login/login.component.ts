@@ -7,11 +7,12 @@ import { HttpService } from '../../services/http-service.service';
 import { CryptoService } from '../../services/crypto.service';
 import { UsuarioLogadoModel } from '../../models/UsuarioLogado.Model';
 import { PerfilUsuarioListaModel } from '../../models/PerfilUsuarioLista.Model';
+import { RodapeComponent } from '../rodape/rodape.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ImportsModule],
+  imports: [ImportsModule, RodapeComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
   providers: [MessageService],

@@ -14,10 +14,9 @@ import { PermissaoPerfilListaModel } from '../../models/PermissaoPerfilLista.Mod
   imports: [ImportsModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
-  providers: [MessageService]
+  providers: [MessageService],
 })
 export class HomeComponent implements OnInit {
-
   boolLoading = true;
 
   objPerfilUsuario: PerfilUsuarioListaModel = new PerfilUsuarioListaModel();
@@ -30,7 +29,9 @@ export class HomeComponent implements OnInit {
     private router: Router,
     private cryptoService: CryptoService
   ) {
-    this.objPerfilUsuario = JSON.parse(this.cryptoService.lerDoSessionStorage("prf"));
+    this.objPerfilUsuario = JSON.parse(
+      this.cryptoService.lerDoSessionStorage('prf')
+    );
     // console.warn(this.objPerfilUsuario);
   }
 
@@ -43,18 +44,17 @@ export class HomeComponent implements OnInit {
       this.http.GetPermissaoPerfil(perCodi).subscribe({
         next: (response) => {
           this.lstPermissaoPerfil = response;
-          console.warn("Lista de Permissões do Perfil do Usuário:", this.lstPermissaoPerfil);
+          // console.warn("Lista de Permissões do Perfil do Usuário:", this.lstPermissaoPerfil);
           this.boolLoading = false;
         },
         error: (error) => {
           console.error('Erro ao carregar dados:', error);
           this.boolLoading = false;
-        }
+        },
       });
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       this.boolLoading = false;
     }
   }
-
 }
