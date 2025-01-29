@@ -9,3 +9,11 @@ export const environment = {
   // urlValidaCarteira: "https://www.victoramaro.com.br/BetterLife/valida?data=",
   // linkExibirCarteira: "http://localhost:4200/carteira?data="
 };
+
+//-> PÁGINAS QUE NECESSITAM ATENÇÃO NA URL DAS IMAGENS:
+/*
+Páginas:
+  - Convites(banco de dados);
+  - Certificados(banco de dados);
+  - Index da aplicação;
+*/
