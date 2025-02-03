@@ -44,7 +44,7 @@ namespace API_Visitatus.Controllers
                                                            join ses in _context.Sessaos on pre.SesCodi equals ses.SesCodi
                                                            join per in _context.PerfilUsuarios on usu.UsuCodi equals per.UsuCodi
                                                            where pre.SesCodi == SesCodi
-                                                                && per.PerCodi == 4 //-> Percodi = 4: Membro
+                                                                && (per.PerCodi == 3 || per.PerCodi == 4 || per.PerCodi == 5) //-> Percodi = Vist/Memb/Fil
                                                            select new ListaPresencaModel
                                                            {
                                                                SesCodi = pre.SesCodi,
@@ -61,7 +61,7 @@ namespace API_Visitatus.Controllers
                                                                    preSub.LojCodi == lojCodi &&
                                                                    _context.PerfilUsuarios.Any(perSub =>
                                                                        perSub.UsuCodi == preSub.UsuCodi &&
-                                                                       perSub.PerCodi == 4)) //-> Percodi = 4: Membro
+                                                                       perSub.PerCodi == 4)) 
                                                            })
                                                             .OrderBy(r => r.MembroLoja)
                                                             .ThenBy(r => r.UsuNome)
