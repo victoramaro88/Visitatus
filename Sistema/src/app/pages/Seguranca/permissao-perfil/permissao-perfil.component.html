@@ -1,0 +1,59 @@
+<p-blockUI [blocked]="boolLoading">
+  <i class="pi pi-spin pi-spinner-dotted" style="font-size: 3rem"></i>
+</p-blockUI>
+<p-toast />
+
+<h2>Cadastro de Permissões do Perfil</h2>
+
+<div class="container">
+  <div class="grid">
+    <div class="flex flex-column  col-12 md:col-6">
+      <label for="PerCodi"><b>Perfil</b></label>
+      <p-dropdown
+        placeholder="Selecione"
+        id="PerCodi"
+        [options]="lstPerfil"
+        optionLabel="PerNome"
+        [(ngModel)]="objPerfil"
+        [style]="{ width: '100%' }"
+        [showClear]="true"
+        (onChange)="GetPermissaoPerfil(objPerfil.PerCodi);"
+      ></p-dropdown>
+    </div>
+  </div>
+
+  <div *ngIf="lstPermissaoPerfil.length > 0" class="col-offset-0 md:col-offset-2 flex flex-column col-12 md:col-8">
+    <p-table [value]="lstPermissaoPerfil" [tableStyle]="{ 'min-width': '30rem' }">
+      <ng-template pTemplate="header">
+          <tr>
+              <th style="text-align: center;">Permissão</th>
+              <th style="text-align: center;">Status</th>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+          <tr>
+              <td style="text-align: center;">{{ item.pemNome }}</td>
+              <td style="text-align: center;">
+                <p-inputSwitch [(ngModel)]="item.papAtvo" />
+                <!-- <p-checkbox
+                  [(ngModel)]="item.papAtvo"
+                  [binary]="true"
+                  [inputId]="item.pemNome"
+                /> -->
+              </td>
+              <!-- <td style="text-align: center;">{{ item.papAtvo }}</td> -->
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+            <td colspan="2" style="text-align: center;"><b>SEM RESULTADOS.</b></td>
+        </tr>
+    </ng-template>
+    </p-table>
+
+    <div class="text-center mt-3">
+      <p-button (onClick)="Salvar();" label="Salvar Informações" severity="success" />
+    </div>
+  </div>
+
+</div>

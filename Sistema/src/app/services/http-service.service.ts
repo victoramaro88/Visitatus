@@ -132,6 +132,12 @@ export class HttpService {
     );
   }
 
+  public GetPerfil(perCodi: number): Observable<PerfilModel[]> {
+    return this.http.get<PerfilModel[]>(
+      `${environment.apiServicos}/Perfil/GetPerfil/${perCodi}`
+    );
+  }
+
   public GetPerfilByPerCodi(idsPerfil: string): Observable<PerfilModel[]> {
     return this.http.get<PerfilModel[]>(
       `${environment.apiServicos}/Perfil/GetPerfilByPerCodi/${idsPerfil}`
@@ -252,6 +258,15 @@ export class HttpService {
     return this.http.put<string>(
       `${environment.apiServicos}/Usuario/PutUsuarioCompleto/${usuCodi}`,
       usuarioCompleto
+    );
+  }
+
+  public PutPermissaoPerfil(
+    lstPermissaoPerfil: PermissaoPerfilListaModel[]
+  ): Observable<string> {
+    return this.http.put<string>(
+      `${environment.apiServicos}/Permissao/PutPermissaoPerfil`,
+      lstPermissaoPerfil
     );
   }
 
