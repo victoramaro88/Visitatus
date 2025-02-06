@@ -56,7 +56,7 @@ export class PerfilComponent implements OnInit {
       this.http.GetPerfil(perCodi).subscribe({
         next: (response) => {
           this.lstPerfil = response;
-          console.warn('Lista de Perfis:', this.lstPerfil);
+          // console.warn('Lista de Perfis:', this.lstPerfil);
           this.boolLoading = false;
         },
         error: (error) => {
@@ -70,11 +70,159 @@ export class PerfilComponent implements OnInit {
     }
   }
 
-  NovoPerfil() {}
+  NovoPerfil() {
+    this.boolManterRegistro = true;
+    this.objPerfil.PerStat = true;
+  }
 
-  AtivaInativa(statusAtual: boolean, objPerfil: PerfilModel) {
-    console.warn(statusAtual);
-    console.warn(objPerfil);
+  AtivaInativa(perCodi: number, objPerfil: PerfilModel) {
+    objPerfil.PerStat = !objPerfil.PerStat;
+    this.PutPerfil(perCodi, objPerfil);
+  }
+
+  EditarRegistro(objPerfil: PerfilModel) {
+    this.boolManterRegistro = true;
+    this.objPerfil = objPerfil;
+  }
+
+  PutPerfil(perCodi: number, objPerfil: PerfilModel) {
+    try {
+      this.boolLoading = true;
+      this.http.PutPerfil(perCodi, objPerfil).subscribe({
+        next: (response) => {
+          // console.warn("Retorno Alteração:", response);
+          if (response === 'Alterado com sucesso!') {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Sucesso!',
+              detail: 'Registro alterado com sucesso!',
+            });
+            this.boolLoading = false;
+            // this.GetSessaoByLojCodi(this.objUsuarioLogado.lojCodi);
+          } else {
+            console.error('Erro ao salvar o registro: ', response);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Erro:',
+              detail: 'Falha ao alterar o registro.',
+            });
+            this.boolLoading = false;
+            // this.GetSessaoByLojCodi(this.objUsuarioLogado.lojCodi);
+          }
+        },
+        error: (error) => {
+          console.error('Erro ao carregar dados:', error);
+          this.boolLoading = false;
+        },
+      });
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+      this.boolLoading = false;
+    }
+  }
+
+  SalvarRegistro() {
+    if (this.ValidaCampos()) {
+      //-> Validando se já possui uma sessão com este número, para esta Loja
+      if (this.objPerfil.PerCodi === 0) {
+        //-> Modo de Inserção
+        try {
+          this.boolLoading = true;
+          this.http.PostPerfil(this.objPerfil).subscribe({
+            next: (response) => {
+              this.boolLoading = false;
+              if (response === 'OK') {
+                this.messageService.add({
+                  severity: 'success',
+                  summary: 'Sucesso!',
+                  detail: 'Registro salvo com sucesso!',
+                });
+                this.CancelaRegitro();
+                this.GetPerfil(0);
+              } else {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Erro:',
+                  detail: 'Falha ao realizar a operação.',
+                });
+              }
+            },
+            error: (error) => {
+              console.error('Erro ao carregar dados:', error);
+              this.boolLoading = false;
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Erro:',
+                detail: 'Falha ao realizar a operação.',
+              });
+            },
+          });
+        } catch (error) {
+          console.error('Erro ao carregar dados:', error);
+          this.boolLoading = false;
+        }
+      } else {
+        this.boolLoading = true;
+        //-> Modo de Edição
+        try {
+          this.http
+            .PutPerfil(this.objPerfil.PerCodi, this.objPerfil)
+            .subscribe({
+              next: (response) => {
+                this.boolLoading = false;
+                if (response === 'Alterado com sucesso!') {
+                  this.messageService.add({
+                    severity: 'success',
+                    summary: 'Sucesso!',
+                    detail: 'Registro alterado com sucesso!',
+                  });
+                  this.CancelaRegitro();
+                  this.GetPerfil(0);
+                } else {
+                  this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro:',
+                    detail: 'Falha ao realizar a operação.',
+                  });
+                }
+              },
+              error: (error) => {
+                console.error('Erro ao carregar dados:', error);
+                this.boolLoading = false;
+              },
+            });
+        } catch (error) {
+          console.error('Erro ao carregar dados:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro:',
+            detail: 'Falha ao realizar a operação.',
+          });
+          this.boolLoading = false;
+        }
+      }
+    }
+  }
+
+  CancelaRegitro() {
+    this.objPerfil = new PerfilModel();
+    this.boolManterRegistro = false;
+    this.lstPerfil = [];
+
+    this.GetPerfil(0);
+  }
+
+  ValidaCampos() {
+    if (this.objPerfil.PerNome.length === 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção:',
+        detail: 'Insira um nome para o perfil.',
+      });
+      return false;
+    }
+
+    return true;
   }
 
   onGlobalFilter(table: Table, event: Event) {

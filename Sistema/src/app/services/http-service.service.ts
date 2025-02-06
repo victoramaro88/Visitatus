@@ -228,6 +228,13 @@ export class HttpService {
     );
   }
 
+  public PostPerfil(objPerfil: PerfilModel): Observable<string> {
+    return this.http.post<string>(
+      `${environment.apiServicos}/Perfil/PostPerfil`,
+      objPerfil
+    );
+  }
+
   public PostLancamentoPresencaSessao(
     objPresenca: ListaPresencaModel[]
   ): Observable<string> {
@@ -267,6 +274,16 @@ export class HttpService {
     return this.http.put<string>(
       `${environment.apiServicos}/Permissao/PutPermissaoPerfil`,
       lstPermissaoPerfil
+    );
+  }
+
+  public PutPerfil(
+    perCodi: number,
+    objPerfil: PerfilModel
+  ): Observable<string> {
+    return this.http.put<string>(
+      `${environment.apiServicos}/Perfil/PutPerfil/${perCodi}`,
+      objPerfil
     );
   }
 

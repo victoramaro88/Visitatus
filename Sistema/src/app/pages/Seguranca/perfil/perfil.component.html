@@ -8,7 +8,7 @@
 <div class="container">
   <div *ngIf="!boolManterRegistro">
     <div class="text-right mb-3">
-      <p-button (click)="NovoPerfil();" label="Nova Sessão" [raised]="true" severity="primary" /> &nbsp;
+      <p-button (click)="NovoPerfil();" label="Novo Perfil" [raised]="true" severity="primary" /> &nbsp;
     </div>
 
     <p-table
@@ -50,8 +50,8 @@
                 <td style="text-align: center;">
                   <!-- <p-button (click)="GetSessaoBySesCodi(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-envelope" [rounded]="true" [text]="true" severity="warning" pTooltip="Convite da Sessão" tooltipPosition="left"/>
                   <p-button (click)="MarcarPresencas(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-check-square" [rounded]="true" [text]="true" severity="success" pTooltip="Marcar Presenças" tooltipPosition="left"/>
-                  <p-button (click)="EditarRegistro(item);" icon="pi pi-pen-to-square" [rounded]="true" [text]="true" severity="info" pTooltip="Editar" tooltipPosition="left"/>
                   <p-button (click)="LiberaTravaSessao(item.SesCodi, item);" icon="pi {{item.SesLibe ? 'pi-ban' : 'pi-thumbs-up'}}" [rounded]="true" [text]="true" [severity]="item.SesLibe ? 'danger' : 'success'" pTooltip="{{item.SesLibe ? 'Travar Sessão' : 'Liberar Sessão'}}" tooltipPosition="left"/> -->
+                  <p-button (click)="EditarRegistro(item);" icon="pi pi-pen-to-square" [rounded]="true" [text]="true" severity="info" pTooltip="Editar" tooltipPosition="left"/>
                   <p-button (click)="AtivaInativa(item.PerCodi, item);" icon="pi {{item.PerStat ? 'pi-lock-open' : 'pi-lock'}}" [rounded]="true" [text]="true" [severity]="item.PerStat ? 'danger' : 'success'" pTooltip="{{item.PerStat ? 'Inativar Perfil' : 'Ativar Perfil' }}" tooltipPosition="left"/>
                 </td>
             </tr>
@@ -62,5 +62,26 @@
           </tr>
       </ng-template>
     </p-table>
+  </div>
+</div>
+
+<div *ngIf="boolManterRegistro" class="container">
+
+  <div class="formgrid grid">
+    <div class="field col-12 md:col-8">
+        <label for="nomeSessao">Nome do Perfil</label>
+        <input pInputText id="nomeSessao"
+        maxlength="100"
+        [(ngModel)]="objPerfil.PerNome" type="text" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+    <div class="field col-12 md:col-4">
+        <label for="liberarSessao">Status</label><br>
+        <p-inputSwitch [(ngModel)]="objPerfil.PerStat" />
+    </div>
+</div>
+
+  <div class="text-right">
+    <p-button (click)="SalvarRegistro();" label="Salvar" [raised]="true" severity="success" /> &nbsp;
+    <p-button (click)="CancelaRegitro();" label="Cancelar" [raised]="true" severity="danger" />
   </div>
 </div>

@@ -224,7 +224,6 @@ namespace API_Visitatus.Controllers
             }
         }
 
-
         [HttpPut("{sesCodi}")]
         public async Task<IActionResult> PutSessao(long sesCodi, [FromBody] Sessao sessao)
         {
