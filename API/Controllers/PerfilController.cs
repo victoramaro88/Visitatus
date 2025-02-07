@@ -80,9 +80,90 @@ namespace API_Visitatus.Controllers
             }
         }
 
-        private bool RitoExists(int id)
+        [HttpPut("{perCodi}")]
+        public async Task<IActionResult> PutPerfil(int perCodi, [FromBody] Perfil perfil)
         {
-            return _context.Ritos.Any(e => e.RitCodi == id);
+            try
+            {
+                if (perCodi != perfil.PerCodi)
+                {
+                    return BadRequest();
+                }
+
+                _context.Entry(perfil).State = EntityState.Modified;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!PerfilExists(perCodi))
+                    {
+                        return NotFound("Registro não encontrado.");
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return Ok("Alterado com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Sessao>> PostPerfil([FromBody] Perfil perfil)
+        {
+            bool novoRegistro = false;
+            if (perfil.PerCodi == 0)
+            {
+                novoRegistro = true;
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                perfil.PerCodi = _context.Perfils.Max(p => (int?)p.PerCodi) + 1 ?? 1;
+
+                _context.Perfils.Add(perfil);
+                var retorno = await _context.SaveChangesAsync();
+
+                if(novoRegistro)
+                {
+                    var lstPermissoes = await _context.Permissaos.ToListAsync();
+
+                    foreach (var itemPermissao in lstPermissoes)
+                    {
+                        PermissaoPerfil objPermissaoPerfil = new PermissaoPerfil();
+                        objPermissaoPerfil.PerCodi = perfil.PerCodi;
+                        objPermissaoPerfil.PemCodi = itemPermissao.PemCodi;
+                        objPermissaoPerfil.PapAtvo = false;
+                        objPermissaoPerfil.PepStat = true;
+
+                        _context.PermissaoPerfils.Add(objPermissaoPerfil);
+                        var retornoPermPerf = await _context.SaveChangesAsync();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return BadRequest(ex.Message + " \n " + ex.InnerException?.Message);
+            }
+
+            await transaction.CommitAsync();
+            return Ok("OK");
+        }
+
+        private bool PerfilExists(int id)
+        {
+            return _context.Perfils.Any(e => e.PerCodi == id);
         }
     }
 }

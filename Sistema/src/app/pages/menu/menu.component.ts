@@ -91,6 +91,29 @@ export class MenuComponent implements OnInit {
           // },
         ],
       },
+      {
+        label: 'Configurações',
+        items: [
+          {
+            label: 'Perfis',
+            command: () => {
+              this.router.navigate(['/perfil']);
+            },
+          },
+          {
+            label: 'Permissões',
+            command: () => {
+              this.router.navigate(['/permissao']);
+            },
+          },
+          {
+            label: 'Permissões por Perfil',
+            command: () => {
+              this.router.navigate(['/permissao-perfil']);
+            },
+          },
+        ],
+      },
       // {
       //   label: 'Contato',
       //   icon: 'pi pi-envelope',

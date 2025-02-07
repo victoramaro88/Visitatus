@@ -224,7 +224,6 @@ namespace API_Visitatus.Controllers
             }
         }
 
-
         [HttpPut("{sesCodi}")]
         public async Task<IActionResult> PutSessao(long sesCodi, [FromBody] Sessao sessao)
         {
@@ -266,7 +265,7 @@ namespace API_Visitatus.Controllers
         {
             try
             {
-                sessao.SesCodi = _context.Sessaos.Max(p => (int?)p.SesCodi) + 1 ?? 1;
+                sessao.SesCodi = _context.Sessaos.Max(p => (long?)p.SesCodi) + 1 ?? 1;
 
                 _context.Sessaos.Add(sessao);
                 var retorno = await _context.SaveChangesAsync();

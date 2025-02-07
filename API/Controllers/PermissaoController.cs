@@ -112,6 +112,41 @@ namespace API_Visitatus.Controllers
             return Ok("Alterado com sucesso!");
         }
 
+        [HttpPut]
+        public async Task<IActionResult> PutPermissaoPerfil([FromBody] List<PermissaoPerfilListaModel> lstPermissaoPerfil)
+        {
+            if (lstPermissaoPerfil == null || lstPermissaoPerfil.Count == 0)
+            {
+                return BadRequest("Parâmetros inválidos.");
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                foreach (var itemPP in lstPermissaoPerfil)
+                {
+                    PermissaoPerfil objPP = new PermissaoPerfil();
+                    objPP.PerCodi = itemPP.perCodi;
+                    objPP.PemCodi = itemPP.pemCodi;
+                    objPP.PapAtvo = itemPP.papAtvo;
+                    objPP.PepStat = itemPP.pepStat;
+
+                    _context.Entry(objPP).State = EntityState.Modified;
+
+                    await _context.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return BadRequest("Falha ao realizar a operação: " + ex.Message);
+            }
+
+            return Ok("Alterado com sucesso!");
+        }
+
         [HttpPost]
         public async Task<ActionResult<Rito>> PostPermissao(Permissao permissao)
         {

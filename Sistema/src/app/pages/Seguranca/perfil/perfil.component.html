@@ -1,0 +1,87 @@
+<p-blockUI [blocked]="boolLoading">
+  <i class="pi pi-spin pi-spinner-dotted" style="font-size: 3rem"></i>
+</p-blockUI>
+<p-toast />
+
+<h2>Cadastro de Perfil</h2>
+
+<div class="container">
+  <div *ngIf="!boolManterRegistro">
+    <div class="text-right mb-3">
+      <p-button (click)="NovoPerfil();" label="Novo Perfil" [raised]="true" severity="primary" /> &nbsp;
+    </div>
+
+    <p-table
+      #dt
+      [value]="lstPerfil"
+      [tableStyle]="{ 'min-width': '50rem' }"
+      styleClass="p-datatable-sm p-datatable-striped"
+      responsiveLayout="stack"
+      [paginator]="true"
+      [rows]="5"
+      [rowsPerPageOptions]="[5, 10, 20, 50, 100]"
+      [globalFilterFields]="['SesNume', 'SesDesc', 'TiSNome', 'GraNome']"
+      >
+      <ng-template pTemplate="caption">
+        <div class="flex">
+            <p-iconField iconPosition="left" class="ml-auto">
+                <p-inputIcon>
+                    <i class="pi pi-search"></i>
+                </p-inputIcon>
+                <input
+                    pInputText
+                    type="text"
+                    (input)="onGlobalFilter(dt, $event)"
+                    placeholder="Pesquisa" />
+            </p-iconField>
+        </div>
+      </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="text-align: center;">Perfil</th>
+                <th style="text-align: center;">Status</th>
+                <th style="text-align: center;">Opções</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+            <tr>
+                <td style="text-align: center;">{{ item.PerNome }}</td>
+                <td style="text-align: center;">{{ item.PerStat ? 'Ativa' : 'Inativa' }}</td>
+                <td style="text-align: center;">
+                  <!-- <p-button (click)="GetSessaoBySesCodi(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-envelope" [rounded]="true" [text]="true" severity="warning" pTooltip="Convite da Sessão" tooltipPosition="left"/>
+                  <p-button (click)="MarcarPresencas(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-check-square" [rounded]="true" [text]="true" severity="success" pTooltip="Marcar Presenças" tooltipPosition="left"/>
+                  <p-button (click)="LiberaTravaSessao(item.SesCodi, item);" icon="pi {{item.SesLibe ? 'pi-ban' : 'pi-thumbs-up'}}" [rounded]="true" [text]="true" [severity]="item.SesLibe ? 'danger' : 'success'" pTooltip="{{item.SesLibe ? 'Travar Sessão' : 'Liberar Sessão'}}" tooltipPosition="left"/> -->
+                  <p-button (click)="EditarRegistro(item);" icon="pi pi-pen-to-square" [rounded]="true" [text]="true" severity="info" pTooltip="Editar" tooltipPosition="left"/>
+                  <p-button (click)="AtivaInativa(item.PerCodi, item);" icon="pi {{item.PerStat ? 'pi-lock-open' : 'pi-lock'}}" [rounded]="true" [text]="true" [severity]="item.PerStat ? 'danger' : 'success'" pTooltip="{{item.PerStat ? 'Inativar Perfil' : 'Ativar Perfil' }}" tooltipPosition="left"/>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+              <td colspan="3" style="text-align: center;"><b>SEM RESULTADOS.</b></td>
+          </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<div *ngIf="boolManterRegistro" class="container">
+
+  <div class="formgrid grid">
+    <div class="field col-12 md:col-8">
+        <label for="nomeSessao">Nome do Perfil</label>
+        <input pInputText id="nomeSessao"
+        maxlength="100"
+        [(ngModel)]="objPerfil.PerNome" type="text" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+    <div class="field col-12 md:col-4">
+        <label for="liberarSessao">Status</label><br>
+        <p-inputSwitch [(ngModel)]="objPerfil.PerStat" />
+    </div>
+</div>
+
+  <div class="text-right">
+    <p-button (click)="SalvarRegistro();" label="Salvar" [raised]="true" severity="success" /> &nbsp;
+    <p-button (click)="CancelaRegitro();" label="Cancelar" [raised]="true" severity="danger" />
+  </div>
+</div>
