@@ -20,6 +20,7 @@ import { ListaPresencaModel } from '../models/ListaPresenca.Model';
 import { UsuarioLojaModel } from '../models/UsuarioLoja.Model';
 import { PerfilModel } from '../models/Perfil.Model';
 import { UsuarioPotenciaModel } from '../models/UsuarioPotencia.Model ';
+import { PermissaoModel } from '../models/Permissao.Model';
 
 @Injectable({
   providedIn: 'root',
@@ -159,6 +160,12 @@ export class HttpService {
     );
   }
 
+  public GetPermissao(pemCodi: number): Observable<PermissaoModel[]> {
+    return this.http.get<PermissaoModel[]>(
+      `${environment.apiServicos}/Permissao/GetPermissao/${pemCodi}`
+    );
+  }
+
   // #endregion
 
   // #region POST
@@ -284,6 +291,16 @@ export class HttpService {
     return this.http.put<string>(
       `${environment.apiServicos}/Perfil/PutPerfil/${perCodi}`,
       objPerfil
+    );
+  }
+
+  public PutPermissao(
+    pemCodi: number,
+    objPermissao: PermissaoModel
+  ): Observable<string> {
+    return this.http.put<string>(
+      `${environment.apiServicos}/Permissao/PutPermissao/${pemCodi}`,
+      objPermissao
     );
   }
 

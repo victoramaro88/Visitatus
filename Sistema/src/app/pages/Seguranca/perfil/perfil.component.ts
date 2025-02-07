@@ -17,7 +17,7 @@ import { Table } from 'primeng/table';
   imports: [ImportsModule],
   templateUrl: './perfil.component.html',
   styleUrl: './perfil.component.css',
-  providers: [MessageService],
+  providers: [MessageService]
 })
 export class PerfilComponent implements OnInit {
   boolLoading = true;
