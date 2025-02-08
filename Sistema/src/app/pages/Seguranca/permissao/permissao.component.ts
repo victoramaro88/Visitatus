@@ -121,6 +121,109 @@ export class PermissaoComponent implements OnInit {
     }
   }
 
+  SalvarRegistro() {
+    if (this.ValidaCampos()) {
+      if (this.objPermissao.PemCodi === 0) {
+        //-> Modo de Inserção
+        try {
+          this.boolLoading = true;
+          this.http.PostPermissao(this.objPermissao).subscribe({
+            next: (response) => {
+              this.boolLoading = false;
+              if (response === 'OK') {
+                this.messageService.add({
+                  severity: 'success',
+                  summary: 'Sucesso!',
+                  detail: 'Registro salvo com sucesso!',
+                });
+                this.CancelaRegitro();
+                this.GetPermissao(0);
+              } else {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Erro:',
+                  detail: 'Falha ao realizar a operação.',
+                });
+              }
+            },
+            error: (error) => {
+              console.error('Erro ao carregar dados:', error);
+              this.boolLoading = false;
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Erro:',
+                detail: 'Falha ao realizar a operação.',
+              });
+            },
+          });
+        } catch (error) {
+          console.error('Erro ao carregar dados:', error);
+          this.boolLoading = false;
+        }
+      } else {
+        this.boolLoading = true;
+        //-> Modo de Edição
+        try {
+          this.http
+            .PutPermissao(this.objPermissao.PemCodi, this.objPermissao)
+            .subscribe({
+              next: (response) => {
+                this.boolLoading = false;
+                if (response === 'Alterado com sucesso!') {
+                  this.messageService.add({
+                    severity: 'success',
+                    summary: 'Sucesso!',
+                    detail: 'Registro alterado com sucesso!',
+                  });
+                  this.CancelaRegitro();
+                  this.GetPermissao(0);
+                } else {
+                  this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro:',
+                    detail: 'Falha ao realizar a operação.',
+                  });
+                }
+              },
+              error: (error) => {
+                console.error('Erro ao carregar dados:', error);
+                this.boolLoading = false;
+              },
+            });
+        } catch (error) {
+          console.error('Erro ao carregar dados:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro:',
+            detail: 'Falha ao realizar a operação.',
+          });
+          this.boolLoading = false;
+        }
+      }
+    }
+  }
+
+  CancelaRegitro() {
+    this.objPermissao = new PermissaoModel();
+    this.boolManterRegistro = false;
+    this.lstPermissao = [];
+
+    this.GetPermissao(0);
+  }
+
+  ValidaCampos() {
+    if (this.objPermissao.PemNome.length === 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção:',
+        detail: 'Insira um nome para a permissão.',
+      });
+      return false;
+    }
+
+    return true;
+  }
+
   onGlobalFilter(table: Table, event: Event) {
       table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
     }

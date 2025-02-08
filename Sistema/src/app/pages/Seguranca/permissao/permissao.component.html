@@ -64,3 +64,23 @@
     </p-table>
   </div>
 </div>
+
+<div *ngIf="boolManterRegistro" class="container">
+  <div class="formgrid grid">
+    <div class="field col-12 md:col-8">
+        <label for="nomeSessao">Nome da Permissão</label>
+        <input pInputText id="nomeSessao"
+        maxlength="100"
+        [(ngModel)]="objPermissao.PemNome" type="text" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+    <div class="field col-12 md:col-4">
+        <label for="liberarSessao">Status</label><br>
+        <p-inputSwitch [(ngModel)]="objPermissao.PemStat" />
+    </div>
+  </div>
+
+  <div class="text-right">
+    <p-button (click)="SalvarRegistro();" label="Salvar" [raised]="true" severity="success" /> &nbsp;
+    <p-button (click)="CancelaRegitro();" label="Cancelar" [raised]="true" severity="danger" />
+  </div>
+</div>

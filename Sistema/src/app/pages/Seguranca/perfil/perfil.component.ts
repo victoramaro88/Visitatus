@@ -123,7 +123,6 @@ export class PerfilComponent implements OnInit {
 
   SalvarRegistro() {
     if (this.ValidaCampos()) {
-      //-> Validando se já possui uma sessão com este número, para esta Loja
       if (this.objPerfil.PerCodi === 0) {
         //-> Modo de Inserção
         try {

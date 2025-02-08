@@ -251,6 +251,15 @@ export class HttpService {
     );
   }
 
+  public PostPermissao(
+    objPermissao: PermissaoModel
+  ): Observable<string> {
+    return this.http.post<string>(
+      `${environment.apiServicos}/Permissao/PostPermissao`,
+      objPermissao
+    );
+  }
+
   // #endregion
 
   // #region PUT

@@ -84,7 +84,7 @@ namespace API_Visitatus.Controllers
         }
 
         [HttpPut("{pemCodi}")]
-        public async Task<IActionResult> PutRito(int pemCodi, Permissao permissao)
+        public async Task<IActionResult> PutPermissao(int pemCodi, Permissao permissao)
         {
             if (pemCodi != permissao.PemCodi)
             {
@@ -148,8 +148,15 @@ namespace API_Visitatus.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Rito>> PostPermissao(Permissao permissao)
+        public async Task<ActionResult<Permissao>> PostPermissao(Permissao permissao)
         {
+            bool novoRegistro = false;
+            if (permissao.PemCodi == 0)
+            {
+                novoRegistro = true;
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 permissao.PemCodi = _context.Permissaos.Max(p => (int?)p.PemCodi) + 1 ?? 1;
@@ -157,12 +164,31 @@ namespace API_Visitatus.Controllers
                 _context.Permissaos.Add(permissao);
                 var retorno = await _context.SaveChangesAsync();
 
-                return Ok(permissao);
+                if (novoRegistro)
+                {
+                    var lstPerfis = await _context.Perfils.ToListAsync();
+
+                    foreach (var itemPerfil in lstPerfis)
+                    {
+                        PermissaoPerfil objPermissaoPerfil = new PermissaoPerfil();
+                        objPermissaoPerfil.PemCodi = permissao.PemCodi;
+                        objPermissaoPerfil.PerCodi = itemPerfil.PerCodi;
+                        objPermissaoPerfil.PapAtvo = false;
+                        objPermissaoPerfil.PepStat = true;
+
+                        _context.PermissaoPerfils.Add(objPermissaoPerfil);
+                        var retornoPermPerf = await _context.SaveChangesAsync();
+                    }
+                }
             }
             catch (Exception ex)
             {
+                await transaction.RollbackAsync();
                 return BadRequest(ex.Message + " \n " + ex.InnerException?.Message);
             }
+
+            await transaction.CommitAsync();
+            return Ok("OK");
         }
 
         private bool PermissaoExists(int id)

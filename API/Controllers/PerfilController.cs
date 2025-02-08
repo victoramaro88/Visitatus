@@ -117,7 +117,7 @@ namespace API_Visitatus.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Sessao>> PostPerfil([FromBody] Perfil perfil)
+        public async Task<ActionResult<Perfil>> PostPerfil([FromBody] Perfil perfil)
         {
             bool novoRegistro = false;
             if (perfil.PerCodi == 0)
