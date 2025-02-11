@@ -32,7 +32,10 @@ namespace API_Visitatus.Controllers
             }
             else
             {
-                var result = await _context.Permissaos.ToListAsync();
+                //var result = await _context.Permissaos.ToListAsync();
+                var result = await _context.Permissaos
+                    .OrderBy(p => p.PemNome)
+                    .ToListAsync();
 
                 if (result == null || result.Count == 0)
                 {
@@ -64,7 +67,9 @@ namespace API_Visitatus.Controllers
                                         pemStat = pr.PemStat,
                                         papAtvo = pp.PapAtvo,
                                         pepStat = pp.PepStat
-                                    }).ToListAsync();
+                                    })
+                                    .OrderBy(pp => pp.pemNome)
+                                    .ToListAsync();
 
                 if (!result.Any())
                 {
@@ -84,7 +89,7 @@ namespace API_Visitatus.Controllers
         }
 
         [HttpPut("{pemCodi}")]
-        public async Task<IActionResult> PutPermissao(int pemCodi, Permissao permissao)
+        public async Task<IActionResult> PutPermissao(int pemCodi, [FromBody] Permissao permissao)
         {
             if (pemCodi != permissao.PemCodi)
             {
@@ -148,7 +153,7 @@ namespace API_Visitatus.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Permissao>> PostPermissao(Permissao permissao)
+        public async Task<ActionResult<Permissao>> PostPermissao([FromBody] Permissao permissao)
         {
             bool novoRegistro = false;
             if (permissao.PemCodi == 0)

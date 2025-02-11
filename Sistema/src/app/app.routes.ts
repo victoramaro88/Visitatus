@@ -14,6 +14,7 @@ import { UsuarioComponent } from './pages/usuario/usuario.component';
 import { PermissaoPerfilComponent } from './pages/Seguranca/permissao-perfil/permissao-perfil.component';
 import { PerfilComponent } from './pages/Seguranca/perfil/perfil.component';
 import { PermissaoComponent } from './pages/Seguranca/permissao/permissao.component';
+import { LojaComponent } from './pages/loja/loja.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -32,6 +33,7 @@ export const routes: Routes = [
   { path: 'permissao-perfil', component: PermissaoPerfilComponent },
   { path: 'perfil', component: PerfilComponent },
   { path: 'permissao', component: PermissaoComponent },
+  { path: 'loja', component: LojaComponent },
   // { path: 'confirmacao', component: ConfirmacaoPresencaComponent }, //-> Temporário
   { path: '**', redirectTo: 'login' },
 ];

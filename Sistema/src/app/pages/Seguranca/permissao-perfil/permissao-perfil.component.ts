@@ -55,7 +55,7 @@ export class PermissaoPerfilComponent implements OnInit {
     try {
       this.http.GetPerfil(perCodi).subscribe({
         next: (response) => {
-          this.lstPerfil = response;
+          this.lstPerfil = response.filter((pp) => pp.PerStat === true);
           // console.warn('Lista de Perfis:', this.lstPerfil);
           this.boolLoading = false;
         },
@@ -75,7 +75,9 @@ export class PermissaoPerfilComponent implements OnInit {
     try {
       this.http.GetPermissaoPerfil(perCodi).subscribe({
         next: (response) => {
-          this.lstPermissaoPerfil = response;
+          this.lstPermissaoPerfil = response.filter(
+            (pp) => pp.pemStat === true
+          );
           // console.warn('Permissões do Perfil:', this.lstPermissaoPerfil);
           this.boolLoading = false;
         },

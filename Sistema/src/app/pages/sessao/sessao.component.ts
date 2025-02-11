@@ -148,7 +148,7 @@ export class SessaoComponent implements OnInit {
         next: (response) => {
           this.lstTipoSessao = response;
           // console.warn("Tipo de Sessão:", this.lstTipoSessao);
-          this.boolLoading = false;
+          // this.boolLoading = false;
         },
         error: (error) => {
           console.error('Erro ao carregar dados:', error);
@@ -168,7 +168,7 @@ export class SessaoComponent implements OnInit {
         next: (response) => {
           this.lstGrau = response;
           // console.warn("Grau:", this.lstGrau);
-          this.boolLoading = false;
+          // this.boolLoading = false;
         },
         error: (error) => {
           console.error('Erro ao carregar dados:', error);
