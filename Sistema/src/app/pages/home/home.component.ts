@@ -7,6 +7,7 @@ import { CryptoService } from '../../services/crypto.service';
 import { Router } from '@angular/router';
 import { Utils } from '../../services/utils';
 import { PermissaoPerfilListaModel } from '../../models/PermissaoPerfilLista.Model ';
+import { ProximaSessaoModel } from '../../models/ProximaSessao.Model';
 
 @Component({
   selector: 'app-home',
@@ -21,6 +22,9 @@ export class HomeComponent implements OnInit {
 
   objPerfilUsuario: PerfilUsuarioListaModel = new PerfilUsuarioListaModel();
   lstPermissaoPerfil: PermissaoPerfilListaModel[] = [];
+  lstProximaSessao: ProximaSessaoModel[] = [];
+
+  boolBlockProxSess: boolean = false;
 
   constructor(
     private http: HttpService,
@@ -32,7 +36,7 @@ export class HomeComponent implements OnInit {
     this.objPerfilUsuario = JSON.parse(
       this.cryptoService.lerDoSessionStorage('prf')
     );
-    // console.warn(this.objPerfilUsuario);
+    // console.warn('Perfil do Usuário: ', this.objPerfilUsuario);
   }
 
   ngOnInit(): void {
@@ -44,8 +48,13 @@ export class HomeComponent implements OnInit {
       this.http.GetPermissaoPerfil(perCodi).subscribe({
         next: (response) => {
           this.lstPermissaoPerfil = response;
-          // console.warn("Lista de Permissões do Perfil do Usuário:", this.lstPermissaoPerfil);
+          // console.warn(
+          //   'Lista de Permissões do Perfil do Usuário:',
+          //   this.lstPermissaoPerfil
+          // );
           this.boolLoading = false;
+
+          this.CarregaPainel();
         },
         error: (error) => {
           console.error('Erro ao carregar dados:', error);
@@ -56,5 +65,30 @@ export class HomeComponent implements OnInit {
       console.error('Erro ao carregar dados:', error);
       this.boolLoading = false;
     }
+  }
+
+  GetProximaSessao(lojCodi: number) {
+    this.boolBlockProxSess = true;
+    try {
+      this.http.GetProximaSessao(lojCodi).subscribe({
+        next: (response) => {
+          this.lstProximaSessao = response;
+          // console.warn('Lista das próximas sessões:', this.lstProximaSessao);
+          this.boolBlockProxSess = false;
+        },
+        error: (error) => {
+          console.error('Erro ao carregar dados:', error);
+          this.boolBlockProxSess = false;
+        },
+      });
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+      this.boolBlockProxSess = false;
+    }
+  }
+
+  CarregaPainel() {
+    //-> TRAZENDO AS PRÓXIMAS SESSÕES:
+    this.GetProximaSessao(this.objPerfilUsuario.lojCodi);
   }
 }

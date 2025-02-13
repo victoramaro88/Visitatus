@@ -21,6 +21,7 @@ import { UsuarioLojaModel } from '../models/UsuarioLoja.Model';
 import { PerfilModel } from '../models/Perfil.Model';
 import { UsuarioPotenciaModel } from '../models/UsuarioPotencia.Model ';
 import { PermissaoModel } from '../models/Permissao.Model';
+import { ProximaSessaoModel } from '../models/ProximaSessao.Model';
 
 @Injectable({
   providedIn: 'root',
@@ -166,6 +167,12 @@ export class HttpService {
     );
   }
 
+  public GetProximaSessao(pemCodi: number): Observable<ProximaSessaoModel[]> {
+    return this.http.get<ProximaSessaoModel[]>(
+      `${environment.apiServicos}/Sessao/GetProximaSessao/${pemCodi}`
+    );
+  }
+
   // #endregion
 
   // #region POST
@@ -251,9 +258,7 @@ export class HttpService {
     );
   }
 
-  public PostPermissao(
-    objPermissao: PermissaoModel
-  ): Observable<string> {
+  public PostPermissao(objPermissao: PermissaoModel): Observable<string> {
     return this.http.post<string>(
       `${environment.apiServicos}/Permissao/PostPermissao`,
       objPermissao

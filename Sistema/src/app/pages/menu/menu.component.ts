@@ -47,7 +47,7 @@ export class MenuComponent implements OnInit {
       this.cryptoService.lerDoSessionStorage('prf')
     );
 
-    if (this.objPerfilUsuario.perCodi > 0) {
+    if (this.objPerfilUsuario && this.objPerfilUsuario.perCodi > 0) {
       this.GetPermissaoPerfil(this.objPerfilUsuario.perCodi);
     }
   }

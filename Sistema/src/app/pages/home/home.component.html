@@ -4,3 +4,34 @@
 <p-toast />
 
 <h2>Home</h2>
+
+<div class="grid">
+  <div class="col-12 sm:col-6 md:col-4">
+      <div class="scroll-container text-center border-round-sm">
+        <p-blockUI [target]="cardProxSess" [blocked]="boolBlockProxSess">
+          <i class="pi pi-spin pi-spinner-dotted" style="font-size: 1.5rem"></i>
+        </p-blockUI>
+        <p-card #cardProxSess header="Próximas Sessões" subheader="Quantidade de presenças">
+          <ul class="custom-list">
+            <li *ngFor="let item of lstProximaSessao; let i = index">
+              <b>Sessão nº:</b> {{ item.SesNume }} - {{item.SesDtHr | date: 'dd/MM/yyyy - HH:mm'}}
+              <br>
+              <b>Título:</b> {{ item.SesNome }}
+              <br>
+              <div class="text-center"><b>Total de Confirmações:</b> &nbsp; &nbsp; <b>{{item.TotalPresenca}}</b></div>
+              <hr>
+            </li>
+          </ul>
+        </p-card>
+      </div>
+  </div>
+  <!-- <div class="col-12 sm:col-6 md:col-4">
+      <div class="text-center p-3 border-round-sm bg-primary font-bold">col-12 md:col-6 lg:col-3</div>
+  </div>
+  <div class="col-12 md:col-4">
+      <div class="text-center p-3 border-round-sm bg-primary font-bold">col-12 md:col-6 lg:col-3</div>
+  </div>
+  <div class="col-12 md:col-4">
+      <div class="text-center p-3 border-round-sm bg-primary font-bold">col-12 md:col-6 lg:col-3</div>
+  </div> -->
+</div>

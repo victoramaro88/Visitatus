@@ -181,29 +181,29 @@ namespace API_Visitatus.Controllers
                     if (result != null)
                     {
                         List<GestaoAdmAtivaModel> lstGestaoAdmAtiva = (from l in _context.Lojas
-                                                                    join ga in _context.GestaoAdministrativas on l.LojCodi equals ga.LojCodi
-                                                                    join gc in _context.GestaoCargos on ga.GstAdmCodi equals gc.GstAdmCodi
-                                                                    join c in _context.Cargos on gc.CarCodi equals c.CarCodi
-                                                                    join u in _context.Usuarios on gc.UsuCodi equals u.UsuCodi
-                                                                    where l.LojCodi == result.LojCodi &&
-                                                                          ga.GstAdmStat == true &&
-                                                                          ga.GstAdmDtIn <= DateTime.Today &&
-                                                                          ga.GstAdmDtFi >= DateTime.Today
-                                                                    orderby ga.GstAdmDtFi descending
-                                                                    select new GestaoAdmAtivaModel
-                                                                    {
-                                                                        LojCodi = l.LojCodi,
-                                                                        LojNome = l.LojNome,
-                                                                        LojNumL = l.LojNumL,
-                                                                        GstAdmNome = ga.GstAdmNome,
-                                                                        GstAdmDtIn = ga.GstAdmDtIn,
-                                                                        GstAdmDtFi = ga.GstAdmDtFi,
-                                                                        GstAdmStat = ga.GstAdmStat,
-                                                                        CarCodi = c.CarCodi,
-                                                                        CarNome = c.CarNome,
-                                                                        UsuNome = u.UsuNome
-                                                                    }).ToList();
-                        if(lstGestaoAdmAtiva != null)
+                                                                       join ga in _context.GestaoAdministrativas on l.LojCodi equals ga.LojCodi
+                                                                       join gc in _context.GestaoCargos on ga.GstAdmCodi equals gc.GstAdmCodi
+                                                                       join c in _context.Cargos on gc.CarCodi equals c.CarCodi
+                                                                       join u in _context.Usuarios on gc.UsuCodi equals u.UsuCodi
+                                                                       where l.LojCodi == result.LojCodi &&
+                                                                             ga.GstAdmStat == true &&
+                                                                             ga.GstAdmDtIn <= DateTime.Today &&
+                                                                             ga.GstAdmDtFi >= DateTime.Today
+                                                                       orderby ga.GstAdmDtFi descending
+                                                                       select new GestaoAdmAtivaModel
+                                                                       {
+                                                                           LojCodi = l.LojCodi,
+                                                                           LojNome = l.LojNome,
+                                                                           LojNumL = l.LojNumL,
+                                                                           GstAdmNome = ga.GstAdmNome,
+                                                                           GstAdmDtIn = ga.GstAdmDtIn,
+                                                                           GstAdmDtFi = ga.GstAdmDtFi,
+                                                                           GstAdmStat = ga.GstAdmStat,
+                                                                           CarCodi = c.CarCodi,
+                                                                           CarNome = c.CarNome,
+                                                                           UsuNome = u.UsuNome
+                                                                       }).ToList();
+                        if (lstGestaoAdmAtiva != null)
                         {
                             result.lstGestaoAdmAtiva = new List<GestaoAdmAtivaModel>();
                             result.lstGestaoAdmAtiva = lstGestaoAdmAtiva;
@@ -216,6 +216,52 @@ namespace API_Visitatus.Controllers
                 else
                 {
                     return Task.FromResult<ActionResult<IEnumerable<SessaoConviteModel>>>(BadRequest("Parâmetros Inválidos."));
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpGet("{lojCodi}")]
+        public async Task<ActionResult<IEnumerable<ProximaSessaoModel>>> GetProximaSessao(long lojCodi)
+        {
+            try
+            {
+                if (lojCodi > 0)
+                {
+                    List<ProximaSessaoModel> result = await (from ses in _context.Sessaos
+                                         join pre in _context.Presencas on ses.SesCodi equals pre.SesCodi into presencas
+                                         from pre in presencas.DefaultIfEmpty() // LEFT JOIN
+                                         where ses.LojCodi == lojCodi && ses.SesDtHr >= DateTime.Now
+                                         group pre by new
+                                         {
+                                             ses.SesCodi,
+                                             ses.SesNume,
+                                             ses.SesDtHr,
+                                             ses.SesLibe,
+                                             ses.SesStat,
+                                             ses.SesNome
+                                         } into grouped
+                                         orderby grouped.Key.SesDtHr ascending
+                                         select new ProximaSessaoModel
+                                         {
+                                             SesCodi = grouped.Key.SesCodi,
+                                             SesNume = grouped.Key.SesNume ?? 0,
+                                             SesDtHr = grouped.Key.SesDtHr,
+                                             SesLibe = grouped.Key.SesLibe,
+                                             SesStat = grouped.Key.SesStat,
+                                             SesNome = grouped.Key.SesNome,
+                                             TotalPresenca = grouped.Count(pre => pre != null)
+                                         }).ToListAsync();
+
+
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest("Parâmetros Inválidos.");
                 }
             }
             catch (Exception)
