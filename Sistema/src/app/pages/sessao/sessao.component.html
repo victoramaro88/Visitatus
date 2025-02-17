@@ -145,7 +145,8 @@
         <label for="liberarSessao">Liberar Sessão?
           <small> ({{objSessao.SesLibe ? 'Sim' : 'Não'}})</small>
         </label><br>
-        <p-selectButton
+        <p-inputSwitch [(ngModel)]="objSessao.SesLibe" /><br>
+        <!-- <p-selectButton
           id="liberarSessao"
           [options]="opcoesSelect"
           [(ngModel)]="objSessao.SesLibe"
@@ -153,14 +154,15 @@
           optionValue="value"
           aria-describedby="liberarSessao"
           unselectable = "true"
-         />
+         /> -->
          <small id="liberarSessao">Libera a sessão para confirmação de presença.</small>
     </div>
     <div class="field col-12 md:col-6">
         <label for="liberarSessao">Ativar Sessão?
           <small> ({{objSessao.SesStat ? 'Sim' : 'Não'}})</small>
         </label><br>
-        <p-selectButton
+        <p-inputSwitch [(ngModel)]="objSessao.SesStat" /><br>
+        <!-- <p-selectButton
           id="liberarSessao"
           [options]="opcoesSelect"
           [(ngModel)]="objSessao.SesStat"
@@ -168,7 +170,7 @@
           optionValue="value"
           aria-describedby="liberarSessao"
           unselectable = "true"
-         />
+         /> -->
          <small id="liberarSessao">Ativa a sessão para deixá-la visível.</small>
     </div>
 </div>

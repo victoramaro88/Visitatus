@@ -173,6 +173,15 @@ export class HttpService {
     );
   }
 
+  public GetLiberaBloqueiaSessao(
+    sesCodi: number,
+    sesLibe: boolean
+  ): Observable<string> {
+    return this.http.get<string>(
+      `${environment.apiServicos}/Sessao/GetLiberaBloqueiaSessao/${sesCodi}/${sesLibe}`
+    );
+  }
+
   // #endregion
 
   // #region POST

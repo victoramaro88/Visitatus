@@ -159,6 +159,7 @@ export class ConfirmacaoPresencaComponent implements OnInit {
         .GetUsuarioByLoja(UsuNCIM, PotCodi, LojNumL.toString())
         .subscribe({
           next: (response) => {
+            // console.warn('Usuário pesquisado: ', response);
             if (response.objUsuarioLoja) {
               this.objConsultaUsrLj.objUsuarioLoja = response.objUsuarioLoja;
               this.objConsultaUsrLj.objUsuarioLoja.UsuNasc = new Date(
@@ -177,7 +178,7 @@ export class ConfirmacaoPresencaComponent implements OnInit {
             //-> VERIFICANDO SE O USUÁRIO EXISTE NA BASE, PELO CIM E POTÊNCIA
             this.http.GetUsuarioByPotCodi(PotCodi, UsuNCIM).subscribe({
               next: (response) => {
-                // console.warn('Usuário 2:', response);
+                // console.warn('Usuário Por potência:', response);
                 if (response.UsuCodi > 0) {
                   this.objConsultaUsrLj.objUsuarioLoja.UsuCodi =
                     response.UsuCodi;

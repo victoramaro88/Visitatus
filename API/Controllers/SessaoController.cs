@@ -270,6 +270,51 @@ namespace API_Visitatus.Controllers
             }
         }
 
+        [HttpGet("{sesCodi}/{sesLibe}")]
+        public async Task<IActionResult> GetLiberaBloqueiaSessao(long sesCodi, bool sesLibe)
+        {
+            try
+            {
+                if (sesCodi == 0)
+                {
+                    return BadRequest();
+                }
+
+                var sessao = await _context.Sessaos.FindAsync(sesCodi);
+
+                if (sessao == null)
+                {
+                    return NotFound("Sessão não encontrada.");
+                }
+
+                sessao.SesLibe = sesLibe;
+
+                _context.Entry(sessao).State = EntityState.Modified;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!SessaoExists(sesCodi))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return Ok("Alterado com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPut("{sesCodi}")]
         public async Task<IActionResult> PutSessao(long sesCodi, [FromBody] Sessao sessao)
         {

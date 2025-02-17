@@ -5,6 +5,7 @@ import { HttpService } from '../../services/http-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ListaPresencaModel } from '../../models/ListaPresenca.Model';
 import { Table } from 'primeng/table';
+import { SessaoModel } from '../../models/Sessao.Model';
 
 @Component({
   selector: 'app-presenca-sessao',
@@ -20,6 +21,7 @@ export class PresencaSessaoComponent implements OnInit {
 
   lstPresenca: ListaPresencaModel[] = [];
   lstPresencaGrid: ListaPresencaModel[] = [];
+  objSessaoModel: SessaoModel = new SessaoModel();
 
   constructor(
     private http: HttpService,
@@ -92,6 +94,8 @@ export class PresencaSessaoComponent implements OnInit {
             detail: 'Certificados enviados com sucesso!',
           });
 
+          this.ConfirmaBloqueioSessao();
+
           this.GetListaPresencaBySesCodi(this.parâmetroURL);
         },
         error: (error) => {
@@ -133,6 +137,65 @@ export class PresencaSessaoComponent implements OnInit {
         // });
       },
     });
+  }
+
+  ConfirmaBloqueioSessao() {
+    this.confirmationService.confirm({
+      message:
+        'Deseja alterar o status da sessão para "Bloqueada", para não exibir mais o convite?',
+      header: 'E-mails Enviados!',
+      icon: 'pi pi-check',
+      acceptIcon: 'none',
+      rejectIcon: 'none',
+      rejectButtonStyleClass: 'p-button-text',
+      accept: () => {
+        this.objSessaoModel.SesCodi = this.parâmetroURL;
+        this.objSessaoModel.SesLibe = false;
+        this.GetLiberaBloqueiaSessao(
+          this.objSessaoModel.SesCodi,
+          this.objSessaoModel.SesLibe
+        );
+      },
+      reject: () => {
+        this.CancelaRegitro();
+      },
+    });
+  }
+
+  GetLiberaBloqueiaSessao(sesCodi: number, sesLibe: boolean) {
+    try {
+      this.boolLoading = true;
+      this.http.GetLiberaBloqueiaSessao(sesCodi, sesLibe).subscribe({
+        next: (response) => {
+          // console.warn("Retorno Alteração:", response);
+          if (response === 'Alterado com sucesso!') {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Sucesso!',
+              detail: 'Registro alterado com sucesso!',
+            });
+            this.boolLoading = false;
+            this.CancelaRegitro();
+          } else {
+            console.error('Erro ao salvar o registro: ', response);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Erro:',
+              detail: 'Falha ao alterar o registro.',
+            });
+            this.boolLoading = false;
+            // this.GetSessaoByLojCodi(this.objUsuarioLogado.lojCodi);
+          }
+        },
+        error: (error) => {
+          console.error('Erro ao carregar dados:', error);
+          this.boolLoading = false;
+        },
+      });
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+      this.boolLoading = false;
+    }
   }
 
   onGlobalFilter(table: Table, event: Event) {
