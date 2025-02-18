@@ -61,7 +61,7 @@ namespace API_Visitatus.Controllers
                                                                    preSub.LojCodi == lojCodi &&
                                                                    _context.PerfilUsuarios.Any(perSub =>
                                                                        perSub.UsuCodi == preSub.UsuCodi &&
-                                                                       perSub.PerCodi == 4)) 
+                                                                       (perSub.PerCodi == 4 || perSub.PerCodi == 5))) //-> Verifica se é membro ou filiado
                                                            })
                                                             .OrderBy(r => r.MembroLoja)
                                                             .ThenBy(r => r.UsuNome)
