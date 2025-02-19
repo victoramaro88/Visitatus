@@ -1,0 +1,22 @@
+/*Estilos de versão */
+#style-version {
+  position: absolute;
+  color: red;
+  width: 320px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  padding: 10px 15px 0 20px;
+  z-index: 10000;
+  top: -2px;
+  left: -290px;
+  cursor: default;
+  transition-property: left;
+  transition-duration: 0.2s;
+  transition-timing-function: linear;
+}
+
+#style-version:hover{
+  left: -3px;
+  transition-delay: 3s;
+  /* transition-delay: 5; */
+}

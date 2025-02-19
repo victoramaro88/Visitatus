@@ -8,7 +8,9 @@ import { CryptoService } from '../../services/crypto.service';
 import { Base64Service } from '../../services/base64.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { EncryptAPIModel } from '../../models/EncryptAPI.Model';
+
 import { toPng } from 'html-to-image';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-certificado',
@@ -104,19 +106,62 @@ export class CertificadoComponent implements OnInit {
     });
   }
 
-  saveAsImage(): void {
-    const node = this.contentDiv.nativeElement;
+  // saveAsImage(): void {
+  //   const node = this.contentDiv.nativeElement;
 
-    toPng(node, { cacheBust: true })
-      .then((dataUrl) => {
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = 'Certificado.png';
-        link.click();
+  //   toPng(node, { cacheBust: true })
+  //     .then((dataUrl) => {
+  //       const link = document.createElement('a');
+  //       link.href = dataUrl;
+  //       link.download = 'Certificado.png';
+  //       link.click();
+  //     })
+  //     .catch((error) => {
+  //       console.error('Erro ao salvar como imagem:', error);
+  //     });
+  // }
+
+  saveAsImage(): void {
+    if (this.isMobile()) {
+      //-> Se for mobile, salva desta forma
+      const node = this.contentDiv.nativeElement;
+
+      html2canvas(node, {
+        scale: 3, // Aumenta a resolução da captura
+        width: node.scrollWidth, // Garante que toda a largura do conteúdo seja capturada
+        height: node.scrollHeight, // Garante que toda a altura do conteúdo seja capturada
+        useCORS: true,
+        allowTaint: true,
       })
-      .catch((error) => {
-        console.error('Erro ao salvar como imagem:', error);
-      });
+        .then((canvas) => {
+          const dataUrl = canvas.toDataURL('image/png');
+          const link = document.createElement('a');
+          link.href = dataUrl;
+          link.download = 'Certificado.png';
+          link.click();
+        })
+        .catch((error) => {
+          console.error('Erro ao salvar como imagem:', error);
+        });
+    } else {
+      //-> Se não for mobile, salva desta forma
+      const node = this.contentDiv.nativeElement;
+
+      toPng(node, { cacheBust: true })
+        .then((dataUrl) => {
+          const link = document.createElement('a');
+          link.href = dataUrl;
+          link.download = 'Certificado.png';
+          link.click();
+        })
+        .catch((error) => {
+          console.error('Erro ao salvar como imagem:', error);
+        });
+    }
+  }
+
+  isMobile(): boolean {
+    return window.innerWidth <= 768; // Considerando telas menores que 768px como mobile
   }
 
   Encriptar(textoEncriptar: EncryptAPIModel) {

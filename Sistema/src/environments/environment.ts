@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
 
-  version: '1.0.0 | 22/10/2024-13:44 | Localhost',
+  version: '1.0.0 | 19/02/2025-08:06 | Localhost',
 
   apiServicos: 'https://localhost:7237/api',
   // apiServicos: 'https://dev.visitatus.com.br/_API/api',
