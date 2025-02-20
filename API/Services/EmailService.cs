@@ -38,7 +38,7 @@ public class EmailService
 
         var mensagem = new MailMessage
         {
-            From = new MailAddress(_smtpSettings.UserName!),
+            From = new MailAddress(_smtpSettings.UserName!, "Certificado de Presença - Visitatus"),
             Subject = assunto,
             Body = htmlCorpo,
             IsBodyHtml = true

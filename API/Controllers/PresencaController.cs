@@ -678,17 +678,10 @@ namespace API_Visitatus.Controllers
                     return BadRequest("Sessão ou Loja não encontrada.");
                 }
 
+                string assuntoEmail = lojaCertificado.LojNome + ", " + lojaCertificado.LojNumL;
+
                 // Obter a gestão administrativa atual
-                var gestaoAdmAtual = await ObterGestaoAdministrativa(lojaCertificado.LojCodi);
-
-                // Gerar o template do certificado
-                //var templateCertificado = await ObterTemplateCertificado(listaPresentes[0].SesCodi);
-                //if (templateCertificado == null)
-                //{
-                //    return BadRequest("Template de certificado não encontrado.");
-                //}
-
-                //string htmlCorpoBase = GerarHtmlCertificado(templateCertificado.TmpCrtPreMode, lojaCertificado, gestaoAdmAtual);
+                var gestaoAdmAtual = await ObterGestaoAdministrativa(lojaCertificado.LojCodi);                
 
                 //-> Gerar template do e-mail a ser enviado
                 var htmlCorpoBase = await GerarHtmlEmailCertificado(_idModeloEmailCertificado, lojaCertificado);
@@ -696,7 +689,7 @@ namespace API_Visitatus.Controllers
                 // Processar lista de presenças
                 foreach (var itemPresente in listaPresentes)
                 {
-                    await ProcessarPresenca(itemPresente, htmlCorpoBase, lojaCertificado, gestaoAdmAtual);
+                    await ProcessarPresenca(itemPresente, htmlCorpoBase, lojaCertificado, gestaoAdmAtual, assuntoEmail);
                 }
 
                 // Commit da transação
@@ -825,7 +818,7 @@ namespace API_Visitatus.Controllers
 
 
         //-> Processar Presença:
-        private async Task ProcessarPresenca(ListaPresencaModel itemPresente, string htmlCorpoBase, dynamic loja, List<GestaoAdmAtivaModel> gestaoAdm)
+        private async Task ProcessarPresenca(ListaPresencaModel itemPresente, string htmlCorpoBase, dynamic loja, List<GestaoAdmAtivaModel> gestaoAdm, string assuntoEmail)
         {
             bool emailEnviado = itemPresente.PreEmai;
             if (itemPresente.PreAtiv && !itemPresente.PreEmai)
@@ -846,41 +839,11 @@ namespace API_Visitatus.Controllers
                             .Replace("[UrlCertificado]", testeURL)
                             ;
 
-                        await _emailService.EnviarEmailAsync(emailUsuario, "Certificado", htmlCorpoTmp);
+                        await _emailService.EnviarEmailAsync(emailUsuario, assuntoEmail, htmlCorpoTmp);
                         emailEnviado = true;
                     }
                 }
             }
-
-            //-> Modo antigo, que retornava o certificado completo
-            //private async Task ProcessarPresenca(ListaPresencaModel itemPresente, string htmlCorpoBase, dynamic loja, List<GestaoAdmAtivaModel> gestaoAdm)
-            //{
-            //    bool emailEnviado = itemPresente.PreEmai;
-            //    if (itemPresente.PreAtiv && !itemPresente.PreEmai)
-            //    {
-            //        if (!itemPresente.MembroLoja)
-            //        {
-            //            var emailUsuario = await _context.Usuarios
-            //                .Where(u => u.UsuCodi == itemPresente.UsuCodi)
-            //                .Select(u => u.UsuEmai)
-            //                .FirstOrDefaultAsync();
-
-            //            if (!string.IsNullOrEmpty(emailUsuario))
-            //            {
-            //                string htmlCorpoTmp = htmlCorpoBase
-            //                    .Replace("[PrimeiroNome]", itemPresente.UsuNome)
-            //                    .Replace("[NomeLoja]", loja.LojNome)
-            //                    .Replace("[NumeroLoja]", loja.LojNumL);
-
-            //                await _emailService.EnviarEmailAsync(emailUsuario, "Certificado", htmlCorpoTmp);
-            //                emailEnviado = true;
-            //            }
-            //        }
-            //    }
-            //else if(!itemPresente.PreAtiv && itemPresente.PreEmai)
-            //{
-            //    emailEnviado = false;
-            //}
 
             var presenca = new Presenca
             {
