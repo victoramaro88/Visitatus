@@ -294,7 +294,7 @@ export class UsuarioComponent implements OnInit {
             .GetUsuarioByPotCodi(this.objPerfilSelecionado.potCodi, nCIM)
             .subscribe({
               next: (response) => {
-                console.warn('Usuário Selecionado:', response);
+                // console.warn('Usuário Selecionado:', response);
                 if (response.UsuCodi > 0) {
                   this.boolEditarRegistro = false;
                   //-> SE EXISTIR USUÁRIO, PREENCHE OS DADOS DELE
@@ -302,6 +302,7 @@ export class UsuarioComponent implements OnInit {
                   this.lstOutrasLojas = [];
                   this.objUsuarioRegistro = new UsuarioPotenciaModel();
                   this.objUsuarioRegistro = response;
+                  this.objUsuarioRegistro.UsLPass = '';
                   this.objUsuarioRegistro.UsuNasc = new Date(
                     response.UsuNasc.toString()
                   );

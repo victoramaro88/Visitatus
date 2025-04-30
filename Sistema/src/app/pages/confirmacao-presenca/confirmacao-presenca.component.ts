@@ -63,6 +63,7 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     icone: '',
     corIcone: '',
   };
+  confirmacaoEmail: string = '';
 
   constructor(
     private http: HttpService,
@@ -165,6 +166,8 @@ export class ConfirmacaoPresencaComponent implements OnInit {
               this.objConsultaUsrLj.objUsuarioLoja.UsuNasc = new Date(
                 response.objUsuarioLoja.UsuNasc.toString()
               );
+              this.confirmacaoEmail =
+                this.objConsultaUsrLj.objUsuarioLoja.UsuEmai;
             } else {
               this.boolBlockIntputsUsuario = false;
             }
@@ -191,6 +194,8 @@ export class ConfirmacaoPresencaComponent implements OnInit {
                   this.objConsultaUsrLj.objUsuarioLoja.UsuNasc = new Date(
                     response.UsuNasc.toString()
                   );
+                  this.confirmacaoEmail =
+                    this.objConsultaUsrLj.objUsuarioLoja.UsuEmai;
                   this.boolBlockIntputsUsuario = true;
                 }
 
@@ -338,6 +343,16 @@ export class ConfirmacaoPresencaComponent implements OnInit {
       });
       return false;
     }
+    if (
+      this.objConsultaUsrLj.objUsuarioLoja.UsuEmai !== this.confirmacaoEmail
+    ) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção: ',
+        detail: 'As informações de e-mail não batem, verifique.',
+      });
+      return false;
+    }
 
     return true;
   }
@@ -346,5 +361,6 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     this.boolDialogMensagem = false;
     this.objConsultaUsrLj = new ConsultaUsuarioLojaModel();
     this.objPotenciaIrmao = new PotenciaModel();
+    this.confirmacaoEmail = '';
   }
 }

@@ -84,7 +84,7 @@
             <input pInputText id="LojNumL" (blur)="GetUsuarioByLoja(this.objConsultaUsrLj.objUsuarioLoja.UsuNCIM, objPotenciaIrmao.PotCodi, this.objConsultaUsrLj.objLojaConsulta.LojNumL);" type="text" [(ngModel)]="this.objConsultaUsrLj.objLojaConsulta.LojNumL" style="text-align: center;"/>
           </div>
           <div class="field col-12 md:col-3 p-fluid">
-              <label for="nCim">Nº do CIM</label>
+              <label for="nCim">Nº Identidade Maçônica</label>
               <input pInputText id="nCim" (blur)="GetUsuarioByLoja(this.objConsultaUsrLj.objUsuarioLoja.UsuNCIM, objPotenciaIrmao.PotCodi, this.objConsultaUsrLj.objLojaConsulta.LojNumL);" type="text" [(ngModel)]="this.objConsultaUsrLj.objUsuarioLoja.UsuNCIM"  style="text-align: center;"/>
           </div>
           <div class="field col-12 md:col-6 p-fluid">
@@ -103,9 +103,13 @@
             <label for="usuNCel">Celular</label>
             <p-inputMask [disabled]="boolBlockIntputsUsuario" id="usuNCel" mask="(99) 99999-9999" [(ngModel)]="this.objConsultaUsrLj.objUsuarioLoja.UsuNCel" placeholder="(00) 00000-0000"></p-inputMask>
           </div>
-          <div class="field col-12 md:col-6 p-fluid">
+          <div class="field col-12 md:col-3 p-fluid">
             <label for="usuEmai">E-mail</label><br>
             <input [disabled]="boolBlockIntputsUsuario" id="usuEmai" type="text" pInputText [(ngModel)]="this.objConsultaUsrLj.objUsuarioLoja.UsuEmai" class="p-2" style="text-transform: lowercase;"/>
+          </div>
+          <div class="field col-12 md:col-3 p-fluid">
+            <label for="usuEmai">Confirme seu e-mail</label><br>
+            <input [disabled]="boolBlockIntputsUsuario" id="usuEmai" type="text" pInputText [(ngModel)]="confirmacaoEmail" class="p-2" style="text-transform: lowercase;"/>
           </div>
         </div>
 
