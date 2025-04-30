@@ -8,16 +8,12 @@ import { ImportsModule } from '../../imports';
   standalone: true,
   imports: [ImportsModule],
   templateUrl: './template-convite.component.html',
-  styleUrl: './template-convite.component.css'
+  styleUrl: './template-convite.component.css',
 })
 export class TemplateConviteComponent {
+  constructor(private router: Router) {}
 
-  constructor(
-    private router: Router
-  ) {}
-
-  ConfirmarPresenca(){
+  ConfirmarPresenca() {
     console.warn('Presença Confirmada!');
   }
-
 }

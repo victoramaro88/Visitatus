@@ -288,7 +288,6 @@ namespace API_Visitatus.Controllers
                 {
                     UsuarioLogin usrLogin = new UsuarioLogin
                     {
-                        UsLcodi = usuarioCompleto.UsuCodi,
                         UsLuser = usuarioCompleto.UsLUser,
                         UsLpass = _utilService.CriptografarSenha(usuarioCompleto.UsLPass),
                         UsLstat = true,
@@ -297,8 +296,16 @@ namespace API_Visitatus.Controllers
 
                     if (UsuarioLoginExists(usuarioCompleto.UsuCodi))
                     {
-                        _context.Entry(usrLogin).State = EntityState.Modified;
-                        await _context.SaveChangesAsync();
+                        var loginExistente = await _context.UsuarioLogins.FirstOrDefaultAsync(e => e.UsuCodi == usuario.UsuCodi);
+                        if (loginExistente != null)
+                        {
+                            loginExistente.UsLuser = usuarioCompleto.UsLUser;
+                            loginExistente.UsLpass = _utilService.CriptografarSenha(usuarioCompleto.UsLPass);
+                            loginExistente.UsLstat = true;
+
+                            _context.UsuarioLogins.Update(loginExistente);
+                            await _context.SaveChangesAsync();
+                        }
                     }
                     else
                     {
