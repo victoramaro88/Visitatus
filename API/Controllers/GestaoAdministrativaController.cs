@@ -51,28 +51,28 @@ namespace API_Visitatus.Controllers
             if (lojCodi > 0)
             {
                 List<GestaoAdmAtivaModel> result = await (from l in _context.Lojas
-                              join ga in _context.GestaoAdministrativas on l.LojCodi equals ga.LojCodi
-                              join gc in _context.GestaoCargos on ga.GstAdmCodi equals gc.GstAdmCodi
-                              join c in _context.Cargos on gc.CarCodi equals c.CarCodi
-                              join u in _context.Usuarios on gc.UsuCodi equals u.UsuCodi
-                              where l.LojCodi == lojCodi &&
-                                    ga.GstAdmStat == true &&
-                                    ga.GstAdmDtIn <= DateTime.Today &&
-                                    ga.GstAdmDtFi >= DateTime.Today
-                              orderby ga.GstAdmDtFi descending
-                              select new GestaoAdmAtivaModel
-                              {
-                                  LojCodi = l.LojCodi,
-                                  LojNome = l.LojNome,
-                                  LojNumL = l.LojNumL,
-                                  GstAdmNome = ga.GstAdmNome,
-                                  GstAdmDtIn = ga.GstAdmDtIn,
-                                  GstAdmDtFi = ga.GstAdmDtFi,
-                                  GstAdmStat = ga.GstAdmStat,
-                                  CarNome = c.CarNome,
-                                  UsuNome = u.UsuNome,
-                                  CarCodi = c.CarCodi
-                              }).ToListAsync();
+                                                          join ga in _context.GestaoAdministrativas on l.LojCodi equals ga.LojCodi
+                                                          join gc in _context.GestaoCargos on ga.GstAdmCodi equals gc.GstAdmCodi
+                                                          join c in _context.Cargos on gc.CarCodi equals c.CarCodi
+                                                          join u in _context.Usuarios on gc.UsuCodi equals u.UsuCodi
+                                                          where l.LojCodi == lojCodi &&
+                                                                ga.GstAdmStat == true &&
+                                                                ga.GstAdmDtIn <= DateTime.Today &&
+                                                                ga.GstAdmDtFi >= DateTime.Today
+                                                          orderby ga.GstAdmDtFi descending
+                                                          select new GestaoAdmAtivaModel
+                                                          {
+                                                              LojCodi = l.LojCodi,
+                                                              LojNome = l.LojNome,
+                                                              LojNumL = l.LojNumL,
+                                                              GstAdmNome = ga.GstAdmNome,
+                                                              GstAdmDtIn = ga.GstAdmDtIn,
+                                                              GstAdmDtFi = ga.GstAdmDtFi,
+                                                              GstAdmStat = ga.GstAdmStat,
+                                                              CarNome = c.CarNome,
+                                                              UsuNome = u.UsuNome,
+                                                              CarCodi = c.CarCodi
+                                                          }).ToListAsync();
 
 
                 if (result == null)
@@ -81,7 +81,83 @@ namespace API_Visitatus.Controllers
                 }
                 else
                 {
-                    return Ok( result );
+                    return Ok(result);
+                }
+            }
+            else
+            {
+                return BadRequest("Parâmetros Inválidos.");
+            }
+        }
+
+        [HttpGet("{gstAdmCodi}")]
+        public async Task<ActionResult<IEnumerable<GestaoAdministrativa>>> GetGestaoAdmByGstAdmCodi(long gstAdmCodi)
+        {
+            if (gstAdmCodi > 0)
+            {
+                List<GestaoAdmAtivaModel> result = await (from l in _context.Lojas
+                                                          join ga in _context.GestaoAdministrativas on l.LojCodi equals ga.LojCodi
+                                                          join gc in _context.GestaoCargos on ga.GstAdmCodi equals gc.GstAdmCodi
+                                                          join c in _context.Cargos on gc.CarCodi equals c.CarCodi
+                                                          join u in _context.Usuarios on gc.UsuCodi equals u.UsuCodi
+                                                          where ga.GstAdmCodi == gstAdmCodi
+                                                          orderby ga.GstAdmDtFi descending
+                                                          select new GestaoAdmAtivaModel
+                                                          {
+                                                              LojCodi = l.LojCodi,
+                                                              LojNome = l.LojNome,
+                                                              LojNumL = l.LojNumL,
+                                                              GstAdmNome = ga.GstAdmNome,
+                                                              GstAdmDtIn = ga.GstAdmDtIn,
+                                                              GstAdmDtFi = ga.GstAdmDtFi,
+                                                              GstAdmStat = ga.GstAdmStat,
+                                                              CarNome = c.CarNome,
+                                                              UsuNome = u.UsuNome,
+                                                              CarCodi = c.CarCodi
+                                                          }).ToListAsync();
+
+
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(result);
+                }
+            }
+            else
+            {
+                return BadRequest("Parâmetros Inválidos.");
+            }
+        }
+
+        [HttpGet("{lojCodi}")]
+        public async Task<ActionResult<IEnumerable<GestaoAdministrativa>>> GetListaGestaoAdmByLojCodi(long lojCodi)
+        {
+            if (lojCodi > 0)
+            {
+                List<GestaoAdministrativa> result = await (from l in _context.Lojas
+                                                          join ga in _context.GestaoAdministrativas on l.LojCodi equals ga.LojCodi
+                                                          where l.LojCodi == lojCodi
+                                                          orderby ga.GstAdmDtFi descending
+                                                          select new GestaoAdministrativa
+                                                          {
+                                                              GstAdmCodi = ga.GstAdmCodi,
+                                                              GstAdmNome = ga.GstAdmNome,
+                                                              GstAdmDtIn = ga.GstAdmDtIn,
+                                                              GstAdmDtFi = ga.GstAdmDtFi,
+                                                              GstAdmStat = ga.GstAdmStat,
+                                                              LojCodi = l.LojCodi,
+                                                          }).ToListAsync();
+
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(result);
                 }
             }
             else
