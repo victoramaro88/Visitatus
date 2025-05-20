@@ -22,6 +22,7 @@ import { PerfilModel } from '../models/Perfil.Model';
 import { UsuarioPotenciaModel } from '../models/UsuarioPotencia.Model ';
 import { PermissaoModel } from '../models/Permissao.Model';
 import { ProximaSessaoModel } from '../models/ProximaSessao.Model';
+import { GestaoAdministrativa } from '../models/GestaoAdministrativa.Model';
 
 @Injectable({
   providedIn: 'root',
@@ -179,6 +180,14 @@ export class HttpService {
   ): Observable<string> {
     return this.http.get<string>(
       `${environment.apiServicos}/Sessao/GetLiberaBloqueiaSessao/${sesCodi}/${sesLibe}`
+    );
+  }
+
+  public GetListaGestaoAdmByLojCodi(
+    lojCodi: number
+  ): Observable<GestaoAdministrativa[]> {
+    return this.http.get<GestaoAdministrativa[]>(
+      `${environment.apiServicos}/GestaoAdministrativa/GetListaGestaoAdmByLojCodi/${lojCodi}`
     );
   }
 

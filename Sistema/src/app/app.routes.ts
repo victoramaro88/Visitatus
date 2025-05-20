@@ -15,6 +15,7 @@ import { PermissaoPerfilComponent } from './pages/Seguranca/permissao-perfil/per
 import { PerfilComponent } from './pages/Seguranca/perfil/perfil.component';
 import { PermissaoComponent } from './pages/Seguranca/permissao/permissao.component';
 import { LojaComponent } from './pages/loja/loja.component';
+import { GestaoAdministrativaComponent } from './pages/gestao-administrativa/gestao-administrativa.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -34,6 +35,7 @@ export const routes: Routes = [
   { path: 'perfil', component: PerfilComponent },
   { path: 'permissao', component: PermissaoComponent },
   { path: 'loja', component: LojaComponent },
+  { path: 'gestao-adm', component: GestaoAdministrativaComponent },
   // { path: 'confirmacao', component: ConfirmacaoPresencaComponent }, //-> Temporário
   { path: '**', redirectTo: 'login' },
 ];

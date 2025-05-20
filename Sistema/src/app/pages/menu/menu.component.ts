@@ -106,6 +106,14 @@ export class MenuComponent implements OnInit {
                     this.router.navigate(['/sessao']);
                   },
                 },
+                {
+                  label: 'Gestão Administrativa',
+                  icon: 'pi pi-sitemap',
+                  visible: this.ValidaMenu(8),
+                  command: () => {
+                    this.router.navigate(['/gestao-adm']);
+                  },
+                },
                 // {
                 //   separator: true,
                 // },
