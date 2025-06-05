@@ -46,6 +46,32 @@ namespace API_Visitatus.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Potencium>>> ListaPotenciasSemLogo()
+        {
+
+            //var result = await _context.Potencia.ToListAsync();
+
+            var result = await _context.Potencia
+                            .Select(p => new Potencium
+                            {
+                                PotCodi = p.PotCodi,
+                                PotNome = p.PotNome,
+                                PotRegu = p.PotRegu,
+                                PotStat = p.PotStat,
+                                PotSigl = p.PotSigl
+                            }).ToListAsync();
+
+            if (result == null || result.Count == 0)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(result);
+            }
+        }
+
         [HttpGet("{LojCodi}")]
         public Task<ActionResult<IEnumerable<Potencium>>> GetPotenciaRegularByLojCodi(int LojCodi)
         {
@@ -67,7 +93,7 @@ namespace API_Visitatus.Controllers
                     {
                         p.PotCodi,
                         p.PotNome,
-                        p.PotLogo,
+                        //p.PotLogo,
                         p.PotRegu,
                         p.PotStat,
                         p.PotSigl
@@ -80,7 +106,7 @@ namespace API_Visitatus.Controllers
                 }
                 else
                 {
-                    return Task.FromResult<ActionResult<IEnumerable<Potencium>>>(Ok( result ));
+                    return Task.FromResult<ActionResult<IEnumerable<Potencium>>>(Ok(result));
                 }
             }
             else
