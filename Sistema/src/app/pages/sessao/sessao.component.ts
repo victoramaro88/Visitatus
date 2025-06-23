@@ -14,11 +14,12 @@ import { Table } from 'primeng/table';
 import { TipoSessaoModel } from '../../models/TipoSessao.Model';
 import { Base64Service } from '../../services/base64.service';
 import { PerfilUsuarioListaModel } from '../../models/PerfilUsuarioLista.Model';
+import { QrCodeWrapperModule } from '../qrCodeWrapper/qr-code-wrapper.module';
 
 @Component({
   selector: 'app-sessao',
   standalone: true,
-  imports: [ImportsModule],
+  imports: [ImportsModule, QrCodeWrapperModule],
   templateUrl: './sessao.component.html',
   styleUrl: './sessao.component.css',
   providers: [MessageService],
@@ -59,6 +60,8 @@ export class SessaoComponent implements OnInit {
     { label: 'Sim', value: true },
     { label: 'Não', value: false },
   ];
+  boolDialogQRCode: boolean = false;
+  valorQrCode: string = '';
 
   constructor(
     private http: HttpService,
@@ -491,6 +494,18 @@ export class SessaoComponent implements OnInit {
 
   MarcarPresencas(SesCodi: number) {
     this.router.navigate(['/presenca-sessao', SesCodi]);
+  }
+
+  GerarQRCode(SesCodi: number){
+    this.valorQrCode =
+      window.location.origin +
+      '/convite?data=' +
+      encodeURIComponent(
+        this.cryptoService.criptografar(
+          this.base64Service.convertNumberToBase64(SesCodi)
+        )
+      );
+    this.boolDialogQRCode = true;
   }
 
   onGlobalFilter(table: Table, event: Event) {

@@ -42,9 +42,9 @@
             <th style="text-align: center;">Tipo</th>
             <th style="text-align: center;">Grau</th>
             <th style="text-align: center;">Nome</th>
-            <th style="text-align: center;">Descrição</th>
+            <!-- <th style="text-align: center;">Descrição</th> -->
             <th style="text-align: center;">Liberada</th>
-            <th style="text-align: center;">Status</th>
+            <!-- <th style="text-align: center;">Status</th> -->
             <th style="text-align: center;">Opções</th>
         </tr>
     </ng-template>
@@ -55,15 +55,16 @@
             <td style="text-align: center;">{{ item.TiSNome }}</td>
             <td style="text-align: center;">{{ item.GraNome }}</td>
             <td>{{ item.SesNome }}</td>
-            <td>{{ item.SesDesc.substring(0, 30) }}...</td>
+            <!-- <td>{{ item.SesDesc.substring(0, 30) }}...</td> -->
             <td style="text-align: center;">{{ item.SesLibe ? 'Sim' : 'Não' }}</td>
-            <td style="text-align: center;">{{ item.SesStat ? 'Ativa' : 'Inativa' }}</td>
+            <!-- <td style="text-align: center;">{{ item.SesStat ? 'Ativa' : 'Inativa' }}</td> -->
             <td style="text-align: center;">
+              <p-button (click)="GerarQRCode(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-qrcode" [rounded]="true" [text]="true" severity="help" pTooltip="Gerar QR Code" tooltipPosition="left"/>
               <p-button (click)="GetSessaoBySesCodi(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-envelope" [rounded]="true" [text]="true" severity="warning" pTooltip="Convite da Sessão" tooltipPosition="left"/>
               <p-button (click)="MarcarPresencas(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-check-square" [rounded]="true" [text]="true" severity="success" pTooltip="Marcar Presenças" tooltipPosition="left"/>
               <p-button (click)="EditarRegistro(item);" icon="pi pi-pen-to-square" [rounded]="true" [text]="true" severity="info" pTooltip="Editar" tooltipPosition="left"/>
               <p-button (click)="LiberaTravaSessao(item.SesCodi, item);" icon="pi {{item.SesLibe ? 'pi-ban' : 'pi-thumbs-up'}}" [rounded]="true" [text]="true" [severity]="item.SesLibe ? 'danger' : 'success'" pTooltip="{{item.SesLibe ? 'Travar Sessão' : 'Liberar Sessão'}}" tooltipPosition="left"/>
-              <p-button (click)="AtivaInativaSessao(item.SesCodi, item);" icon="pi {{item.SesStat ? 'pi-lock-open' : 'pi-lock'}}" [rounded]="true" [text]="true" [severity]="item.SesStat ? 'danger' : 'success'" pTooltip="{{item.SesStat ? 'Inativar Sessão' : 'Ativar Sessão' }}" tooltipPosition="left"/>
+              <!-- <p-button (click)="AtivaInativaSessao(item.SesCodi, item);" icon="pi {{item.SesStat ? 'pi-lock-open' : 'pi-lock'}}" [rounded]="true" [text]="true" [severity]="item.SesStat ? 'danger' : 'success'" pTooltip="{{item.SesStat ? 'Inativar Sessão' : 'Ativar Sessão' }}" tooltipPosition="left"/> -->
             </td>
         </tr>
     </ng-template>
@@ -180,3 +181,31 @@
     <p-button (click)="CancelaRegitro();" label="Cancelar" [raised]="true" severity="danger" />
   </div>
 </div>
+
+<p-dialog header="QR Code do Convite" [modal]="true" [(visible)]="boolDialogQRCode" [style]="{ width: '25rem' }">
+  <div class="flex justify-content-center gap-3 mb-3">
+      <qrcode
+        [qrdata]="valorQrCode"
+        [allowEmptyString]="true"
+        [ariaLabel]="'visitatus.com.br'"
+        [cssClass]="'center'"
+        [colorDark]="'#000000ff'"
+        [colorLight]="'#ffffffff'"
+        [elementType]="'canvas'"
+        [errorCorrectionLevel]="'M'"
+        [imageSrc]="'./assets/img/Visitatus.pngs'"
+        [imageHeight]="50"
+        [imageWidth]="50"
+        [margin]="2"
+        [scale]="1"
+        [title]="'QR Code Convite'"
+        [width]="300"
+      ></qrcode>
+      <!-- <qrcode [qrdata]="valorQrCode" [width]="256" [errorCorrectionLevel]="'M'"></qrcode> -->
+    <!-- <label for="username" class="font-semibold w-6rem">Username</label>
+      <input pInputText id="username" class="flex-auto" autocomplete="off" /> -->
+  </div>
+  <div class="flex justify-content-center gap-2">
+      <p-button label="Ok" (onClick)="boolDialogQRCode = false" />
+  </div>
+</p-dialog>
