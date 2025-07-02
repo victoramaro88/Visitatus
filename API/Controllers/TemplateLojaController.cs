@@ -20,7 +20,7 @@ namespace API_Visitatus.Controllers
             if (lojCodi > 0)
             {
                 TemplateLojaModel? result = await _context.TemplateLojas
-                    .Where(tl => tl.LojCodi == lojCodi)
+                    .Where(tl => tl.LojCodi == lojCodi && tl.TmpLjStat == true)
                     .Join(
                         _context.TemplateConvites,
                         tl => tl.TmpCvtCodi,
