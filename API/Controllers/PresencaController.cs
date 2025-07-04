@@ -139,7 +139,7 @@ namespace API_Visitatus.Controllers
                                                  join pre in _context.TemplateCertificadoPresencas on cer.TmpCrtPreCodi equals pre.TmpCrtPreCodi
                                                  join loj in _context.Lojas on cer.LojCodi equals loj.LojCodi
                                                  join ses in _context.Sessaos on loj.LojCodi equals ses.LojCodi
-                                                 where ses.SesCodi == sesCodi
+                                                 where ses.SesCodi == sesCodi && cer.TmpCrtStat == true
                                                  select new
                                                  {
                                                      pre.TmpCrtPreMode
