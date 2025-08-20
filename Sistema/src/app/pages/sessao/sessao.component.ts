@@ -16,6 +16,8 @@ import { Base64Service } from '../../services/base64.service';
 import { PerfilUsuarioListaModel } from '../../models/PerfilUsuarioLista.Model';
 import { QrCodeWrapperModule } from '../qrCodeWrapper/qr-code-wrapper.module';
 
+import { ViewChild, ElementRef } from '@angular/core';
+
 @Component({
   selector: 'app-sessao',
   standalone: true,
@@ -25,6 +27,7 @@ import { QrCodeWrapperModule } from '../qrCodeWrapper/qr-code-wrapper.module';
   providers: [MessageService],
 })
 export class SessaoComponent implements OnInit {
+  @ViewChild('meuParagrafo') meuParagrafo!: ElementRef<HTMLParagraphElement>;
   boolLoading = true;
 
   lstSessao: SessaoListaModel[] = [];
@@ -61,6 +64,7 @@ export class SessaoComponent implements OnInit {
     { label: 'Não', value: false },
   ];
   boolDialogQRCode: boolean = false;
+  boolDialogWhats: boolean = false;
   valorQrCode: string = '';
 
   constructor(
@@ -78,7 +82,7 @@ export class SessaoComponent implements OnInit {
     this.objPerfilSelecionado = JSON.parse(
       this.cryptoService.lerDoSessionStorage('prf')
     );
-    // console.warn("Perfil Selecionado (Sessão): ", this.objPerfilSelecionado);
+    // console.warn('Perfil Selecionado (Sessão): ', this.objPerfilSelecionado);
   }
 
   ngOnInit() {
@@ -496,7 +500,20 @@ export class SessaoComponent implements OnInit {
     this.router.navigate(['/presenca-sessao', SesCodi]);
   }
 
-  GerarQRCode(SesCodi: number){
+  CopiarTextoWhats() {
+    const texto = this.meuParagrafo.nativeElement.innerText;
+
+    navigator.clipboard
+      .writeText(texto)
+      .then(() => {
+        // console.log('Texto copiado com sucesso!');
+      })
+      .catch((err) => {
+        console.error('Erro ao copiar texto: ', err);
+      });
+  }
+
+  GerarQRCode(SesCodi: number) {
     this.valorQrCode =
       window.location.origin +
       '/convite?data=' +
@@ -506,6 +523,11 @@ export class SessaoComponent implements OnInit {
         )
       );
     this.boolDialogQRCode = true;
+  }
+
+  GerarMensagemWhats(SesCodi: any) {
+    console.warn(SesCodi);
+    this.boolDialogWhats = true;
   }
 
   onGlobalFilter(table: Table, event: Event) {

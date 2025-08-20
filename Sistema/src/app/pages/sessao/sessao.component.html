@@ -59,6 +59,7 @@
             <td style="text-align: center;">{{ item.SesLibe ? 'Sim' : 'Não' }}</td>
             <!-- <td style="text-align: center;">{{ item.SesStat ? 'Ativa' : 'Inativa' }}</td> -->
             <td style="text-align: center;">
+              <p-button (click)="GerarMensagemWhats(item);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-whatsapp" [rounded]="true" [text]="true" severity="success" pTooltip="Mensagem WhatsApp" tooltipPosition="left"/>
               <p-button (click)="GerarQRCode(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-qrcode" [rounded]="true" [text]="true" severity="help" pTooltip="Gerar QR Code" tooltipPosition="left"/>
               <p-button (click)="GetSessaoBySesCodi(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-envelope" [rounded]="true" [text]="true" severity="warning" pTooltip="Convite da Sessão" tooltipPosition="left"/>
               <p-button (click)="MarcarPresencas(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-check-square" [rounded]="true" [text]="true" severity="success" pTooltip="Marcar Presenças" tooltipPosition="left"/>
@@ -207,5 +208,34 @@
   </div>
   <div class="flex justify-content-center gap-2">
       <p-button label="Ok" (onClick)="boolDialogQRCode = false" />
+  </div>
+</p-dialog>
+
+
+<!-- DIALOG DE MENSAGEM DO WHATSAPP -->
+<p-dialog header="Mensagem WhatsApp" [modal]="true" [(visible)]="boolDialogWhats" [style]="{ width: '25rem' }">
+  <div class="">
+    <p #meuParagrafo>
+      A.R.L.S. CAVALEIROS DE BAALBEK - 4024
+      <br><br>
+      Temos a honra de convidar os Irmãos regulares para sessão de INSTALAÇÃO E POSSE 2025/2026, no rito de York.
+      <br><br>
+      <b>Rito:</b> York<br>
+      Grau: Aprendiz<br>
+      Tipo: Magna<br>
+      Quando: 27/06/2025 às 20:00 horas<br>
+      Onde: RUA LISBOA, 1120, PINHEIROS - TEMPLO DISTRITO INGLÊS - São Paulo, SP<br>
+      <br><br>
+      Solicitamos a confirmação de presença para uma melhor acomodação, através do link abaixo:<br>
+      <br>
+      https://visitatus.com.br/convite?data=U2FsdGVkX19Yc5MWGo6pQhlPCm8lobIZI%2BjHKNwXE4g%3D
+    </p>
+    <!-- <qrcode [qrdata]="valorQrCode" [width]="256" [errorCorrectionLevel]="'M'"></qrcode> -->
+    <!-- <label for="username" class="font-semibold w-6rem">Username</label> -->
+    <!-- <input pInputText id="username" class="flex-auto" autocomplete="off" /> -->
+  </div>
+  <div class="flex justify-content-center gap-2">
+    <button (click)="CopiarTextoWhats()">Copiar</button>
+    <p-button label="Ok" (onClick)="boolDialogWhats = false" />
   </div>
 </p-dialog>
