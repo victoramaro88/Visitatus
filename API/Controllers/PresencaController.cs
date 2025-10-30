@@ -3,20 +3,26 @@ using API_Visitatus.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Visitatus.Data.Repositories;
 
 namespace API_Visitatus.Controllers
 {
     [Route("api/[controller]/[action]")]
     public class PresencaController : ControllerBase
     {
+        private readonly VisitatusRepository _visitatusRepo;
+        private readonly IWebHostEnvironment _hostingEnvironment;
+
         private readonly AppDbContext _context;
         private readonly EmailService _emailService;
         private readonly EncryptionService _encryptService;
         private readonly int _idModeloEmailCertificado;
         private readonly string _urlAplicacaoCertificado;
 
-        public PresencaController(IConfiguration configuration, AppDbContext context, EmailService emailService, EncryptionService encryptService)
+        public PresencaController(IConfiguration configuration, IWebHostEnvironment hostingEnvironment, AppDbContext context, EmailService emailService, EncryptionService encryptService)
         {
+            _hostingEnvironment = hostingEnvironment;
+            _visitatusRepo = new VisitatusRepository(configuration, _hostingEnvironment);
             _context = context;
             _emailService = emailService;
             _encryptService = encryptService;
@@ -24,6 +30,7 @@ namespace API_Visitatus.Controllers
             _urlAplicacaoCertificado = configuration.GetValue<string>("UrlAplicacaoCertificado")!;
         }
 
+        #region GET
         [HttpGet("{SesCodi}")]
         public async Task<ActionResult<IEnumerable<ListaPresencaModel>>> GetListaPresencaBySesCodi(long SesCodi = 0)
         {
@@ -193,6 +200,29 @@ namespace API_Visitatus.Controllers
 
             return Ok(htmlCorpo);
         }
+
+        [HttpGet("{sesCodi}")]
+        [Produces("application/json")]
+        public IActionResult GetQtdPresencaBySesCodi(long sesCodi = 0)
+        {
+            try
+            {
+                if(sesCodi == 0)
+                {
+                    return BadRequest("Campos obrigatórios inválidos.");
+                }
+
+                var ret = _visitatusRepo.GetQtdPresencaBySesCodi(sesCodi);
+                return Ok(ret);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        #endregion
+
+
 
         [HttpPost]
         public async Task<ActionResult<string>> PostConfirmaPresenca([FromBody] ConsultaUsuarioLojaModel objPresenca)
@@ -816,7 +846,6 @@ namespace API_Visitatus.Controllers
                 .Replace("[TipoSessao]", loja.TiSnome);
         }
 
-
         //-> Processar Presença:
         private async Task ProcessarPresenca(ListaPresencaModel itemPresente, string htmlCorpoBase, dynamic loja, List<GestaoAdmAtivaModel> gestaoAdm, string assuntoEmail)
         {
@@ -858,192 +887,6 @@ namespace API_Visitatus.Controllers
             await _context.SaveChangesAsync();
         }
         #endregion
-
-        //[HttpPost]
-        //public async Task<ActionResult<string>> PostLancamentoPresencaSessao([FromBody] List<ListaPresencaModel> listaPresentes)
-        //{
-        //    if (listaPresentes.Count == 0)
-        //    {
-        //        return BadRequest("Parâmetros inválidos.");
-        //    }
-
-        //    string destinatario = "";
-        //    string assunto = "";
-        //    string htmlCorpo = "";
-
-        //    //using var transaction = await _context.Database.BeginTransactionAsync();
-        //    try
-        //    {
-        //        //-> Retornando as informações da Loja para emitir o certificado
-        //        var LojaCertificado = await (from ses in _context.Sessaos
-        //                                     join tip in _context.TipoSessaos on ses.TiScodi equals tip.TiScodi
-        //                                     join loj in _context.Lojas on ses.LojCodi equals loj.LojCodi
-        //                                     join pot in _context.Potencia on loj.PotCodi equals pot.PotCodi
-        //                                     join cid in _context.Cidades on loj.CidCodi equals cid.CidCodi
-        //                                     join est in _context.Estados on cid.EstCodi equals est.EstCodi
-        //                                     where ses.SesCodi == listaPresentes[0].SesCodi
-        //                                     select new
-        //                                     {
-        //                                         loj.LojCodi,
-        //                                         loj.LojNome,
-        //                                         loj.LojNumL,
-        //                                         tip.TiSnome,
-        //                                         pot.PotSigl,
-        //                                         pot.PotNome,
-        //                                         cid.CidNome,
-        //                                         est.EstSigl,
-        //                                         ses.SesDtHr,
-        //                                         loj.LojLogo,
-        //                                         pot.PotLogo
-        //                                     }).FirstOrDefaultAsync();
-
-        //        assunto = "Certificado de Presença - "
-        //            + LojaCertificado!.LojNome
-        //            + ", " + LojaCertificado!.LojNumL
-        //            + " - " + LojaCertificado!.SesDtHr.ToShortDateString();
-
-        //        //-> Retornando a Gestão Administrativa atual (cargos)
-        //        List<GestaoAdmAtivaModel> gestaoAdmAtual = await (from l in _context.Lojas
-        //                                                          join ga in _context.GestaoAdministrativas on l.LojCodi equals ga.LojCodi
-        //                                                          join gc in _context.GestaoCargos on ga.GstAdmCodi equals gc.GstAdmCodi
-        //                                                          join c in _context.Cargos on gc.CarCodi equals c.CarCodi
-        //                                                          join u in _context.Usuarios on gc.UsuCodi equals u.UsuCodi
-        //                                                          where l.LojCodi == LojaCertificado.LojCodi &&
-        //                                                                ga.GstAdmStat == true &&
-        //                                                                ga.GstAdmDtIn <= DateTime.Today &&
-        //                                                                ga.GstAdmDtFi >= DateTime.Today
-        //                                                          orderby ga.GstAdmDtFi descending
-        //                                                          select new GestaoAdmAtivaModel
-        //                                                          {
-        //                                                              LojCodi = l.LojCodi,
-        //                                                              LojNome = l.LojNome,
-        //                                                              LojNumL = l.LojNumL,
-        //                                                              GstAdmNome = ga.GstAdmNome,
-        //                                                              GstAdmDtIn = ga.GstAdmDtIn,
-        //                                                              GstAdmDtFi = ga.GstAdmDtFi,
-        //                                                              GstAdmStat = ga.GstAdmStat,
-        //                                                              CarNome = c.CarNome,
-        //                                                              UsuNome = u.UsuNome,
-        //                                                              CarCodi = c.CarCodi
-        //                                                          }).ToListAsync();
-
-        //        //-> Retornando o template do certificado.
-        //        var templateCertificado = await (from cer in _context.TemplateCertificadoLojas
-        //                                         join pre in _context.TemplateCertificadoPresencas on cer.TmpCrtPreCodi equals pre.TmpCrtPreCodi
-        //                                         join loj in _context.Lojas on cer.LojCodi equals loj.LojCodi
-        //                                         join ses in _context.Sessaos on loj.LojCodi equals ses.LojCodi
-        //                                         where ses.SesCodi == listaPresentes[0].SesCodi
-        //                                         select new
-        //                                         {
-        //                                             pre.TmpCrtPreMode
-        //                                         }).FirstOrDefaultAsync();
-
-        //        if (templateCertificado != null)
-        //        {
-        //            htmlCorpo = templateCertificado.TmpCrtPreMode
-        //                .Replace("[LojLogo]", LojaCertificado.LojLogo)
-        //                .Replace("[PotLogo]", LojaCertificado.PotLogo)
-        //                .Replace("[LojNome]", LojaCertificado.LojNome)
-        //                .Replace("[PotSigl]", LojaCertificado.PotSigl)
-        //                .Replace("[PotNome]", LojaCertificado.PotNome)
-        //                .Replace("[TipoSessao]", LojaCertificado.TiSnome)
-        //                .Replace("[CidadeLoja]", LojaCertificado.CidNome + ", " + LojaCertificado.EstSigl)
-        //                .Replace("[DataSessao]", LojaCertificado.SesDtHr.ToShortDateString())
-        //                .Replace("[NomeVM]", gestaoAdmAtual.Count > 0 ? gestaoAdmAtual.Where(g => g.CarCodi == 1).FirstOrDefault()!.UsuNome : "")
-        //                .Replace("[CargoVM]", gestaoAdmAtual.Count > 0 ? gestaoAdmAtual.Where(g => g.CarCodi == 1).FirstOrDefault()!.CarNome : "")
-        //                .Replace("[NomeSecretario]", gestaoAdmAtual.Count > 0 ? gestaoAdmAtual.Where(g => g.CarCodi == 4).FirstOrDefault()!.UsuNome : "")
-        //                .Replace("[CargoSecretario]", gestaoAdmAtual.Count > 0 ? gestaoAdmAtual.Where(g => g.CarCodi == 4).FirstOrDefault()!.CarNome : "")
-        //                ;
-        //        }
-
-        //        foreach (var itemPresente in listaPresentes)
-        //        {
-        //            if (itemPresente.PreAtiv && !itemPresente.PreEmai)
-        //            {
-        //                if (!itemPresente.MembroLoja) //-> Se não for membro da Loja, envia e-mail, senão apenas salva a presença.
-        //                {
-        //                    //-> Retornando o e-mail do usuário
-        //                    var emailUsuario = await _context.Usuarios
-        //                        .Where(u => u.UsuCodi == itemPresente.UsuCodi).FirstOrDefaultAsync();
-
-        //                    if (emailUsuario != null && emailUsuario.UsuEmai.Length > 0)
-        //                    {
-        //                        string htmlCorpoTmp = htmlCorpo
-        //                             .Replace("[NomeUsuario]", itemPresente.UsuNome)
-        //                             .Replace("[NomeLoja]", itemPresente.LojNome)
-        //                             .Replace("[NumeroLoja]", itemPresente.LojNumL)
-        //                             ;
-
-        //                        destinatario = emailUsuario.UsuEmai;
-        //                        await _emailService.EnviarEmailAsync(destinatario, assunto, htmlCorpoTmp);
-        //                    }
-        //                }
-
-        //                Presenca objPresencaUpdate = new Presenca();
-        //                objPresencaUpdate.UsuCodi = itemPresente.UsuCodi;
-        //                objPresencaUpdate.SesCodi = itemPresente.SesCodi;
-        //                objPresencaUpdate.PreAtiv = true;
-        //                objPresencaUpdate.LojCodi = itemPresente.LojCodi;
-        //                objPresencaUpdate.PreEmai = itemPresente.MembroLoja ? false : true;
-        //                _context.Entry(objPresencaUpdate).State = EntityState.Modified;
-        //                try
-        //                {
-        //                    await _context.SaveChangesAsync();
-        //                }
-        //                catch (DbUpdateConcurrencyException)
-        //                {
-        //                    return BadRequest("Falha ao alterar o registro");
-        //                }
-        //            }
-        //            else if (!itemPresente.PreAtiv && itemPresente.MembroLoja)
-        //            {
-        //                Presenca objPresencaUpdate = new Presenca();
-        //                objPresencaUpdate.UsuCodi = itemPresente.UsuCodi;
-        //                objPresencaUpdate.SesCodi = itemPresente.SesCodi;
-        //                objPresencaUpdate.PreAtiv = false;
-        //                objPresencaUpdate.LojCodi = itemPresente.LojCodi;
-        //                objPresencaUpdate.PreEmai = itemPresente.MembroLoja ? false : true;
-        //                _context.Entry(objPresencaUpdate).State = EntityState.Modified;
-        //                try
-        //                {
-        //                    await _context.SaveChangesAsync();
-        //                }
-        //                catch (DbUpdateConcurrencyException)
-        //                {
-        //                    return BadRequest("Falha ao alterar o registro");
-        //                }
-        //            }
-        //            else if (!itemPresente.PreAtiv && itemPresente.PreEmai)
-        //            {
-        //                Presenca objPresencaUpdate = new Presenca();
-        //                objPresencaUpdate.UsuCodi = itemPresente.UsuCodi;
-        //                objPresencaUpdate.SesCodi = itemPresente.SesCodi;
-        //                objPresencaUpdate.PreAtiv = itemPresente.PreAtiv;
-        //                objPresencaUpdate.LojCodi = itemPresente.LojCodi;
-        //                objPresencaUpdate.PreEmai = false;
-        //                _context.Entry(objPresencaUpdate).State = EntityState.Modified;
-        //                try
-        //                {
-        //                    await _context.SaveChangesAsync();
-        //                }
-        //                catch (DbUpdateConcurrencyException)
-        //                {
-        //                    return BadRequest("Falha ao alterar o registro");
-        //                }
-        //            }
-        //        }
-
-        //        // Commit da transação
-        //        //await transaction.CommitAsync();
-        //        return Ok("Presença confirmada com sucesso.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Rollback em caso de erro
-        //        //await transaction.RollbackAsync();
-        //        return BadRequest($"Erro ao confirmar presença: {ex.Message} \n {ex.InnerException?.Message}");
-        //    }
-        //}
 
         [NonAction]
         public string RetornaUrlCertificado(long usuCodi = 0, long sesCodi = 0)
