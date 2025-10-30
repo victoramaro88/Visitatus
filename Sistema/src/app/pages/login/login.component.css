@@ -1,0 +1,8 @@
+.full-width {
+  width: 100%; /* Define a largura do componente p-password como 100% */
+}
+
+:host ::ng-deep .p-inputmask {
+  width: 100%;
+  box-sizing: border-box;
+}

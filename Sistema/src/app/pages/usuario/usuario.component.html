@@ -1,0 +1,185 @@
+<p-blockUI [blocked]="boolLoading">
+  <i class="pi pi-spin pi-spinner-dotted" style="font-size: 3rem"></i>
+</p-blockUI>
+<p-toast />
+
+<h2>Cadastro de Usuário</h2>
+
+<!-- GRID DE EXIBIÇÃO DOS REGISTROS -->
+<div *ngIf="!boolManterRegistro">
+  <div class="text-right mb-3">
+    <p-button (click)="NovoRegistro();" label="Novo Usuário" [raised]="true" severity="primary" /> &nbsp;
+  </div>
+
+  <!-- TABELA DE EXIBIÇÃO DOS IRMÃOS -->
+  <p-table
+    #dt
+    [value]="lstUsuarioLojaGrid"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    styleClass="p-datatable-sm p-datatable-striped"
+    responsiveLayout="stack"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 20, 50, 100]"
+    [globalFilterFields]="['UsuNCIM', 'UsuNome', 'PerNome', 'UsuEmai', 'UsuNCel']"
+    >
+    <ng-template pTemplate="caption">
+      <div class="flex">
+        <p-iconField iconPosition="left" class="ml-auto">
+          <p-inputIcon>
+              <i class="pi pi-search"></i>
+          </p-inputIcon>
+          <input
+              pInputText
+              type="text"
+              (input)="onGlobalFilter(dt, $event)"
+              placeholder="Pesquisa" />
+        </p-iconField>
+      </div>
+    </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="text-align: center;">CIM</th>
+          <th style="text-align: center;">Nome</th>
+          <th style="text-align: center;">Celular</th>
+          <th style="text-align: center;">E-mail</th>
+          <th style="text-align: center;">Nascimento</th>
+          <th style="text-align: center;">Perfil</th>
+          <th style="text-align: center;">Opções</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td style="text-align: center;">{{ item.UsuNCIM }}</td>
+          <td style="text-align: center;">{{ item.UsuNome }}</td>
+          <td style="text-align: center;">{{ utils.formataTelefone(item.UsuNCel) }}</td>
+          <td style="text-align: center;">{{ item.UsuEmai }}</td>
+          <td style="text-align: center;">{{ item.UsuNasc | date:'dd/MM/yyyy' }}</td>
+          <td style="text-align: center;">{{ item.PerNome }}</td>
+          <td style="text-align: center;">
+            <!-- <p-button (click)="GetSessaoBySesCodi(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-envelope" [rounded]="true" [text]="true" severity="warning" pTooltip="Convite da Sessão" tooltipPosition="left"/> -->
+            <!-- <p-button (click)="MarcarPresencas(item.SesCodi);" icon="pi pi-check-square" [rounded]="true" [text]="true" severity="success" pTooltip="Marcar Presenças" tooltipPosition="left"/> -->
+            <p-button (click)="EditarRegistro(item.UsuNCIM);" icon="pi pi-pen-to-square" [rounded]="true" [text]="true" severity="info" pTooltip="Editar" tooltipPosition="left"/>
+            <!-- <p-button (click)="LiberaTravaSessao(item.SesCodi, item);" icon="pi {{item.SesLibe ? 'pi-ban' : 'pi-thumbs-up'}}" [rounded]="true" [text]="true" [severity]="item.SesLibe ? 'danger' : 'success'" pTooltip="{{item.SesLibe ? 'Travar Sessão' : 'Liberar Sessão'}}" tooltipPosition="left"/> -->
+            <!-- <p-button (click)="AtivaInativaSessao(item.SesCodi, item);" icon="pi {{item.SesStat ? 'pi-lock-open' : 'pi-lock'}}" [rounded]="true" [text]="true" [severity]="item.SesStat ? 'danger' : 'success'" pTooltip="{{item.SesStat ? 'Inativar Sessão' : 'Ativar Sessão' }}" tooltipPosition="left"/> -->
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+            <td colspan="9" style="text-align: center;"><b>SEM RESULTADOS.</b></td>
+        </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- FORMULÁRIO DE REGISTRO -->
+<div *ngIf="boolManterRegistro" class="container">
+  <div class="formgrid grid">
+    <div class="field col-12 md:col-2 p-fluid">
+      <label for="UsuNCIM">Nº CIM</label><br>
+      <input (blur)="ConsultaUsuarioExistente(objUsuarioRegistro.UsuNCIM);" id="UsuNCIM" type="text" pInputText [(ngModel)]="objUsuarioRegistro.UsuNCIM" style="text-align: center;"/>
+    </div>
+    <div class="field col-12 md:col-6 p-fluid">
+      <label for="UsuNome">Nome Completo</label><br>
+      <input id="UsuNome" type="text" pInputText [(ngModel)]="objUsuarioRegistro.UsuNome" />
+    </div>
+    <div class="field col-12 md:col-4 p-fluid">
+      <label for="UsuEmai">E-mail</label><br>
+      <input id="UsuEmai" type="text" pInputText [(ngModel)]="objUsuarioRegistro.UsuEmai" />
+    </div>
+    <div class="field col-12 md:col-3 p-fluid">
+      <label for="UsuNCel">Celular</label>
+      <p-inputMask id="UsuNCel" mask="(99) 99999-9999" [(ngModel)]="objUsuarioRegistro.UsuNCel" placeholder="(00) 00000-0000"></p-inputMask>
+    </div>
+    <div class="field col-12 md:col-3">
+        <label for="dataHora">Data Nascimento</label><br>
+        <p-calendar
+            inputId="dataHora"
+            [(ngModel)]="objUsuarioRegistro.UsuNasc"
+            dateFormat="dd/mm/yy"
+            class="text-center-calendar"
+            [style]="{ width: '100%' }"
+          >
+        </p-calendar>
+    </div>
+  </div>
+  <hr>
+  <div class="formgrid grid mt-3">
+    <div class="field col-12 md:col-6">
+      <div class="flex align-items-center gap-2 mb-2">
+        <div class="grid">
+          <div class="flex flex-column flex-grow-1 col-8 md:col-10">
+            <label for="PerCodi"><b>Perfil</b></label>
+            <p-dropdown
+              placeholder="Selecione"
+              id="PerCodi"
+              [options]="lstPerfil"
+              optionLabel="PerNome"
+              [(ngModel)]="objPerfil"
+              [style]="{ width: '100%' }"
+              [showClear]="true"
+            ></p-dropdown>
+          </div>
+          <div class=" text-center flex flex-column flex-grow-1 col-4 md:col-1 mt-3">
+            <p-button
+              icon="pi pi-plus"
+              [rounded]="true"
+              [text]="true"
+              [raised]="true"
+              severity="success"
+              (onClick)="AddPerfil(objPerfil);"
+            ></p-button>
+          </div>
+        </div>
+      </div>
+      <p-table
+      styleClass="p-datatable-sm"
+      [value]="lstPerfilSelecionado">
+        <ng-template pTemplate="header">
+            <tr>
+              <th style="text-align: center;">Perfil</th>
+              <th style="text-align: center;">Ação</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+            <tr>
+                <td style="text-align: center;">{{ item.PerNome }}</td>
+                <td style="text-align: center;"><p-button (onClick)="DelPerfil(item);" icon="pi pi-times" [rounded]="true" [text]="true" severity="danger" /></td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+              <td colspan="9" style="text-align: center;"><b>SEM RESULTADOS.</b></td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+    <div class="field col-12 md:col-6">
+      <label *ngIf="boolResponsavelLoja"><b>Login</b></label><br>
+      <div *ngIf="boolResponsavelLoja" class="formgrid grid">
+        <div class="field col-12 md:col-6 p-fluid">
+          <label for="usLUser">Usuário</label><br>
+          <input id="usLUser" type="text" pInputText [(ngModel)]="objUsuarioRegistro.UsLUser" style="text-align: center;"/>
+        </div>
+        <div class="field col-12 md:col-6 p-fluid">
+          <label for="usLPass">Senha</label><br>
+          <!-- <input id="usLPass" type="text" pInputText [(ngModel)]="objUsuarioRegistro.UsuNome" /> -->
+          <p-password [(ngModel)]="objUsuarioRegistro.UsLPass" [feedback]="false" [toggleMask]="true"/>
+        </div>
+      </div>
+      <hr *ngIf="boolResponsavelLoja">
+      <div *ngIf="lstOutrasLojas.length > 0" class="field col-12">
+        <b>Outras Lojas / Função:</b><br>
+        <span *ngFor="let item of lstOutrasLojas">
+          <a>{{item.LojNome}} - {{item.PerNome}}</a><br>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-right">
+    <p-button (click)="SalvarRegistro();" label="Salvar" [raised]="true" severity="success" /> &nbsp;
+    <p-button (click)="CancelaRegitro();" label="Cancelar" [raised]="true" severity="danger" />
+  </div>
+</div>

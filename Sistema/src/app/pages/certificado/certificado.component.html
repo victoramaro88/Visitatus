@@ -1,0 +1,13 @@
+<p-blockUI [blocked]="boolLoading">
+  <i class="pi pi-spin pi-spinner-dotted" style="font-size: 3rem"></i>
+</p-blockUI>
+<p-toast></p-toast>
+
+<div>
+  <div #contentDiv [innerHTML]="htmlContent"></div>
+</div>
+
+<div *ngIf="boolButtonSaveImg" class="text-center">
+  <!-- <button (click)="saveAsImage()">Salvar como Imagem</button> -->
+  <p-button (click)="saveAsImage()" label="Salvar como Imagem" icon="pi pi-download" [rounded]="true" severity="warning" />
+</div>

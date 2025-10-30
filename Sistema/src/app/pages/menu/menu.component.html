@@ -1,0 +1,42 @@
+<div class="card">
+  <p-menubar [model]="items">
+      <ng-template pTemplate="start">
+          <p-image
+            src="assets/img/Visitatus.png"
+            alt="Logo"
+            width="50"
+            class="mr-2"
+          ></p-image>
+      </ng-template>
+      <ng-template pTemplate="item" let-item let-root="root">
+          <a pRipple class="flex align-items-center p-menuitem-link">
+              <span [class]="item.icon"></span>
+              <span class="ml-2">{{ item.label }}</span>
+              <span *ngIf="item.shortcut" class="ml-auto border-1 surface-border border-round surface-100 text-xs p-1">{{ item.shortcut }}</span>
+              <i *ngIf="item.items" [ngClass]="['pi', root ? 'pi-angle-down ml-2' : 'pi-angle-right ml-auto']"></i>
+          </a>
+      </ng-template>
+      <ng-template pTemplate="end">
+        <div class="grid nested-grid">
+          <div class="col-10">
+              <div class="grid">
+                  <div class="col-12 pt-3">
+                      <div class="text-right">
+                        <small>{{objUsuarioLogado ? objUsuarioLogado.usuNome : ''}}</small>
+                        <br>
+                        <small><strong>Loja:</strong> {{objPerfilUsuario ? objPerfilUsuario.lojNome : ''}}</small>&nbsp;
+                        <br>
+                        <small><strong>Perfil:</strong> {{objPerfilUsuario ? objPerfilUsuario.perNome : ''}}</small>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="col-2">
+              <div class="text-center h-full pt-2">
+                <p-button (onClick)="Logout();" icon="pi pi-power-off" [rounded]="true" [text]="true" severity="secondary" />
+              </div>
+          </div>
+        </div>
+      </ng-template>
+  </p-menubar>
+</div>

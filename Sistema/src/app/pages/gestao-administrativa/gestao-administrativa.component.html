@@ -1,0 +1,108 @@
+<p-blockUI [blocked]="boolLoading">
+  <i class="pi pi-spin pi-spinner-dotted" style="font-size: 3rem"></i>
+</p-blockUI>
+<p-toast />
+
+<h2>Gestão Administrativa</h2>
+
+<!-- GRID DE EXIBIÇÃO DOS REGISTROS -->
+<div *ngIf="!boolManterRegistro">
+  <div class="text-right mb-3">
+    <p-button (click)="NovaGestao();" label="Nova Gestão" [raised]="true" severity="primary" /> &nbsp;
+  </div>
+  <p-table
+  #dt
+  [value]="lstGestaoAdm"
+  [tableStyle]="{ 'min-width': '50rem' }"
+  styleClass="p-datatable-sm p-datatable-striped"
+  responsiveLayout="stack"
+  [paginator]="true"
+  [rows]="5"
+  [rowsPerPageOptions]="[5, 10, 20, 50, 100]"
+  [globalFilterFields]="['GstAdmNome', 'GstAdmDtIn', 'GstAdmDtFi', 'GstAdmStat']"
+  >
+  <ng-template pTemplate="caption">
+    <div class="flex">
+        <p-iconField iconPosition="left" class="ml-auto">
+            <p-inputIcon>
+                <i class="pi pi-search"></i>
+            </p-inputIcon>
+            <input
+                pInputText
+                type="text"
+                (input)="onGlobalFilter(dt, $event)"
+                placeholder="Pesquisa" />
+        </p-iconField>
+    </div>
+  </ng-template>
+    <ng-template pTemplate="header">
+        <tr>
+            <th style="text-align: center;">Gestão</th>
+            <th style="text-align: center;">Data Início</th>
+            <th style="text-align: center;">Data Fim</th>
+            <th style="text-align: center;">Status</th>
+            <th style="text-align: center;">Opções</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-item>
+        <tr>
+            <td style="text-align: center;">{{ item.GstAdmNome }}</td>
+            <td style="text-align: center;"><span class="p-column-title"><b>Data Início</b></span>{{ item.GstAdmDtIn | date:'dd/MM/yyyy' }}</td>
+            <td style="text-align: center;"><span class="p-column-title"><b>Data Fim</b></span>{{ item.GstAdmDtFi | date:'dd/MM/yyyy' }}</td>
+            <td style="text-align: center;">{{ item.GstAdmStat ? 'Ativa' : 'Inativa' }}</td>
+            <td style="text-align: center;">
+              <!-- <p-button (click)="GetSessaoBySesCodi(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-envelope" [rounded]="true" [text]="true" severity="warning" pTooltip="Convite da Sessão" tooltipPosition="left"/>
+              <p-button (click)="MarcarPresencas(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-check-square" [rounded]="true" [text]="true" severity="success" pTooltip="Marcar Presenças" tooltipPosition="left"/>
+              <p-button (click)="EditarRegistro(item);" icon="pi pi-pen-to-square" [rounded]="true" [text]="true" severity="info" pTooltip="Editar" tooltipPosition="left"/>
+              <p-button (click)="LiberaTravaSessao(item.SesCodi, item);" icon="pi {{item.SesLibe ? 'pi-ban' : 'pi-thumbs-up'}}" [rounded]="true" [text]="true" [severity]="item.SesLibe ? 'danger' : 'success'" pTooltip="{{item.SesLibe ? 'Travar Sessão' : 'Liberar Sessão'}}" tooltipPosition="left"/>
+              <p-button (click)="AtivaInativaSessao(item.SesCodi, item);" icon="pi {{item.SesStat ? 'pi-lock-open' : 'pi-lock'}}" [rounded]="true" [text]="true" [severity]="item.SesStat ? 'danger' : 'success'" pTooltip="{{item.SesStat ? 'Inativar Sessão' : 'Ativar Sessão' }}" tooltipPosition="left"/> -->
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+          <td colspan="9" style="text-align: center;"><b>SEM RESULTADOS.</b></td>
+      </tr>
+  </ng-template>
+  </p-table>
+</div>
+
+<div *ngIf="boolManterRegistro" class="container">
+  <div class="formgrid grid">
+    <div class="field col-12 md:col-4">
+        <label for="GstAdmNome">Descrição da Gestão</label>
+        <input pInputText [(ngModel)]="objGestaoAdm.GstAdmNome" id="GstAdmNome" type="text" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+    <div class="field col-12 md:col-2">
+        <label for="dataHora">Data Inicial</label><br>
+        <p-calendar
+            inputId="dataHora"
+            [(ngModel)]="objGestaoAdm.GstAdmDtIn"
+            dateFormat="dd/mm/yy"
+            class="text-center-calendar"
+            [style]="{ width: '100%' }"
+          >
+        </p-calendar>
+    </div>
+    <div class="field col-12 md:col-2">
+        <label for="dataHora">Data Final</label><br>
+        <p-calendar
+            inputId="dataHora"
+            [(ngModel)]="objGestaoAdm.GstAdmDtFi"
+            dateFormat="dd/mm/yy"
+            class="text-center-calendar"
+            [style]="{ width: '100%' }"
+          >
+        </p-calendar>
+    </div>
+    <div class="field col-12 md:col-4">
+        <label for="liberarSessao">Status Gestão</label><br>
+        <p-inputSwitch [(ngModel)]="objGestaoAdm.GstAdmStat" />
+    </div>
+</div>
+
+  <div class="text-right">
+    <p-button (click)="SalvarRegistro();" label="Salvar" [raised]="true" severity="success" /> &nbsp;
+    <p-button (click)="CancelaRegitro();" label="Cancelar" [raised]="true" severity="danger" />
+  </div>
+</div>

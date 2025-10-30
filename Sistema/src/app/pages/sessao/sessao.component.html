@@ -1,0 +1,241 @@
+<p-blockUI [blocked]="boolLoading">
+  <i class="pi pi-spin pi-spinner-dotted" style="font-size: 3rem"></i>
+</p-blockUI>
+<p-toast />
+
+<h2>Cadastro de Sessão</h2>
+
+<!-- <div *ngIf="!boolManterRegistro && (lstSessao.length > 0)"> -->
+  <div *ngIf="!boolManterRegistro">
+  <div class="text-right mb-3">
+    <p-button (click)="NovaSessao();" label="Nova Sessão" [raised]="true" severity="primary" /> &nbsp;
+  </div>
+  <p-table
+  #dt
+  [value]="lstSessao"
+  [tableStyle]="{ 'min-width': '50rem' }"
+  styleClass="p-datatable-sm p-datatable-striped"
+  responsiveLayout="stack"
+  [paginator]="true"
+  [rows]="5"
+  [rowsPerPageOptions]="[5, 10, 20, 50, 100]"
+  [globalFilterFields]="['SesNume', 'SesDesc', 'TiSNome', 'GraNome']"
+  >
+  <ng-template pTemplate="caption">
+    <div class="flex">
+        <p-iconField iconPosition="left" class="ml-auto">
+            <p-inputIcon>
+                <i class="pi pi-search"></i>
+            </p-inputIcon>
+            <input
+                pInputText
+                type="text"
+                (input)="onGlobalFilter(dt, $event)"
+                placeholder="Pesquisa" />
+        </p-iconField>
+    </div>
+  </ng-template>
+    <ng-template pTemplate="header">
+        <tr>
+            <th style="text-align: center;">Nº Sessão</th>
+            <th style="text-align: center;">Data</th>
+            <th style="text-align: center;">Tipo</th>
+            <th style="text-align: center;">Grau</th>
+            <th style="text-align: center;">Nome</th>
+            <!-- <th style="text-align: center;">Descrição</th> -->
+            <th style="text-align: center;">Liberada</th>
+            <!-- <th style="text-align: center;">Status</th> -->
+            <th style="text-align: center;">Opções</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-item>
+        <tr>
+            <td style="text-align: center;">{{ item.SesNume }}</td>
+            <td style="text-align: center;"><span class="p-column-title"><b>Data</b></span>{{ item.SesDtHr | date:'dd/MM/yyyy - HH:mm' }}</td>
+            <td style="text-align: center;">{{ item.TiSNome }}</td>
+            <td style="text-align: center;">{{ item.GraNome }}</td>
+            <td>{{ item.SesNome }}</td>
+            <!-- <td>{{ item.SesDesc.substring(0, 30) }}...</td> -->
+            <td style="text-align: center;">{{ item.SesLibe ? 'Sim' : 'Não' }}</td>
+            <!-- <td style="text-align: center;">{{ item.SesStat ? 'Ativa' : 'Inativa' }}</td> -->
+            <td style="text-align: center;">
+              <p-button (click)="GerarMensagemWhats(item);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-whatsapp" [rounded]="true" [text]="true" severity="success" pTooltip="Mensagem WhatsApp" tooltipPosition="left"/>
+              <p-button (click)="GerarQRCode(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-qrcode" [rounded]="true" [text]="true" severity="help" pTooltip="Gerar QR Code" tooltipPosition="left"/>
+              <p-button (click)="GetSessaoBySesCodi(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-envelope" [rounded]="true" [text]="true" severity="warning" pTooltip="Convite da Sessão" tooltipPosition="left"/>
+              <p-button (click)="MarcarPresencas(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-check-square" [rounded]="true" [text]="true" severity="success" pTooltip="Marcar Presenças" tooltipPosition="left"/>
+              <p-button (click)="EditarRegistro(item);" icon="pi pi-pen-to-square" [rounded]="true" [text]="true" severity="info" pTooltip="Editar" tooltipPosition="left"/>
+              <p-button (click)="LiberaTravaSessao(item.SesCodi, item);" icon="pi {{item.SesLibe ? 'pi-ban' : 'pi-thumbs-up'}}" [rounded]="true" [text]="true" [severity]="item.SesLibe ? 'danger' : 'success'" pTooltip="{{item.SesLibe ? 'Travar Sessão' : 'Liberar Sessão'}}" tooltipPosition="left"/>
+              <!-- <p-button (click)="AtivaInativaSessao(item.SesCodi, item);" icon="pi {{item.SesStat ? 'pi-lock-open' : 'pi-lock'}}" [rounded]="true" [text]="true" [severity]="item.SesStat ? 'danger' : 'success'" pTooltip="{{item.SesStat ? 'Inativar Sessão' : 'Ativar Sessão' }}" tooltipPosition="left"/> -->
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+          <td colspan="9" style="text-align: center;"><b>SEM RESULTADOS.</b></td>
+      </tr>
+  </ng-template>
+  </p-table>
+</div>
+
+<div *ngIf="boolManterRegistro" class="container">
+
+  <div class="formgrid grid">
+    <div class="field col-12 md:col-2">
+        <label for="numeroSessao">Sessão Nº</label>
+        <input pInputText [(ngModel)]="objSessao.SesNume" id="numeroSessao" type="number" style="text-align: center;" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+    <div class="field col-12 md:col-2">
+        <label for="dataHora">Data / Hora</label><br>
+        <p-calendar
+            inputId="dataHora"
+            [(ngModel)]="objSessao.SesDtHr"
+            [showTime]="true"
+            [hourFormat]="'24'"
+            dateFormat="dd/mm/yy"
+            class="text-center-calendar"
+            [style]="{ width: '100%' }"
+          >
+        </p-calendar>
+    </div>
+    <div class="field col-12 md:col-8">
+        <label for="nomeSessao">Nome da Sessão</label>
+        <input pInputText id="nomeSessao"
+        (input)="contadorCaracteres(100, 'NOME')"
+        maxlength="100"
+        [(ngModel)]="objSessao.SesNome" type="text" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+        <div class="text-right"><small>{{ caracteresRestantesNome }} caracteres restantes</small></div>
+    </div>
+    <div class="field col-12">
+        <label for="descSessao">Texto da Sessão</label>
+        <textarea id="descSessao"
+        (input)="contadorCaracteres(500, 'TEXTO')"
+        maxlength="500"
+        [(ngModel)]="objSessao.SesDesc" type="text" rows="4" class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"></textarea>
+        <div class="text-right"><small>{{ caracteresRestantesTexto }} caracteres restantes</small></div>
+    </div>
+    <div class="field col-12 md:col-5">
+        <label for="state">Loja</label><br>
+        <p-dropdown
+          [disabled]="true"
+          [options]="lstLoja"
+          optionLabel="displayName"
+          placeholder="{{objPerfilSelecionado.lojNome}} - {{objPerfilSelecionado.lojNumL}}"
+          [style]="{ width: '100%' }"
+          />
+    </div>
+    <div class="field col-12 md:col-4">
+        <label for="state">Tipo de Sessão</label><br>
+        <p-dropdown
+          [options]="lstTipoSessao"
+          [(ngModel)]="objTipoSessaoSelecionado"
+          optionLabel="TiSnome"
+          placeholder="Selecione"
+          [style]="{ width: '100%' }"
+          />
+    </div>
+    <div class="field col-12 md:col-3">
+        <label for="state">Grau</label><br>
+        <p-dropdown
+          [options]="lstGrau"
+          [(ngModel)]="objGrauSelecionado"
+          optionLabel="GraNome"
+          placeholder="Selecione"
+          [style]="{ width: '100%' }"
+          />
+    </div>
+    <div class="field col-12 md:col-6">
+        <label for="liberarSessao">Liberar Sessão?
+          <small> ({{objSessao.SesLibe ? 'Sim' : 'Não'}})</small>
+        </label><br>
+        <p-inputSwitch [(ngModel)]="objSessao.SesLibe" /><br>
+        <!-- <p-selectButton
+          id="liberarSessao"
+          [options]="opcoesSelect"
+          [(ngModel)]="objSessao.SesLibe"
+          optionLabel="label"
+          optionValue="value"
+          aria-describedby="liberarSessao"
+          unselectable = "true"
+         /> -->
+         <small id="liberarSessao">Libera a sessão para confirmação de presença.</small>
+    </div>
+    <div class="field col-12 md:col-6">
+        <label for="liberarSessao">Ativar Sessão?
+          <small> ({{objSessao.SesStat ? 'Sim' : 'Não'}})</small>
+        </label><br>
+        <p-inputSwitch [(ngModel)]="objSessao.SesStat" /><br>
+        <!-- <p-selectButton
+          id="liberarSessao"
+          [options]="opcoesSelect"
+          [(ngModel)]="objSessao.SesStat"
+          optionLabel="label"
+          optionValue="value"
+          aria-describedby="liberarSessao"
+          unselectable = "true"
+         /> -->
+         <small id="liberarSessao">Ativa a sessão para deixá-la visível.</small>
+    </div>
+</div>
+
+  <div class="text-right">
+    <p-button (click)="SalvarRegistro();" label="Salvar" [raised]="true" severity="success" /> &nbsp;
+    <p-button (click)="CancelaRegitro();" label="Cancelar" [raised]="true" severity="danger" />
+  </div>
+</div>
+
+<p-dialog header="QR Code do Convite" [modal]="true" [(visible)]="boolDialogQRCode" [style]="{ width: '25rem' }">
+  <div class="flex justify-content-center gap-3 mb-3">
+      <qrcode
+        [qrdata]="valorQrCode"
+        [allowEmptyString]="true"
+        [ariaLabel]="'visitatus.com.br'"
+        [cssClass]="'center'"
+        [colorDark]="'#000000ff'"
+        [colorLight]="'#ffffffff'"
+        [elementType]="'canvas'"
+        [errorCorrectionLevel]="'M'"
+        [imageSrc]="'./assets/img/Visitatus.pngs'"
+        [imageHeight]="50"
+        [imageWidth]="50"
+        [margin]="2"
+        [scale]="1"
+        [title]="'QR Code Convite'"
+        [width]="300"
+      ></qrcode>
+      <!-- <qrcode [qrdata]="valorQrCode" [width]="256" [errorCorrectionLevel]="'M'"></qrcode> -->
+    <!-- <label for="username" class="font-semibold w-6rem">Username</label>
+      <input pInputText id="username" class="flex-auto" autocomplete="off" /> -->
+  </div>
+  <div class="flex justify-content-center gap-2">
+      <p-button label="Ok" (onClick)="boolDialogQRCode = false" />
+  </div>
+</p-dialog>
+
+
+<!-- DIALOG DE MENSAGEM DO WHATSAPP -->
+<p-dialog header="Mensagem WhatsApp" [modal]="true" [(visible)]="boolDialogWhats" [style]="{ width: '25rem' }">
+  <div class="">
+    <p #meuParagrafo>
+      A.R.L.S. CAVALEIROS DE BAALBEK - 4024
+      <br><br>
+      Temos a honra de convidar os Irmãos regulares para sessão de INSTALAÇÃO E POSSE 2025/2026, no rito de York.
+      <br><br>
+      <b>Rito:</b> York<br>
+      Grau: Aprendiz<br>
+      Tipo: Magna<br>
+      Quando: 27/06/2025 às 20:00 horas<br>
+      Onde: RUA LISBOA, 1120, PINHEIROS - TEMPLO DISTRITO INGLÊS - São Paulo, SP<br>
+      <br><br>
+      Solicitamos a confirmação de presença para uma melhor acomodação, através do link abaixo:<br>
+      <br>
+      https://visitatus.com.br/convite?data=U2FsdGVkX19Yc5MWGo6pQhlPCm8lobIZI%2BjHKNwXE4g%3D
+    </p>
+    <!-- <qrcode [qrdata]="valorQrCode" [width]="256" [errorCorrectionLevel]="'M'"></qrcode> -->
+    <!-- <label for="username" class="font-semibold w-6rem">Username</label> -->
+    <!-- <input pInputText id="username" class="flex-auto" autocomplete="off" /> -->
+  </div>
+  <div class="flex justify-content-center gap-2">
+    <button (click)="CopiarTextoWhats()">Copiar</button>
+    <p-button label="Ok" (onClick)="boolDialogWhats = false" />
+  </div>
+</p-dialog>

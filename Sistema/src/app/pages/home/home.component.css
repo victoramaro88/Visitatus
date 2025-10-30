@@ -1,0 +1,13 @@
+ul.custom-list {
+  list-style: none; /* Remove os marcadores padrão */
+  padding: 0;
+  margin: 0;
+}
+
+ul.custom-list li {
+  color: white; /* Fonte branca */
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5; /* espaçamento entre linhas */
+  padding: 2px 0; /* Espaçamento mínimo entre os itens */
+}
