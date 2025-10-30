@@ -6,9 +6,6 @@ export const environment = {
   // apiServicos: 'https://localhost:7237/api',
   apiServicos: 'https://dev.visitatus.com.br/_API/api',
   //apiServicos: 'https://visitatus.com.br/_API/api',
-  // urlValidaCarteira: "http://localhost:4200/valida?data=",
-  // urlValidaCarteira: "https://www.victoramaro.com.br/BetterLife/valida?data=",
-  // linkExibirCarteira: "http://localhost:4200/carteira?data="
 };
 
 //-> PÁGINAS QUE NECESSITAM ATENÇÃO NA URL DAS IMAGENS:
