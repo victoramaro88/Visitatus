@@ -343,9 +343,13 @@ export class ConfirmacaoPresencaComponent implements OnInit {
       });
       return false;
     }
-    if (
-      this.objConsultaUsrLj.objUsuarioLoja.UsuEmai !== this.confirmacaoEmail
-    ) {
+    const email = this.objConsultaUsrLj.objUsuarioLoja.UsuEmai.replace(
+      /\s+/g,
+      ''
+    );
+    const confirm = this.confirmacaoEmail.replace(/\s+/g, '');
+
+    if (email !== confirm) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Atenção: ',

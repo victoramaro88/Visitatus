@@ -59,7 +59,7 @@
             <td style="text-align: center;">{{ item.SesLibe ? 'Sim' : 'Não' }}</td>
             <!-- <td style="text-align: center;">{{ item.SesStat ? 'Ativa' : 'Inativa' }}</td> -->
             <td style="text-align: center;">
-              <p-button (click)="GerarMensagemWhats(item);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-whatsapp" [rounded]="true" [text]="true" severity="success" pTooltip="Mensagem WhatsApp" tooltipPosition="left"/>
+              <!-- <p-button (click)="GerarMensagemWhats(item);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-whatsapp" [rounded]="true" [text]="true" severity="success" pTooltip="Mensagem WhatsApp" tooltipPosition="left"/> -->
               <p-button (click)="GerarQRCode(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-qrcode" [rounded]="true" [text]="true" severity="help" pTooltip="Gerar QR Code" tooltipPosition="left"/>
               <p-button (click)="GetSessaoBySesCodi(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-envelope" [rounded]="true" [text]="true" severity="warning" pTooltip="Convite da Sessão" tooltipPosition="left"/>
               <p-button (click)="MarcarPresencas(item.SesCodi);" *ngIf="item.SesLibe && item.SesStat" icon="pi pi-check-square" [rounded]="true" [text]="true" severity="success" pTooltip="Marcar Presenças" tooltipPosition="left"/>
