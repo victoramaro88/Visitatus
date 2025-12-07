@@ -20,3 +20,4 @@ Páginas:
 // https://www.npmjs.com/package/angularx-qrcode#demo-app
 
 // ng build --base-href="./" --configuration=dev
+//
