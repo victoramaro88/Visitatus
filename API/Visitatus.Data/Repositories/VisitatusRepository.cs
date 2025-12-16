@@ -50,7 +50,7 @@ namespace Visitatus.Data.Repositories
 
             _urlAplicacaoCertificado = Configuration.GetValue<string>("UrlAplicacaoCertificado")!;
 
-            _bdVisitatus = Configuration.GetValue<string>("DB_HELPDESK_CB")!;
+            _bdVisitatus = Configuration.GetValue<string>("DB_Visitatus")!;
 
             _tblPresenca = Configuration.GetValue<string>("Presenca")!;
             _tblLoja = Configuration.GetValue<string>("Loja")!;
@@ -66,6 +66,7 @@ namespace Visitatus.Data.Repositories
         public QuantitativoPresencaModel GetQtdPresencaBySesCodi(long sesCodi)
         {
             List<PresencaModel> listaPresenca = new List<PresencaModel>();
+            List<PresencaModel> listaPresencaFiltrada = new List<PresencaModel>();
             QuantitativoPresencaModel objRetorno = new QuantitativoPresencaModel();
 
             using (SqlConnection connection = new SqlConnection(_connVisitatus))
@@ -84,13 +85,13 @@ namespace Visitatus.Data.Repositories
                     command.CommandText = @$"
                                             SELECT
 	                                            USR.usuCodi, USR.usuNome, USR.usuNCIM, PERF.perCodi, LOJ2.lojNome, LOJ2.lojNumL, POT.potSigl
-                                            FROM DB_Visitatus.dbo.{_tblLoja} LOJ WITH(NOLOCK)
-                                            JOIN DB_Visitatus.dbo.{_tblSessao} SES WITH(NOLOCK) ON LOJ.lojCodi = SES.lojCodi 
-                                            JOIN DB_Visitatus.dbo.{_tblPresenca} PRE WITH(NOLOCK) ON SES.sesCodi = PRE.sesCodi
-                                            JOIN DB_Visitatus.dbo.{_tblUsuario} USR WITH(NOLOCK) ON PRE.usuCodi = USR.usuCodi
-                                            LEFT JOIN DB_Visitatus.dbo.{_tblPerfilUsuario} PERF WITH(NOLOCK) ON PRE.usuCodi = PERF.usuCodi AND PERF.lojCodi = LOJ.lojCodi AND PERF.perCodi IN (4, 5)
-                                            JOIN DB_Visitatus.dbo.{_tblLoja} LOJ2 WITH(NOLOCK) ON PRE.lojCodi = LOJ2.lojCodi
-                                            JOIN DB_Visitatus.dbo.{_tblPotencia} POT WITH(NOLOCK) ON LOJ2.potCodi = POT.potCodi 
+                                            FROM {_bdVisitatus}.dbo.{_tblLoja} LOJ WITH(NOLOCK)
+                                            JOIN {_bdVisitatus}.dbo.{_tblSessao} SES WITH(NOLOCK) ON LOJ.lojCodi = SES.lojCodi 
+                                            JOIN {_bdVisitatus}.dbo.{_tblPresenca} PRE WITH(NOLOCK) ON SES.sesCodi = PRE.sesCodi
+                                            JOIN {_bdVisitatus}.dbo.{_tblUsuario} USR WITH(NOLOCK) ON PRE.usuCodi = USR.usuCodi
+                                            LEFT JOIN {_bdVisitatus}.dbo.{_tblPerfilUsuario} PERF WITH(NOLOCK) ON PRE.usuCodi = PERF.usuCodi AND PERF.lojCodi = LOJ.lojCodi AND PERF.perCodi IN (4, 5)
+                                            JOIN {_bdVisitatus}.dbo.{_tblLoja} LOJ2 WITH(NOLOCK) ON PRE.lojCodi = LOJ2.lojCodi
+                                            JOIN {_bdVisitatus}.dbo.{_tblPotencia} POT WITH(NOLOCK) ON LOJ2.potCodi = POT.potCodi 
                                             WHERE SES.sesCodi = @sesCodi
                                             ORDER BY PERF.perCodi, USR.usuNome;
                                             ";
@@ -122,17 +123,26 @@ namespace Visitatus.Data.Repositories
                     //-> VERIFCANDO O QUANTITATIVO DE VISITANTES, MEMBROS E TOTAIS.
                     foreach (var item in listaPresenca)
                     {
-                        if(item.perCodi == 0) //-> SE PERFIL == 0, É VISITANTE
-                        {
-                            objRetorno.qtdVisitantes += 1;
-                        }
-                        else //-> SENÃO, É MEMBRO
-                        {
-                            objRetorno.qtdMembros += 1;
-                        }
+                        //-> VERIFICANDO SE JÁ FOI INSERIDO A PESSOA NA CONTAGEM (VALIDAÇÃO DE PESSOA COM CADASTRO DE MEMBRO E FILIADO AO MESMO TEMPO).
+                        var itemExistente = listaPresencaFiltrada.Where(l => l.usuCodi == item.usuCodi).FirstOrDefault();
 
-                        //-> ADICIONA PARA O TOTAL GERAL
-                        objRetorno.qtdTotal += 1;
+                        //-> SE NÃO EXISTIR PESSOA, VALIDA E INSERE.
+                        if (itemExistente == null)
+                        {
+                            if (item.perCodi == 0) //-> SE PERFIL == 0, É VISITANTE
+                            {
+                                objRetorno.qtdVisitantes += 1;
+                            }
+                            else //-> SENÃO, É MEMBRO
+                            {
+                                objRetorno.qtdMembros += 1;
+                            }
+
+                            //-> ADICIONA PARA O TOTAL GERAL
+                            objRetorno.qtdTotal += 1;
+
+                            listaPresencaFiltrada.Add(item);
+                        }
                     }
                 }
                 catch (Exception ex)
