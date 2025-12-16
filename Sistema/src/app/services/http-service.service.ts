@@ -23,6 +23,7 @@ import { UsuarioPotenciaModel } from '../models/UsuarioPotencia.Model ';
 import { PermissaoModel } from '../models/Permissao.Model';
 import { ProximaSessaoModel } from '../models/ProximaSessao.Model';
 import { GestaoAdministrativa } from '../models/GestaoAdministrativa.Model';
+import { QuantitativoPresencaModel } from '../models/QuantitativoPresenca.Model';
 
 @Injectable({
   providedIn: 'root',
@@ -188,6 +189,14 @@ export class HttpService {
   ): Observable<GestaoAdministrativa[]> {
     return this.http.get<GestaoAdministrativa[]>(
       `${environment.apiServicos}/GestaoAdministrativa/GetListaGestaoAdmByLojCodi/${lojCodi}`
+    );
+  }
+
+  public GetQtdPresencaBySesCodi(
+    lojCodi: number
+  ): Observable<QuantitativoPresencaModel> {
+    return this.http.get<QuantitativoPresencaModel>(
+      `${environment.apiServicos}/Presenca/GetQtdPresencaBySesCodi/${lojCodi}`
     );
   }
 

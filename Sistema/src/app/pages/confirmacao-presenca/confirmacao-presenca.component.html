@@ -9,26 +9,6 @@
     <h2 class="text-center">Confirmação de Presença</h2>
     <div class="text-center">
       <p class="m-0">Confirme sua presença para a sessão:</p><br>
-      <!-- <div class="grid">
-        <div class="col-6">
-          <div class="responsive-img-container">
-            <img
-              src="data:image/png;base64,{{objSessaoConvite.LojLogo}}"
-              alt="Brasão Loja"
-              class="responsive-img"
-            />
-          </div>
-        </div>
-        <div class="col-6">
-          <div class="responsive-img-container">
-            <img
-              src="data:image/png;base64,{{objSessaoConvite.PotLogo}}"
-              alt="Brasão Potência"
-              class="responsive-img"
-            />
-          </div>
-        </div>
-      </div> -->
       <div class="mt-2">
         <b>{{objSessaoConvite.LojNome}} - {{objSessaoConvite.LojNumL}}</b>
         <br>
@@ -43,11 +23,13 @@
       <b>Grau: </b> {{objSessaoConvite.GraNome}}<br>
       <b>Dia:</b> {{objSessaoConvite.SesDtHr | date: 'dd/MM/yyyy'}}<br>
       <b>Horário: </b> {{objSessaoConvite.SesDtHr | date: 'HH:mm'}}<br>
-      <!-- <b>Descrição: </b>
-      <br>
-      <div class="m-3 text-center">
-        <p [ngStyle]="{ 'white-space': 'pre-wrap' }">{{objSessaoConvite.SesDesc}}</p><br>
-      </div> -->
+    </div>
+
+    <div class="text-center mt-3">
+      <b>CONFIRMAÇÕES: </b><br>
+      <b>Visitantes: </b> {{objConfirmacoes.qtdVisitantes}}<br>
+      <b>Membros: </b> {{objConfirmacoes.qtdMembros}}<br>
+      <b>Total: </b> {{objConfirmacoes.qtdTotal}}<br>
     </div>
 
     <hr>
@@ -63,7 +45,6 @@
 
     <!-- FORMULÁRIO DE CONFIRMAÇÃO DE PRESENÇA -->
     <div class="mt-3 mb-3">
-      <!-- <p-card> -->
         <div class="formgrid grid">
           <div class="field col-12 md:col-6 p-fluid">
             <label for="potCodi">Potência da Loja</label>

@@ -13,6 +13,7 @@ import { SessaoConviteModel } from '../../models/SessaoConvite.Model';
 import { UsuarioModel } from '../../models/Usuario.Model';
 import { PotenciaModel } from '../../models/Potencia.Model';
 import { ChangeDetectorRef } from '@angular/core';
+import { QuantitativoPresencaModel } from '../../models/QuantitativoPresenca.Model';
 
 interface Mensagem {
   titulo: string;
@@ -64,6 +65,7 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     corIcone: '',
   };
   confirmacaoEmail: string = '';
+  objConfirmacoes: QuantitativoPresencaModel = new QuantitativoPresencaModel();
 
   constructor(
     private http: HttpService,
@@ -89,10 +91,30 @@ export class ConfirmacaoPresencaComponent implements OnInit {
         this.base64Service.decodeBase64ToNumber(baseDecripto);
 
       this.GetSessaoBySesCodi(this.idSessaoCrypto);
+      this.GetQtdPresencaBySesCodi(this.idSessaoCrypto);
     } catch (error) {
       this.boolLoading = false;
       console.warn('Falha ao receber os parâmetros.');
     }
+  }
+
+  GetQtdPresencaBySesCodi(sesCodi: number) {
+    this.boolLoading = true;
+    this.http.GetQtdPresencaBySesCodi(sesCodi).subscribe({
+      next: (response) => {
+        this.objConfirmacoes = response;
+        console.warn('CONFIRMAÇÕES:', this.objConfirmacoes);
+      },
+      error: (error) => {
+        console.error('Erro ao carregar dados:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro: ',
+          detail: 'Falha ao realizar a operação, contate o suporte.',
+        });
+        this.boolLoading = false;
+      },
+    });
   }
 
   GetSessaoBySesCodi(sesCodi: number) {
