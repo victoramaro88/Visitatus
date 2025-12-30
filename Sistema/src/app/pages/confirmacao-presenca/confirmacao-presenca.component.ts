@@ -103,7 +103,8 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     this.http.GetQtdPresencaBySesCodi(sesCodi).subscribe({
       next: (response) => {
         this.objConfirmacoes = response;
-        console.warn('CONFIRMAÇÕES:', this.objConfirmacoes);
+        this.boolLoading = false;
+        // console.warn('CONFIRMAÇÕES:', this.objConfirmacoes);
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);
@@ -264,6 +265,7 @@ export class ConfirmacaoPresencaComponent implements OnInit {
           // console.warn(response);
           this.boolLoading = false;
           if (response === 'Presença confirmada com sucesso.') {
+            this.GetQtdPresencaBySesCodi(this.idSessaoCrypto);
             this.mensagem.titulo = 'Presença Confirmada!';
             this.mensagem.corpoMensagem = 'Presença confirmada com sucesso!';
             this.mensagem.icone = 'pi-check';
