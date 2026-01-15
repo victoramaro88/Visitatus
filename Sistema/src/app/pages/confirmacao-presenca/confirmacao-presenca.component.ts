@@ -46,7 +46,9 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     0,
     '',
     0,
-    ''
+    '',
+    false,
+    0
   );
   objUsuarioLogado: UsuarioLogadoModel = new UsuarioLogadoModel();
   objUsuario: UsuarioModel = new UsuarioModel();

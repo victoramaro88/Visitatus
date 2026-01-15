@@ -43,7 +43,9 @@ export class SessaoComponent implements OnInit {
     0,
     '',
     0,
-    ''
+    '',
+    false,
+    0
   );
   objUsuarioLogado: UsuarioLogadoModel = new UsuarioLogadoModel();
   objPerfilSelecionado: PerfilUsuarioListaModel = new PerfilUsuarioListaModel();
@@ -303,6 +305,8 @@ export class SessaoComponent implements OnInit {
             GraCodi: this.objSessao.GraCodi,
             TiScodi: this.objSessao.TiSCodi,
             SesNume: this.objSessao.SesNume,
+            SesAgap: this.objSessao.SesAgap,
+            SesVlAg: this.objSessao.SesVlAg
           };
 
           this.http.PutSessao(this.objSessao.SesCodi, objPutSessao).subscribe({
@@ -404,6 +408,9 @@ export class SessaoComponent implements OnInit {
       });
       return false;
     }
+    if(!this.objSessao.SesAgap){
+      this.objSessao.SesVlAg = 0;
+    }
 
     return true;
   }
@@ -421,7 +428,9 @@ export class SessaoComponent implements OnInit {
       0,
       '',
       0,
-      ''
+      '',
+      false,
+      0
     );
     this.objGrauSelecionado = new GrauModel(0, '', false);
     this.objTipoSessaoSelecionado = new TipoSessaoModel(0, '', false);

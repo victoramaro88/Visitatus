@@ -9,6 +9,8 @@ export class SessaoModel {
   GraCodi: number;
   TiScodi: number;
   SesNume: number;
+  SesAgap: boolean;
+  SesVlAg: number;
 
   constructor() {
     this.SesCodi = 0;
@@ -21,5 +23,7 @@ export class SessaoModel {
     this.GraCodi = 0;
     this.TiScodi = 0;
     this.SesNume = 0;
+    this.SesAgap = false;
+    this.SesVlAg = 0;
   }
 }

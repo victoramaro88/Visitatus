@@ -14,5 +14,7 @@
         public string? TiSNome { get; set; }
         public long SesNume { get; set; }
         public string? SesNome { get; set; }
+        public bool SesAgap { get; set; }
+        public decimal? SesVlAg { get; set; }
     }
 }

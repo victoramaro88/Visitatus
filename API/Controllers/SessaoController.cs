@@ -68,7 +68,9 @@ namespace API_Visitatus.Controllers
                                       TiSCodi = s.TiScodi,
                                       TiSNome = ts.TiSnome,
                                       SesNume = (long)s.SesNume!,
-                                      SesNome = s.SesNome
+                                      SesNome = s.SesNome,
+                                      SesAgap = s.SesAgap,
+                                      SesVlAg = s.SesVlAg
                                   })
                                   .Where(l => l.LojCodi == LojCodi)
                                   .OrderByDescending(x => x.SesDtHr)
