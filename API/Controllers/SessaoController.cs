@@ -177,7 +177,9 @@ namespace API_Visitatus.Controllers
                                                      CidNome = c.CidNome,
                                                      EstSigl = e.EstSigl,
                                                      LojLogo = l.LojLogo,
-                                                     PotLogo = p.PotLogo
+                                                     PotLogo = p.PotLogo,
+                                                     SesAgap = s.SesAgap,
+                                                     SesVlAg = s.SesVlAg
                                                  }).FirstOrDefault()!;
 
                     if (result != null)

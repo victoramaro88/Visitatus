@@ -22,6 +22,8 @@ namespace API_Visitatus.Models
         public long LojCodi { get; set; }
         [Column("preEmai")]
         public bool PreEmai { get; set; }
+        [Column("preAgap")]
+        public bool PreAgap { get; set; }
 
         [ForeignKey(nameof(LojCodi))]
         [InverseProperty(nameof(Loja.Presencas))]

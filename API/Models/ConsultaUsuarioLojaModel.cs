@@ -5,6 +5,7 @@
         public long sesCodi { get; set; }
         public UsrLoja? objUsuarioLoja { get; set; }
         public LojaConsulta? objLojaConsulta { get; set; }
+        public bool preAgap { get; set; }
 
         public class UsrLoja
         {

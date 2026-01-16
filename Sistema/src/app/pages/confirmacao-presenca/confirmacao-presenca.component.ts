@@ -125,7 +125,7 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     this.http.GetSessaoBySesCodi(sesCodi).subscribe({
       next: (response) => {
         this.objSessaoConvite = response;
-        // console.warn('Sessão:', this.objSessaoConvite);
+        console.warn('Sessão:', this.objSessaoConvite);
         this.GetPotenciaRegularByLojCodi(this.objSessaoConvite.LojCodi);
       },
       error: (error) => {

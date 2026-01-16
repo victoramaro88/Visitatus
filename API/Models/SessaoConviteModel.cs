@@ -27,6 +27,7 @@
         public List<GestaoAdmAtivaModel>? lstGestaoAdmAtiva{ get; set; }
         public string? LojLogo { get; set; }
         public string? PotLogo { get; set; }
-
+        public bool SesAgap { get; set; }
+        public decimal? SesVlAg { get; set; }
     }
 }

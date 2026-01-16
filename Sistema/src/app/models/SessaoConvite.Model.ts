@@ -26,6 +26,8 @@ export class SessaoConviteModel {
   lstGestaoAdmAtiva?: GestaoAdmAtivaModel[];
   LojLogo?: string;
   PotLogo?: string;
+  SesAgap?: boolean;
+  SesVlAg?: number;
 
   constructor(
     SesCodi: number,
@@ -52,7 +54,9 @@ export class SessaoConviteModel {
     EstSigl?: string,
     lstGestaoAdmAtiva?: GestaoAdmAtivaModel[],
     LojLogo?: string,
-    PotLogo?: string
+    PotLogo?: string,
+    SesAgap?: boolean,
+    SesVlAg?: number
   ) {
     this.SesCodi = SesCodi;
     this.SesNume = SesNume;
@@ -79,5 +83,7 @@ export class SessaoConviteModel {
     this.lstGestaoAdmAtiva = lstGestaoAdmAtiva;
     this.LojLogo = LojLogo;
     this.PotLogo = PotLogo;
+    this.SesAgap = SesAgap;
+    this.SesVlAg = SesVlAg;
   }
 }
