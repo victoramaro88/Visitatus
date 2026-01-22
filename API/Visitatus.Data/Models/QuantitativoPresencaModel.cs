@@ -11,5 +11,6 @@ namespace Visitatus.Data.Models
         public int qtdVisitantes { get; set; }
         public int qtdMembros { get; set; }
         public int qtdTotal { get; set; }
+        public int qtdAgape { get; set; }
     }
 }

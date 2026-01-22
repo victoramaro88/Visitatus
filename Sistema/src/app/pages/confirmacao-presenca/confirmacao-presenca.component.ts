@@ -106,7 +106,7 @@ export class ConfirmacaoPresencaComponent implements OnInit {
       next: (response) => {
         this.objConfirmacoes = response;
         this.boolLoading = false;
-        // console.warn('CONFIRMAÇÕES:', this.objConfirmacoes);
+        console.warn('CONFIRMAÇÕES:', this.objConfirmacoes);
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);
@@ -125,7 +125,7 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     this.http.GetSessaoBySesCodi(sesCodi).subscribe({
       next: (response) => {
         this.objSessaoConvite = response;
-        console.warn('Sessão:', this.objSessaoConvite);
+        // console.warn('Sessão:', this.objSessaoConvite);
         this.GetPotenciaRegularByLojCodi(this.objSessaoConvite.LojCodi);
       },
       error: (error) => {

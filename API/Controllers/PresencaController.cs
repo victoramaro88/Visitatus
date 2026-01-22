@@ -361,7 +361,8 @@ namespace API_Visitatus.Controllers
                     SesCodi = objPresenca.sesCodi,
                     LojCodi = objPresenca.objLojaConsulta.LojCodi > 0 ? objPresenca.objLojaConsulta.LojCodi : novoLojaId,
                     PreAtiv = false,
-                    PreEmai = false
+                    PreEmai = false,
+                    PreAgap = objPresenca.preAgap
                 };
 
                 _context.Presencas.Add(presenca);

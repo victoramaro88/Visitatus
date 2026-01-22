@@ -85,12 +85,13 @@
             <label for="usuEmai">Confirme seu e-mail</label><br>
             <input [disabled]="boolBlockIntputsUsuario" id="usuEmai" type="text" pInputText [(ngModel)]="confirmacaoEmail" class="p-2" style="text-transform: lowercase;"/>
           </div>
-          <div class="field col-12 md:col-12 p-fluid text-center">
+          <div *ngIf="objSessaoConvite.SesAgap" class="field col-12 md:col-12 p-fluid text-center">
             <label for="jantar">Ficará para o jantar?
               <small> ({{objConsultaUsrLj.preAgap ? 'Sim' : 'Não'}})</small>
             </label><br>
             <p-inputSwitch [(ngModel)]="objConsultaUsrLj.preAgap" /> <br>
-            <small id="jantar">O valor para a participação do jantar <br> é de R$ {{objSessaoConvite.SesVlAg?.toString()?.replace('.', ',')}} por pessoa.</small>
+            <small *ngIf="objSessaoConvite.SesVlAg! > 0" id="jantar">O valor para a participação do jantar <br> é de R$ {{objSessaoConvite.SesVlAg | number:'1.2-2':'pt-BR'}} por pessoa.</small>
+            <small *ngIf="objSessaoConvite.SesVlAg! === 0" id="jantar">Não será cobrado valor individual para o jantar.</small>
           </div>
           
         </div>
@@ -102,7 +103,8 @@
 
     <!-- TOTAL DE CONFIRMAÇÃO DE PRESENÇAS -->
     <div style="color: darkgrey;" class="text-center">
-      <small><b>Confirmações de Presenças: <br> Membros: {{objConfirmacoes.qtdMembros}} | Visitantes: {{objConfirmacoes.qtdVisitantes}} | Total: {{objConfirmacoes.qtdTotal}}</b></small>
+      <small><b>Confirmações de Presenças: <br> Membros: {{objConfirmacoes.qtdMembros}} | Visitantes: {{objConfirmacoes.qtdVisitantes}} | Total: {{objConfirmacoes.qtdTotal}}</b></small> <br>
+      <span *ngIf="objSessaoConvite.SesAgap"><small><b>Jantar: {{objConfirmacoes.qtdAgape}}</b></small></span>
     </div>
 
   </p-card>
@@ -112,7 +114,8 @@
 <p-dialog [header]="mensagem.titulo" [modal]="true" [(visible)]="boolDialogMensagem" [style]="{ width: '25rem' }">
   <ng-template pTemplate="header">
     <div class="inline-flex align-items-center justify-content-center gap-2">
-        <i class="pi {{mensagem.icone}}" style="font-size: 2.5rem" style="color: {{mensagem.corIcone}}"></i>&nbsp;
+        <!-- <i class="pi {{mensagem.icone}}" style="font-size: 2.5rem" style="color: {{mensagem.corIcone}}"></i>&nbsp; -->
+         <i class="pi {{mensagem.icone}}" [ngStyle]="{ 'font-size': '2.5rem', color: mensagem.corIcone }"></i>&nbsp;
         <span class="font-bold white-space-nowrap">
             {{mensagem.titulo}}
         </span>

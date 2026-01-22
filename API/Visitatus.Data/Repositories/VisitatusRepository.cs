@@ -84,7 +84,7 @@ namespace Visitatus.Data.Repositories
 
                     command.CommandText = @$"
                                             SELECT
-	                                            USR.usuCodi, USR.usuNome, USR.usuNCIM, PERF.perCodi, LOJ2.lojNome, LOJ2.lojNumL, POT.potSigl
+	                                            USR.usuCodi, USR.usuNome, USR.usuNCIM, PERF.perCodi, LOJ2.lojNome, LOJ2.lojNumL, POT.potSigl, PRE.preAgap 
                                             FROM {_bdVisitatus}.dbo.{_tblLoja} LOJ WITH(NOLOCK)
                                             JOIN {_bdVisitatus}.dbo.{_tblSessao} SES WITH(NOLOCK) ON LOJ.lojCodi = SES.lojCodi 
                                             JOIN {_bdVisitatus}.dbo.{_tblPresenca} PRE WITH(NOLOCK) ON SES.sesCodi = PRE.sesCodi
@@ -111,6 +111,7 @@ namespace Visitatus.Data.Repositories
                             objItem.lojNome = reader["lojNome"].ToString();
                             objItem.lojNumL = reader["lojNumL"].ToString();
                             objItem.potSigl = reader["potSigl"].ToString();
+                            objItem.preAgap = reader["preAgap"] != DBNull.Value ? bool.Parse(reader["preAgap"].ToString()!) : default;
 
                             listaPresenca.Add(objItem);
                         }
@@ -140,6 +141,12 @@ namespace Visitatus.Data.Repositories
 
                             //-> ADICIONA PARA O TOTAL GERAL
                             objRetorno.qtdTotal += 1;
+
+                            //-> ACRESCENTANDO O QUANTITATIVO DO ÁGAPE
+                            if(item.preAgap)
+                            {
+                                objRetorno.qtdAgape += 1;
+                            }
 
                             listaPresencaFiltrada.Add(item);
                         }

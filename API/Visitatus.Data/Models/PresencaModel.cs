@@ -15,5 +15,6 @@ namespace Visitatus.Data.Models
         public string? lojNome { get; set; }
         public string? lojNumL { get; set; }
         public string? potSigl { get; set; }
+        public bool preAgap { get; set; }
     }
 }
