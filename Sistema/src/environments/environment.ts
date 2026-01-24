@@ -5,8 +5,8 @@ export const environment = {
   // version: '1.2.0 | 26/11/2025-13:11 | Localhost', //-> QR-Code e Mensagem Whatsapp
   version: '1.3.0 | 23/01/2026-11:49 | Localhost', //-> Exibição de presentes confirmados e confirmação de ágape.
 
-  apiServicos: 'https://localhost:7237/api',
-  // apiServicos: 'https://dev.visitatus.com.br/_API/api',
+  // apiServicos: 'https://localhost:7237/api',
+  apiServicos: 'https://dev.visitatus.com.br/_API/api',
   //apiServicos: 'https://visitatus.com.br/_API/api',
 };
 

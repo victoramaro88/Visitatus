@@ -62,6 +62,12 @@ export class HttpService {
     );
   }
 
+  public GetLoja(lojCodi: number): Observable<LojaModel[]> {
+    return this.http.get<LojaModel[]>(
+      `${environment.apiServicos}/Loja/GetLoja/${lojCodi}`
+    );
+  }
+
   public GetTipoSessao(TiScodi: number): Observable<TipoSessaoModel[]> {
     return this.http.get<TipoSessaoModel[]>(
       `${environment.apiServicos}/TipoSessao/GetTipoSessao/${TiScodi}`

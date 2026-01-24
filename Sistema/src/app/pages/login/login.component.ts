@@ -136,7 +136,7 @@ export class LoginComponent implements OnInit {
     this.boolLoading = true;
     if (this.objPerfilSelecionado.perCodi > 0) {
       this.boolDialogPerfil = false;
-      // console.warn("Perfil Selecionado", this.objPerfilSelecionado);
+      console.warn("Perfil Selecionado", this.objPerfilSelecionado);
       this.cryptoService.salvarNoSessionStorage(
         'prf',
         JSON.stringify(this.objPerfilSelecionado)
