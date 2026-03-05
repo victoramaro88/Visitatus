@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml, bootstrapApplication } from '@angular/platform-browser';
 import { HttpService } from '../../services/http-service.service';
 import { CryptoService } from '../../services/crypto.service';
 import { Base64Service } from '../../services/base64.service';
@@ -36,6 +36,7 @@ export class ConviteComponent implements OnInit {
   objSessaoConvite: SessaoConviteModel | undefined;
   objTemplate: TemplateLojaModel | undefined;
   boolDialogMensagem: boolean = false;
+  boolDialogPropaganda: boolean = false;
   mensagem: Mensagem = {
     titulo: '',
     corpoMensagem: '',
@@ -99,6 +100,11 @@ export class ConviteComponent implements OnInit {
           this.boolDialogMensagem = true;
           this.boolLoading = false;
         } else {
+          //-> VALIDANDO SE É BAALBEK, SE FOR, ABRE A MENSAGEM DO CONVITE DO IAA.
+          if(this.objSessaoConvite.LojCodi === 1){
+            this.boolDialogPropaganda = true;
+          }
+
           this.GetTemplateLoja(response.LojCodi);
         }
       },
@@ -224,5 +230,9 @@ export class ConviteComponent implements OnInit {
       ),
     ];
     this.router.navigate(path);
+  }
+
+  abrirLink() {
+    window.open('https://uticket.com.br/event/01LT2RJ6G62VER', '_blank');
   }
 }
