@@ -232,7 +232,11 @@ export class ConviteComponent implements OnInit {
     this.router.navigate(path);
   }
 
-  abrirLink() {
-    window.open('https://uticket.com.br/event/01LT2RJ6G62VER', '_blank');
+  abrirLink(tipo: string) {
+    if(tipo === 'PIX'){
+      window.open('https://wa.link/duxusp', '_blank');
+    } else {
+      window.open('https://uticket.com.br/event/01LT2RJ6G62VER', '_blank');
+    }
   }
 }

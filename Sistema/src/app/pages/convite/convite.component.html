@@ -49,13 +49,27 @@
   </div>
 
   <div class="text-center justify-content-center gap-2 mt-4">
-    <!-- <p-button label="Clique aqui para comprar!" [raised]="true" severity="success" /><br><br> -->
-     <p-button
-    label="Clique aqui para comprar!"
-    [raised]="true"
-    severity="success"
-    (onClick)="abrirLink()">
-    </p-button>
+     <!-- <p-button
+      label="Clique aqui para comprar!"
+      [raised]="true"
+      severity="success"
+      (onClick)="abrirLink()">
+      </p-button> -->
+      <p-button
+      label="Comprar com Pix - R$80,00"
+      [raised]="true"
+      severity="success"
+      (onClick)="abrirLink('PIX')">
+      </p-button>
+
+    <br><br>
+
+      <p-button
+      label="Comprar online - R$80,00 + taxas"
+      [raised]="true"
+      severity="success"
+      (onClick)="abrirLink('ONLINE')">
+      </p-button>
 
     <br><br>
 
