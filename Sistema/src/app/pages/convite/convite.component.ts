@@ -101,9 +101,9 @@ export class ConviteComponent implements OnInit {
           this.boolLoading = false;
         } else {
           //-> VALIDANDO SE É BAALBEK, SE FOR, ABRE A MENSAGEM DO CONVITE DO IAA.
-          if(this.objSessaoConvite.LojCodi === 1){
-            this.boolDialogPropaganda = true;
-          }
+          // if(this.objSessaoConvite.LojCodi === 1){
+          //   this.boolDialogPropaganda = true;
+          // }
 
           this.GetTemplateLoja(response.LojCodi);
         }

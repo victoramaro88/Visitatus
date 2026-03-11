@@ -68,6 +68,7 @@ export class ConfirmacaoPresencaComponent implements OnInit {
   };
   confirmacaoEmail: string = '';
   objConfirmacoes: QuantitativoPresencaModel = new QuantitativoPresencaModel();
+  boolDialogPropaganda: boolean = false;
 
   constructor(
     private http: HttpService,
@@ -106,7 +107,7 @@ export class ConfirmacaoPresencaComponent implements OnInit {
       next: (response) => {
         this.objConfirmacoes = response;
         this.boolLoading = false;
-        console.warn('CONFIRMAÇÕES:', this.objConfirmacoes);
+        // console.warn('CONFIRMAÇÕES:', this.objConfirmacoes);
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);
@@ -392,5 +393,18 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     this.objConsultaUsrLj = new ConsultaUsuarioLojaModel();
     this.objPotenciaIrmao = new PotenciaModel();
     this.confirmacaoEmail = '';
+
+    //-> VERIFICANDO SE A LOJA É BAALBEK, SE SIM, ABRE A PROPAGANDA
+    if(this.objSessaoConvite?.LojCodi === 1){
+      this.boolDialogPropaganda = true;
+    }
+  }
+
+  abrirLink(tipo: string) {
+    if(tipo === 'PIX'){
+      window.open('https://wa.link/duxusp', '_blank');
+    } else {
+      window.open('https://uticket.com.br/event/01LT2RJ6G62VER', '_blank');
+    }
   }
 }

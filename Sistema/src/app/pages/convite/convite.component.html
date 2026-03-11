@@ -3,6 +3,21 @@
 </p-blockUI>
 <p-toast></p-toast>
 
+<!-- IMAGEM DE PROPAGANDA -->
+<div>
+  <div class="flex justify-content-center mt-3">
+    <p-image
+        src="assets/img/Baalbek/Logo_Infancia_Azul.png"
+        alt="Convite"
+        [preview]="true"
+        [imageStyle]="{ width: '100%', height: 'auto', 'max-width': '100px' }">
+    </p-image>
+  </div>
+  <div  class="text-center justify-content-center mb-1 mt-3">
+    <p-button (onClick)="boolDialogPropaganda = true;" size="small" label="Colabore com o evento do Instituto Infância Azul" [raised]="true" severity="info" />
+  </div>
+</div>
+
 <div *ngIf="!boolDialogMensagem" #dynamicContainer>
   <div [innerHTML]="htmlContent" (click)="onContainerClick($event)"></div>
 </div>
@@ -26,6 +41,7 @@
 </p-dialog>
 
 
+<!-- POPUP DA PROPAGANDA  -->
 <p-dialog
     [(visible)]="boolDialogPropaganda"
     [modal]="true"
@@ -49,12 +65,6 @@
   </div>
 
   <div class="text-center justify-content-center gap-2 mt-4">
-     <!-- <p-button
-      label="Clique aqui para comprar!"
-      [raised]="true"
-      severity="success"
-      (onClick)="abrirLink()">
-      </p-button> -->
       <p-button
       label="Comprar com Pix - R$80,00"
       [raised]="true"
