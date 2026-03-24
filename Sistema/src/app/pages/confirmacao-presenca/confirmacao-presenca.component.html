@@ -93,7 +93,7 @@
             <small *ngIf="objSessaoConvite.SesVlAg! > 0" id="jantar">O valor para a participação do jantar <br> é de R$ {{objSessaoConvite.SesVlAg | number:'1.2-2':'pt-BR'}} por pessoa.</small>
             <small *ngIf="objSessaoConvite.SesVlAg! === 0" id="jantar">Não será cobrado valor individual para o jantar.</small>
           </div>
-          
+
         </div>
 
         <div class="text-center mt-3">
@@ -156,21 +156,21 @@
   </div>
 
   <div class="text-center justify-content-center gap-2 mt-4">
-      <p-button
-      label="Comprar com Pix - R$80,00"
+    <p-button
+      label="Comprar via Pix ou Cartão"
       [raised]="true"
       severity="success"
-      (onClick)="abrirLink('PIX')">
-      </p-button>
+      (onClick)="abrirLink('COMPRA')">
+    </p-button>
 
     <br><br>
 
-      <p-button
-      label="Comprar online - R$80,00 + taxas"
+    <p-button
+      label="Mais informações sobre o evento"
       [raised]="true"
       severity="success"
-      (onClick)="abrirLink('ONLINE')">
-      </p-button>
+      (onClick)="abrirLink('INFO')">
+    </p-button>
 
     <br><br>
 
