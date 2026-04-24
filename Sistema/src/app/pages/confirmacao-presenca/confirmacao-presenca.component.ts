@@ -395,9 +395,9 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     this.confirmacaoEmail = '';
 
     //-> VERIFICANDO SE A LOJA É BAALBEK, SE SIM, ABRE A PROPAGANDA
-    if(this.objSessaoConvite?.LojCodi === 1){
-      this.boolDialogPropaganda = true;
-    }
+    // if(this.objSessaoConvite?.LojCodi === 1){ //-> COMENTADO PARA NÃO EXIBIR MAIS O CONVITE.
+    //   this.boolDialogPropaganda = true;
+    // }
   }
 
   abrirLink(tipo: string) {

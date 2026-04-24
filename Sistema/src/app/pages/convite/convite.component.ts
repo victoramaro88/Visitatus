@@ -235,8 +235,9 @@ export class ConviteComponent implements OnInit {
   abrirLink(tipo: string) {
     if(tipo === 'INFO'){
       window.open('https://wa.link/duxusp', '_blank');
+    } else if(tipo === 'IAA') {
+      window.open('https://www.infanciaazul.com.br/', '_blank');
     } else {
-      // window.open('https://uticket.com.br/event/01LT2RJ6G62VER', '_blank');
       window.open('https://pag.ae/81CfhAguq/button', '_blank');
     }
   }

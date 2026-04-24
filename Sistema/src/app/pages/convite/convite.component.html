@@ -14,7 +14,7 @@
     </p-image>
   </div>
   <div  class="text-center justify-content-center mb-1 mt-3">
-    <p-button (onClick)="boolDialogPropaganda = true;" size="small" label="Colabore com o evento do Instituto Infância Azul" [raised]="true" severity="info" />
+    <p-button (onClick)="boolDialogPropaganda = true;" size="small" label="Colabore com o Instituto Infância Azul" [raised]="true" severity="info" />
   </div>
 </div>
 
@@ -42,7 +42,8 @@
 
 
 <!-- POPUP DA PROPAGANDA  -->
-<p-dialog
+ <!-- PROGAPANDA DO EVENTO -->
+<!-- <p-dialog
     [(visible)]="boolDialogPropaganda"
     [modal]="true"
     [style]="{ width: '70vw' }"
@@ -85,5 +86,59 @@
 
     <p-button label="Fechar" (onClick)="boolDialogPropaganda = false" [raised]="true" severity="danger" size="small"></p-button>
   </div>
+</p-dialog> -->
+
+<!-- PROPAGANDA COMUM -->
+<p-dialog
+    [(visible)]="boolDialogPropaganda"
+    [modal]="true"
+    [style]="{ width: '60vw' }"
+    [breakpoints]="{ '960px': '60vw', '640px': '90vw' }"
+>
+  <p-card header="Instituto Infância Azul" subheader="Ajude-nos a continuar nossa missão!" >
+    <ng-template pTemplate="header">
+      <div style="text-align: center;">
+          <img 
+              src="assets/img/Baalbek/Logo_IAA_Grande.png" 
+              style="width: clamp(240px, 25vw, 280px); height: auto;"
+          />
+      </div>
+    </ng-template>
+
+    <p [style]="{ textAlign: 'justify' }">
+        O Instituto Infância Azul é uma organização sem fins lucrativos dedicada ao acolhimento, desenvolvimento e inclusão de crianças com Transtorno do Espectro Autista (TEA). Com um trabalho pautado no cuidado, respeito e responsabilidade social, o instituto oferece suporte especializado de forma totalmente gratuita, contribuindo para a melhoria da qualidade de vida das crianças e de suas famílias.
+
+        Para manter suas atividades e ampliar o alcance de seus atendimentos, o Instituto Infância Azul depende do apoio da comunidade, por meio de doações, parcerias e ações solidárias. Cada contribuição é fundamental para garantir a continuidade desse trabalho transformador, levando esperança, dignidade e oportunidades a quem mais precisa.
+
+        Acreditamos que, juntos, podemos construir um futuro mais inclusivo e cheio de possibilidades para todas as crianças.<br><br>
+    </p>
+
+    <div style="text-align: center;">
+      <img 
+          src="assets/img/Baalbek/PIX_IAA.png" 
+          style="width: clamp(140px, 25vw, 180px); height: auto;"
+      />
+    </div>
+    
+    <br><br>
+
+    <div style="display: flex; align-items: center; gap: 5px;">
+      <span>Para conhecer mais sobre o instituto, acesse o site</span>
+
+      <p-button 
+        (onClick)="abrirLink('IAA')" 
+        label="www.infanciaazul.com.br" 
+        [text]="true" 
+        severity="info"
+      />
+    </div>
+
+    <!-- <ng-template pTemplate="footer">
+        <div class="flex gap-3 mt-1">
+            <p-button label="Cancel" severity="secondary" class="w-full" styleClass="w-full" />
+            <p-button label="Save" class="w-full" styleClass="w-full" />
+        </div>
+    </ng-template> -->
+  </p-card>
 
 </p-dialog>
