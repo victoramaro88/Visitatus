@@ -98,8 +98,8 @@
   <p-card header="Instituto Infância Azul" subheader="Ajude-nos a continuar nossa missão!" >
     <ng-template pTemplate="header">
       <div style="text-align: center;">
-          <img 
-              src="assets/img/Baalbek/Logo_IAA_Grande.png" 
+          <img
+              src="assets/img/Baalbek/Logo_IAA_Grande.png"
               style="width: clamp(240px, 25vw, 280px); height: auto;"
           />
       </div>
@@ -107,28 +107,30 @@
 
     <p [style]="{ textAlign: 'justify' }">
         O Instituto Infância Azul é uma organização sem fins lucrativos dedicada ao acolhimento, desenvolvimento e inclusão de crianças com Transtorno do Espectro Autista (TEA). Com um trabalho pautado no cuidado, respeito e responsabilidade social, o instituto oferece suporte especializado de forma totalmente gratuita, contribuindo para a melhoria da qualidade de vida das crianças e de suas famílias.
-
+    </p>
+    <p [style]="{ textAlign: 'justify' }">
         Para manter suas atividades e ampliar o alcance de seus atendimentos, o Instituto Infância Azul depende do apoio da comunidade, por meio de doações, parcerias e ações solidárias. Cada contribuição é fundamental para garantir a continuidade desse trabalho transformador, levando esperança, dignidade e oportunidades a quem mais precisa.
-
+    </p>
+    <p [style]="{ textAlign: 'justify' }">
         Acreditamos que, juntos, podemos construir um futuro mais inclusivo e cheio de possibilidades para todas as crianças.<br><br>
     </p>
 
     <div style="text-align: center;">
-      <img 
-          src="assets/img/Baalbek/PIX_IAA.png" 
+      <img
+          src="assets/img/Baalbek/PIX_IAA.png"
           style="width: clamp(140px, 25vw, 180px); height: auto;"
       />
     </div>
-    
+
     <br><br>
 
-    <div style="display: flex; align-items: center; gap: 5px;">
-      <span>Para conhecer mais sobre o instituto, acesse o site</span>
+    <div class="text-center" style="align-items: center; gap: 5px;">
+      <span>Para conhecer mais sobre o instituto, acesse o site:</span><br><br>
 
-      <p-button 
-        (onClick)="abrirLink('IAA')" 
-        label="www.infanciaazul.com.br" 
-        [text]="true" 
+      <p-button
+        (onClick)="abrirLink('IAA')"
+        label="www.infanciaazul.com.br"
+        [text]="true"
         severity="info"
       />
     </div>
