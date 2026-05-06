@@ -12,6 +12,7 @@ namespace API_Visitatus.Models
         public Loja()
         {
             GestaoAdministrativas = new HashSet<GestaoAdministrativa>();
+            OrientacaoLojas = new HashSet<OrientacaoLoja>();
             PerfilUsuarios = new HashSet<PerfilUsuario>();
             Presencas = new HashSet<Presenca>();
             Sessaos = new HashSet<Sessao>();
@@ -65,6 +66,8 @@ namespace API_Visitatus.Models
         public virtual Rito? RitCodiNavigation { get; set; }
         [InverseProperty(nameof(GestaoAdministrativa.LojCodiNavigation))]
         public virtual ICollection<GestaoAdministrativa> GestaoAdministrativas { get; set; }
+        [InverseProperty(nameof(OrientacaoLoja.LojCodiNavigation))]
+        public virtual ICollection<OrientacaoLoja> OrientacaoLojas { get; set; }
         [InverseProperty(nameof(PerfilUsuario.LojCodiNavigation))]
         public virtual ICollection<PerfilUsuario> PerfilUsuarios { get; set; }
         [InverseProperty(nameof(Presenca.LojCodiNavigation))]

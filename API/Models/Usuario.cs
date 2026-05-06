@@ -11,7 +11,9 @@ namespace API_Visitatus.Models
     {
         public Usuario()
         {
+            AusenciaSessaos = new HashSet<AusenciaSessao>();
             GestaoCargos = new HashSet<GestaoCargo>();
+            OrientacaoLojas = new HashSet<OrientacaoLoja>();
             PerfilUsuarios = new HashSet<PerfilUsuario>();
             Presencas = new HashSet<Presenca>();
             UsuarioLogins = new HashSet<UsuarioLogin>();
@@ -41,8 +43,12 @@ namespace API_Visitatus.Models
         [Column("usuStat")]
         public bool UsuStat { get; set; }
 
+        [InverseProperty(nameof(AusenciaSessao.UsuCodiNavigation))]
+        public virtual ICollection<AusenciaSessao> AusenciaSessaos { get; set; }
         [InverseProperty(nameof(GestaoCargo.UsuCodiNavigation))]
         public virtual ICollection<GestaoCargo> GestaoCargos { get; set; }
+        [InverseProperty(nameof(OrientacaoLoja.UsuCodiNavigation))]
+        public virtual ICollection<OrientacaoLoja> OrientacaoLojas { get; set; }
         [InverseProperty(nameof(PerfilUsuario.UsuCodiNavigation))]
         public virtual ICollection<PerfilUsuario> PerfilUsuarios { get; set; }
         [InverseProperty(nameof(Presenca.UsuCodiNavigation))]

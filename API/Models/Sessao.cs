@@ -11,6 +11,7 @@ namespace API_Visitatus.Models
     {
         public Sessao()
         {
+            AusenciaSessaos = new HashSet<AusenciaSessao>();
             Presencas = new HashSet<Presenca>();
         }
 
@@ -53,6 +54,8 @@ namespace API_Visitatus.Models
         [ForeignKey(nameof(TiScodi))]
         [InverseProperty(nameof(TipoSessao.Sessaos))]
         public virtual TipoSessao TiScodiNavigation { get; set; } = null!;
+        [InverseProperty(nameof(AusenciaSessao.SesCodiNavigation))]
+        public virtual ICollection<AusenciaSessao> AusenciaSessaos { get; set; }
         [InverseProperty(nameof(Presenca.SesCodiNavigation))]
         public virtual ICollection<Presenca> Presencas { get; set; }
     }

@@ -16,6 +16,7 @@ namespace API_Visitatus.Models
         {
         }
 
+        public virtual DbSet<AusenciaSessao> AusenciaSessaos { get; set; } = null!;
         public virtual DbSet<Cargo> Cargos { get; set; } = null!;
         public virtual DbSet<CargosRito> CargosRitos { get; set; } = null!;
         public virtual DbSet<Cidade> Cidades { get; set; } = null!;
@@ -24,6 +25,7 @@ namespace API_Visitatus.Models
         public virtual DbSet<GestaoCargo> GestaoCargos { get; set; } = null!;
         public virtual DbSet<Grau> Graus { get; set; } = null!;
         public virtual DbSet<Loja> Lojas { get; set; } = null!;
+        public virtual DbSet<OrientacaoLoja> OrientacaoLojas { get; set; } = null!;
         public virtual DbSet<Perfil> Perfils { get; set; } = null!;
         public virtual DbSet<PerfilUsuario> PerfilUsuarios { get; set; } = null!;
         public virtual DbSet<Permissao> Permissaos { get; set; } = null!;
@@ -57,6 +59,26 @@ namespace API_Visitatus.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("V1s1tAtu5D3v");
+
+            modelBuilder.Entity<AusenciaSessao>(entity =>
+            {
+                entity.HasKey(e => e.AusSesCodi)
+                    .HasName("PK__Ausencia__2C81E00D05F53CD0");
+
+                entity.Property(e => e.AusSesCodi).ValueGeneratedNever();
+
+                entity.HasOne(d => d.SesCodiNavigation)
+                    .WithMany(p => p.AusenciaSessaos)
+                    .HasForeignKey(d => d.SesCodi)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__AusenciaS__sesCo__114A936A");
+
+                entity.HasOne(d => d.UsuCodiNavigation)
+                    .WithMany(p => p.AusenciaSessaos)
+                    .HasForeignKey(d => d.UsuCodi)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__AusenciaS__usuCo__10566F31");
+            });
 
             modelBuilder.Entity<Cargo>(entity =>
             {
@@ -174,6 +196,26 @@ namespace API_Visitatus.Models
                     .WithMany(p => p.Lojas)
                     .HasForeignKey(d => d.RitCodi)
                     .HasConstraintName("fk_RitLoj");
+            });
+
+            modelBuilder.Entity<OrientacaoLoja>(entity =>
+            {
+                entity.HasKey(e => e.OrlCodi)
+                    .HasName("PK__Orientac__7BF1EAF22B8383CA");
+
+                entity.Property(e => e.OrlCodi).ValueGeneratedNever();
+
+                entity.HasOne(d => d.LojCodiNavigation)
+                    .WithMany(p => p.OrientacaoLojas)
+                    .HasForeignKey(d => d.LojCodi)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Orientaca__lojCo__0C85DE4D");
+
+                entity.HasOne(d => d.UsuCodiNavigation)
+                    .WithMany(p => p.OrientacaoLojas)
+                    .HasForeignKey(d => d.UsuCodi)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Orientaca__usuCo__0D7A0286");
             });
 
             modelBuilder.Entity<Perfil>(entity =>
