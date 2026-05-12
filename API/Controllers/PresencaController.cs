@@ -207,7 +207,7 @@ namespace API_Visitatus.Controllers
         {
             try
             {
-                if(sesCodi == 0)
+                if (sesCodi == 0)
                 {
                     return BadRequest("Campos obrigatórios inválidos.");
                 }
@@ -337,7 +337,7 @@ namespace API_Visitatus.Controllers
                     var usrPertencenteLoja = usuarioLojas.FindAll(u => u.LojCodi == objPresenca.objLojaConsulta.LojCodi);
 
                     //-> Se não pertencer, 
-                    if(usrPertencenteLoja.Count == 0)
+                    if (usrPertencenteLoja.Count == 0)
                     {
                         //-> Inserindo o perfil deste usuário como FILIADO desta Loja.
                         PerfilUsuario perfilUsuario = new PerfilUsuario
@@ -526,170 +526,6 @@ namespace API_Visitatus.Controllers
             }
         }
 
-        //[HttpPost]
-        //public async Task<ActionResult<string>> PostConfirmaPresenca([FromBody] ConsultaUsuarioLojaModel objPresenca)
-        //{
-        //    long novoUsuarioId = 0;
-        //    long novoLojaId = 0;
-        //    if (objPresenca.objUsuarioLoja == null || objPresenca.objLojaConsulta == null || objPresenca.sesCodi == 0)
-        //    {
-        //        return BadRequest("Parâmetros inválidos.");
-        //    }
-
-        //    using var transaction = await _context.Database.BeginTransactionAsync();
-        //    try
-        //    {
-        //        //-> Se o usuário existir, verifica se já confirmou sua presença para esta sessão
-        //        if (objPresenca.objUsuarioLoja.UsuCodi > 0)
-        //        {
-        //            var confirmacaoPresenca = await _context.Presencas
-        //                .Where(p => p.UsuCodi == objPresenca.objUsuarioLoja.UsuCodi && p.SesCodi == objPresenca.sesCodi)
-        //                .FirstOrDefaultAsync();
-
-        //            if (confirmacaoPresenca != null)
-        //            {
-        //                return Ok("Presença já confirmada.");
-        //            }
-        //        }
-
-        //        //-> Se o código da Loja vier 0, insere a nova Loja.
-        //        if (objPresenca.objLojaConsulta.LojCodi == 0)
-        //        {
-        //            Loja loja = new Loja
-        //            {
-        //                LojCodi = _context.Lojas.Max(p => (int?)p.LojCodi) + 1 ?? 1,
-        //                LojNome = objPresenca.objLojaConsulta.LojNome!,
-        //                LojNumL = objPresenca.objLojaConsulta.LojNumL!,
-        //                PotCodi = objPresenca.objLojaConsulta.PotCodi!,
-        //                LojStat = true
-        //            };
-
-        //            _context.Lojas.Add(loja);
-        //            await _context.SaveChangesAsync();
-
-        //            novoLojaId = loja.LojCodi;
-        //        }
-
-        //        //-> Se não vier id do usuário, verifica se já existe, senão, insere ele na tabela, vinculando-o com a Loja e atribuindo o perfil código 4 (Membro).
-        //        if (objPresenca.objUsuarioLoja.UsuCodi == 0)
-        //        {
-        //            //-> Faz uma consulta, para saber se o usuário já existe na base, mas em outra Loja
-        //            var usuarioOutraLoja = await _context.Usuarios
-        //                .Where(u => u.UsuNome.ToUpper() == objPresenca.objUsuarioLoja.UsuNome!.ToUpper()
-        //                    && u.UsuNcim.ToUpper() == objPresenca.objUsuarioLoja.UsuNCIM!.ToUpper())
-        //                .FirstOrDefaultAsync();
-
-        //            //var usuarioOutraLoja = await (from usr in _context.Usuarios
-        //            //                                    join perUsu in _context.PerfilUsuarios on usr.UsuCodi equals perUsu.UsuCodi
-        //            //                                    join loj in _context.Lojas on perUsu.LojCodi equals loj.LojCodi
-        //            //                                    join perf in _context.Perfils on perUsu.PerCodi equals perf.PerCodi
-        //            //                                    join login in _context.UsuarioLogins on usr.UsuCodi equals login.UsuCodi into loginGroup
-        //            //                                    from login in loginGroup.DefaultIfEmpty() // Left join aqui
-        //            //                                    where usr.UsuNcim == objPresenca.objUsuarioLoja.UsuNCIM && loj.PotCodi == objPresenca.objLojaConsulta.PotCodi
-        //            //                              orderby loj.LojNome
-        //            //                                    select new
-        //            //                                    {
-        //            //                                        usr.UsuCodi
-        //            //                                    }).FirstOrDefaultAsync();
-
-        //            if (usuarioOutraLoja != null)
-        //            {
-        //                //-> Inserindo o perfil deste usuário como FILIADO desta Loja.
-        //                PerfilUsuario perfilUsuario = new PerfilUsuario
-        //                {
-        //                    PeUcodi = _context.PerfilUsuarios.Max(p => (int?)p.PeUcodi) + 1 ?? 1,
-        //                    PeUstat = true,
-        //                    PerCodi = 5, //-> Perfil selecionado como FILIADO.
-        //                    UsuCodi = usuarioOutraLoja.UsuCodi,
-        //                    LojCodi = objPresenca.objLojaConsulta.LojCodi > 0 ? objPresenca.objLojaConsulta.LojCodi : novoLojaId
-        //                };
-
-        //                _context.PerfilUsuarios.Add(perfilUsuario);
-        //                await _context.SaveChangesAsync();
-
-        //                Presenca presenca = new Presenca
-        //                {
-        //                    UsuCodi = usuarioOutraLoja.UsuCodi,
-        //                    SesCodi = objPresenca.sesCodi,
-        //                    LojCodi = objPresenca.objLojaConsulta.LojCodi > 0 ? objPresenca.objLojaConsulta.LojCodi : novoLojaId,
-        //                    PreAtiv = false
-        //                };
-
-        //                _context.Presencas.Add(presenca);
-        //                await _context.SaveChangesAsync();
-        //            }
-        //            else //-> Caso a pesquisa venha null, insere o usuário
-        //            {
-        //                Usuario usuario = new Usuario
-        //                {
-        //                    UsuCodi = _context.Usuarios.Max(p => (int?)p.UsuCodi) + 1 ?? 1,
-        //                    UsuNome = objPresenca.objUsuarioLoja.UsuNome!,
-        //                    UsuNcim = objPresenca.objUsuarioLoja.UsuNCIM!,
-        //                    UsuNasc = objPresenca.objUsuarioLoja.UsuNasc!,
-        //                    UsuEmai = objPresenca.objUsuarioLoja.UsuEmai!,
-        //                    UsuNcel = objPresenca.objUsuarioLoja.UsuNCel!,
-        //                    UsuStat = true
-        //                };
-
-        //                _context.Usuarios.Add(usuario);
-        //                await _context.SaveChangesAsync();
-
-        //                novoUsuarioId = usuario.UsuCodi;
-
-        //                //-> Inserindo o perfil deste usuário como MEMBRO de sua Loja.
-        //                PerfilUsuario perfilUsuario = new PerfilUsuario
-        //                {
-        //                    PeUcodi = _context.PerfilUsuarios.Max(p => (int?)p.PeUcodi) + 1 ?? 1,
-        //                    PeUstat = true,
-        //                    PerCodi = 4, //-> Perfil selecionado como MEMBRO.
-        //                    UsuCodi = novoUsuarioId,
-        //                    LojCodi = objPresenca.objLojaConsulta.LojCodi > 0 ? objPresenca.objLojaConsulta.LojCodi : novoLojaId
-        //                };
-
-        //                _context.PerfilUsuarios.Add(perfilUsuario);
-        //                await _context.SaveChangesAsync();
-
-        //                //-> Insere a presença
-        //                Presenca presenca = new Presenca
-        //                {
-        //                    UsuCodi = novoUsuarioId,
-        //                    SesCodi = objPresenca.sesCodi,
-        //                    LojCodi = objPresenca.objLojaConsulta.LojCodi > 0 ? objPresenca.objLojaConsulta.LojCodi : novoLojaId,
-        //                    PreAtiv = false,
-        //                    PreEmai = false
-        //                };
-
-        //                _context.Presencas.Add(presenca);
-        //                await _context.SaveChangesAsync();
-        //            }
-        //        }
-        //        else //-> Se já existir usuário na pesquisa vindo da aplicação, insere na tabela de presença.
-        //        {
-        //            Presenca presenca = new Presenca
-        //            {
-        //                UsuCodi = objPresenca.objUsuarioLoja.UsuCodi,
-        //                SesCodi = objPresenca.sesCodi,
-        //                LojCodi = objPresenca.objLojaConsulta.LojCodi > 0 ? objPresenca.objLojaConsulta.LojCodi : novoLojaId,
-        //                PreAtiv = false,
-        //                PreEmai = false
-        //            };
-
-        //            _context.Presencas.Add(presenca);
-        //            await _context.SaveChangesAsync();
-        //        }
-
-        //        // Commit da transação
-        //        await transaction.CommitAsync();
-        //        return Ok("Presença confirmada com sucesso.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Rollback em caso de erro
-        //        await transaction.RollbackAsync();
-        //        return BadRequest($"Erro ao confirmar presença: {ex.Message} \n {ex.InnerException?.Message}");
-        //    }
-        //}
-
         #region CONFIRMAÇÃO DE PRESENÇA E ENVIO DE E-MAIL
         [HttpPost]
         public async Task<ActionResult<string>> PostLancamentoPresencaSessao([FromBody] List<ListaPresencaModel> listaPresentes)
@@ -712,7 +548,7 @@ namespace API_Visitatus.Controllers
                 string assuntoEmail = lojaCertificado.LojNome + ", " + lojaCertificado.LojNumL;
 
                 // Obter a gestão administrativa atual
-                var gestaoAdmAtual = await ObterGestaoAdministrativa(lojaCertificado.LojCodi);                
+                var gestaoAdmAtual = await ObterGestaoAdministrativa(lojaCertificado.LojCodi);
 
                 //-> Gerar template do e-mail a ser enviado
                 var htmlCorpoBase = await GerarHtmlEmailCertificado(_idModeloEmailCertificado, lojaCertificado);
@@ -888,6 +724,43 @@ namespace API_Visitatus.Controllers
             await _context.SaveChangesAsync();
         }
         #endregion
+
+        [HttpPost]
+        public async Task<ActionResult<AusenciaSessao>> PostAusenciaSessao([FromBody] AusenciaSessao ausenciaSessao)
+        {
+            try
+            {
+                //-> VERIFICANDO SE O USUÁRIO JÁ REGISTROU AUSÊNCIA PARA ESTA SESSÃO
+                var resultUsuario = await _context.AusenciaSessaos
+                    .FirstOrDefaultAsync(s => s.SesCodi == ausenciaSessao.SesCodi
+                                            && s.UsuCodi == ausenciaSessao.UsuCodi);
+                if (resultUsuario != null)
+                {
+                    return BadRequest("Ausência já registrada para esta sessão.");
+                }
+
+                //-> VERIFICANDO SE A SESSÃO EXISTE E ESTÁ ATIVA PARA REALIZAR A AUSÊNCIA
+                var resultSessao = await _context.Sessaos
+                    .FirstOrDefaultAsync(s => s.SesCodi == ausenciaSessao.SesCodi
+                                            && s.SesLibe);
+
+                if (resultSessao == null)
+                {
+                    return BadRequest("Sessão não encontrada ou não liberada para registrar ausência.");
+                }
+
+                ausenciaSessao.AusSesCodi = _context.AusenciaSessaos.Max(p => (long?)p.AusSesCodi) + 1 ?? 1;
+
+                _context.AusenciaSessaos.Add(ausenciaSessao);
+                var retorno = await _context.SaveChangesAsync();
+
+                return Ok("OK");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message + " \n " + ex.InnerException?.Message);
+            }
+        }
 
         [NonAction]
         public string RetornaUrlCertificado(long usuCodi = 0, long sesCodi = 0)

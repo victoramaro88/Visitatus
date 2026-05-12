@@ -220,5 +220,86 @@ namespace API_Visitatus.Controllers
         {
             return _context.Lojas.Any(e => e.LojCodi == id);
         }
+
+        #region ORIENTAÇÃO LOJA
+        [HttpGet("{lojCodi}")]
+        public async Task<ActionResult<IEnumerable<OrientacaoLoja>>> GetOrientacaoLojaByLojCodi(long lojCodi = 0)
+        {
+            if (lojCodi > 0)
+            {
+                var result = await _context.OrientacaoLojas.FindAsync(lojCodi);
+
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(new List<OrientacaoLoja> { result });
+                }
+            }
+            else
+            {
+                return NotFound("Orientação da Loja não encontrada.");
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<OrientacaoLoja>> PostOrientacaoLoja(OrientacaoLoja orientacaoLoja)
+        {
+            try
+            {
+                if (OrientacaoLojaExists(orientacaoLoja.LojCodi))
+                {
+                    return BadRequest("Loja já possui orientação.");
+                }
+
+                orientacaoLoja.OrlCodi = _context.OrientacaoLojas.Max(p => (int?)p.OrlCodi) + 1 ?? 1;
+
+                _context.OrientacaoLojas.Add(orientacaoLoja);
+                var retorno = await _context.SaveChangesAsync();
+
+                return Ok(orientacaoLoja);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message + " \n " + ex.InnerException?.Message);
+            }
+        }
+
+        [HttpPut("{orlCodi}")]
+        public async Task<IActionResult> PutOrientacaoLoja(int orlCodi, OrientacaoLoja orientacaoLoja)
+        {
+            if (orlCodi != orientacaoLoja.OrlCodi)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(orientacaoLoja).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!OrientacaoLojaExists(orlCodi))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return Ok("Alterado com sucesso!");
+        }
+
+        private bool OrientacaoLojaExists(long id)
+        {
+            return _context.OrientacaoLojas.Any(e => e.LojCodi == id);
+        }
+        #endregion
     }
 }
