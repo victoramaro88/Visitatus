@@ -206,6 +206,14 @@ export class HttpService {
     );
   }
 
+  public GetPotencia(
+    potCodi: number
+  ): Observable<PotenciaModel[]> {
+    return this.http.get<PotenciaModel[]>(
+      `${environment.apiServicos}/Potencia/GetPotencia/${potCodi}`
+    );
+  }
+
   // #endregion
 
   // #region POST

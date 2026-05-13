@@ -60,10 +60,10 @@ export class UsuarioComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.GetPerfilByPerCodi('2,4,5');
+    this.GetPerfilByPerCodi('2,4,5,6');
 
-    //-> Se o usuário possuir perfil de Responsável, habilita a opção de cadastro de Login
-    if (this.objPerfilSelecionado.perCodi === 2) {
+    //-> Se o usuário possuir perfil de Responsável ou Secretário, habilita a opção de cadastro de Login
+    if (this.objPerfilSelecionado.perCodi === 2 || this.objPerfilSelecionado.perCodi === 6) {
       this.boolResponsavelLoja = true;
     }
   }
