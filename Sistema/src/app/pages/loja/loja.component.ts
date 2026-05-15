@@ -85,7 +85,8 @@ export class LojaComponent implements OnInit {
         this.boolLoading = false;
         console.warn('LISTA DE LOJAS:', this.lstLoja);
         this.objLoja = this.lstLoja[0];
-        this.GetPotencia(this.objLoja.PotCodi);
+        // this.GetPotencia(this.objLoja.PotCodi);
+        this.GetPotencia(0);
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);

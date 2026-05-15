@@ -2,21 +2,27 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using Visitatus.Data.Repositories;
 
 namespace API_Visitatus.Controllers
 {
     [Route("api/[controller]/[action]")]
     public class PotenciaController : ControllerBase
     {
+        private readonly PotenciaRepository _potenciaRepo;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly AppDbContext _context;
 
-        public PotenciaController(AppDbContext context)
+        public PotenciaController(IConfiguration configuration, IWebHostEnvironment hostingEnvironment, AppDbContext context)
         {
+            _context = context; 
+            _hostingEnvironment = hostingEnvironment;
+            _potenciaRepo = new PotenciaRepository(configuration, _hostingEnvironment);
             _context = context;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Potencium>>> GetPotencia(int id = 0)
+        public async Task<ActionResult<IEnumerable<Potencium>>> GetPotenciaComLogo(int id = 0)
         {
             if (id > 0)
             {
@@ -43,6 +49,20 @@ namespace API_Visitatus.Controllers
                 {
                     return Ok(result);
                 }
+            }
+        }
+
+        [HttpGet("{potCodi}")]
+        public IActionResult GetPotencia(int potCodi = 0)
+        {
+            try
+            {
+                var ret = _potenciaRepo.GetPotencia(potCodi);
+                return Ok(ret);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 
