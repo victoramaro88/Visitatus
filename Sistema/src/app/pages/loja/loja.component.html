@@ -80,114 +80,107 @@
       <!-- <input (blur)="ConsultaUsuarioExistente(objUsuarioRegistro.UsuNCIM);" id="UsuNCIM" type="text" pInputText [(ngModel)]="objUsuarioRegistro.UsuNCIM" style="text-align: center;"/> -->
     <!-- </div> -->
     <div class="field col-12 md:col-4 p-fluid">
-      <label for="UsuNome">Nome da Loja</label><br>
-      <input id="UsuNome" type="text" pInputText [(ngModel)]="objLoja.LojNome" />
+      <label for="lojNome">Nome da Loja</label><br>
+      <input id="lojNome" type="text" pInputText [(ngModel)]="objLoja.LojNome" />
     </div>
     <div class="field col-12 md:col-2 p-fluid">
-      <label for="UsuEmai">Nº da Loja</label><br>
-      <input id="UsuEmai" type="text" pInputText [(ngModel)]="objLoja.LojNumL" />
+      <label for="LojNumL">Nº da Loja</label><br>
+      <input id="LojNumL" type="text" pInputText [(ngModel)]="objLoja.LojNumL" />
     </div>
-    <div class="field col-12 md:col-3 p-fluid">
-      <label for="UsuNCel">Endereço</label>
-      <input id="UsuEmai" type="text" pInputText [(ngModel)]="objLoja.LojLogr" />
+    <div class="flex flex-column flex-grow-1 col-12 md:col-3">
+      <label class="mb-2" for="PotCodi"><b>Potência</b></label>
+      <p-dropdown
+        placeholder="Selecione"
+        id="PotCodi"
+        [options]="lstPotencia"
+        optionLabel="PotSigl"
+        [(ngModel)]="objPotencia"
+        [style]="{ width: '100%' }"
+        [showClear]="true"
+        [filter]="true"
+        filterBy="PotSigl, PotNome" 
+      ></p-dropdown>
+    </div>
+    <div class="flex flex-column flex-grow-1 col-12 md:col-3">
+      <label class="mb-2" for="PotCodi"><b>Rito</b></label>
+      <p-dropdown
+        placeholder="Selecione"
+        id="RitCodi"
+        [options]="lstRito"
+        optionLabel="RitNome"
+        [(ngModel)]="objRito"
+        [style]="{ width: '100%' }"
+        [showClear]="true"
+        [filter]="true"
+        filterBy="RitNome" 
+      ></p-dropdown>
+    </div>
+    <div class="field col-12 md:col-5 p-fluid">
+      <label for="LojLogr">Endereço</label>
+      <input id="LojLogr" type="text" pInputText [(ngModel)]="objLoja.LojLogr" />
       <!-- <p-inputMask id="UsuNCel" mask="(99) 99999-9999" [(ngModel)]="objUsuarioRegistro.UsuNCel" placeholder="(00) 00000-0000"></p-inputMask> -->
     </div>
-    <div class="flex flex-column flex-grow-1 col-8 md:col-10">
-            <label for="PerCodi"><b>Perfil</b></label>
-            <p-dropdown
-              placeholder="Selecione"
-              id="PerCodi"
-              [options]="lstPotencia"
-              optionLabel="PerNome"
-              [(ngModel)]="objPotencia"
-              [style]="{ width: '100%' }"
-              [showClear]="true"
-            ></p-dropdown>
-          </div>
-    <!-- <div class="field col-12 md:col-3">
-        <label for="dataHora">Data Nascimento</label><br>
-        <p-calendar
-            inputId="dataHora"
-            [(ngModel)]="objUsuarioRegistro.UsuNasc"
-            dateFormat="dd/mm/yy"
-            class="text-center-calendar"
-            [style]="{ width: '100%' }"
-          >
-        </p-calendar>
-    </div> -->
+    <div class="field col-12 md:col-2 p-fluid">
+      <label for="LojNume">Número</label>
+      <input id="LojNume" type="text" pInputText [(ngModel)]="objLoja.LojNume" />
+    </div>
+    <div class="field col-12 md:col-5 p-fluid">
+      <label for="LojBair">Bairro</label>
+      <input id="LojBair" type="text" pInputText [(ngModel)]="objLoja.LojBair" />
+    </div>
+    <div class="flex flex-column flex-grow-1 col-8 md:col-3">
+      <label class="mb-2" for="EstCodi"><b>Estado</b></label>
+      <p-dropdown
+        placeholder="Selecione"
+        id="EstCodi"
+        [options]="lstEstado"
+        optionLabel="EstNome"
+        [(ngModel)]="objEstado"
+        [style]="{ width: '100%' }"
+        [showClear]="true"
+        [filter]="true"
+        filterBy="EstNome, EstSigl"
+      ></p-dropdown>
+    <!-- </div>
+    <div class="flex flex-column flex-grow-1 col-12 md:col-3 mt-2"> -->
+      <label class="mb-2 mt-2" for="CidCodi"><b>Cidade</b></label>
+      <p-dropdown
+        placeholder="Selecione"
+        id="CidCodi"
+        [options]="lstCidade"
+        optionLabel="CidNome"
+        [(ngModel)]="objCidade"
+        [style]="{ width: '100%' }"
+        [showClear]="true"
+        [filter]="true"
+        filterBy="CidNome" 
+      ></p-dropdown>
+    </div>
+    <div class="text-center flex flex-column flex-grow-1 col-4 md:col-3 mt-2">
+      <label class="mb-2" for="CidCodi"><b>Imagem</b></label>
+        <p-image
+          [src]="imagemBase64 ? imagemBase64 : 'assets/img/noImage.png'"
+          alt="Preview"
+          width="128">
+        </p-image>
+        <input
+            #fileInput
+            type="file"
+            accept="image/*"
+            hidden
+            (change)="onFileSelected($event)" />
+        <p-button label="Alterar Imagem" (click)="fileInput.click()" size="small" [raised]="true" severity="info"/>
+    </div>
   </div>
+  
   <hr>
-  <!-- <div class="formgrid grid mt-3">
-    <div class="field col-12 md:col-6">
-      <div class="flex align-items-center gap-2 mb-2">
-        <div class="grid">
-          <div class="flex flex-column flex-grow-1 col-8 md:col-10">
-            <label for="PerCodi"><b>Perfil</b></label>
-            <p-dropdown
-              placeholder="Selecione"
-              id="PerCodi"
-              [options]="lstPerfil"
-              optionLabel="PerNome"
-              [(ngModel)]="objPerfil"
-              [style]="{ width: '100%' }"
-              [showClear]="true"
-            ></p-dropdown>
-          </div>
-          <div class=" text-center flex flex-column flex-grow-1 col-4 md:col-1 mt-3">
-            <p-button
-              icon="pi pi-plus"
-              [rounded]="true"
-              [text]="true"
-              [raised]="true"
-              severity="success"
-              (onClick)="AddPerfil(objPerfil);"
-            ></p-button>
-          </div>
-        </div>
-      </div>
-      <p-table
-      styleClass="p-datatable-sm"
-      [value]="lstPerfilSelecionado">
-        <ng-template pTemplate="header">
-            <tr>
-              <th style="text-align: center;">Perfil</th>
-              <th style="text-align: center;">Ação</th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-item>
-            <tr>
-                <td style="text-align: center;">{{ item.PerNome }}</td>
-                <td style="text-align: center;"><p-button (onClick)="DelPerfil(item);" icon="pi pi-times" [rounded]="true" [text]="true" severity="danger" /></td>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-              <td colspan="9" style="text-align: center;"><b>SEM RESULTADOS.</b></td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div>
-    <div class="field col-12 md:col-6">
-      <label *ngIf="boolResponsavelLoja"><b>Login</b></label><br>
-      <div *ngIf="boolResponsavelLoja" class="formgrid grid">
-        <div class="field col-12 md:col-6 p-fluid">
-          <label for="usLUser">Usuário</label><br>
-          <input id="usLUser" type="text" pInputText [(ngModel)]="objUsuarioRegistro.UsLUser" style="text-align: center;"/>
-        </div>
-        <div class="field col-12 md:col-6 p-fluid">
-          <label for="usLPass">Senha</label><br>
-          <p-password [(ngModel)]="objUsuarioRegistro.UsLPass" [feedback]="false" [toggleMask]="true"/>
-        </div>
-      </div>
-      <hr *ngIf="boolResponsavelLoja">
-      <div *ngIf="lstOutrasLojas.length > 0" class="field col-12">
-        <b>Outras Lojas / Função:</b><br>
-        <span *ngFor="let item of lstOutrasLojas">
-          <a>{{item.LojNome}} - {{item.PerNome}}</a><br>
-        </span>
-      </div>
-    </div>
-  </div> -->
+
+  <div class="flex flex-column flex-grow-1 col-12">
+    <label class="mb-2" for="orientacaoLoja"><b>Orientações da Loja</b></label>
+    <p-editor [(ngModel)]="orientacaoLoja" [style]="{ height: '320px' }" />
+  </div>
+
+  <hr>
 
   <div class="text-right">
     <p-button (click)="SalvarRegistro();" label="Salvar" [raised]="true" severity="success" /> &nbsp;

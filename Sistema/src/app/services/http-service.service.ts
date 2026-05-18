@@ -24,6 +24,9 @@ import { PermissaoModel } from '../models/Permissao.Model';
 import { ProximaSessaoModel } from '../models/ProximaSessao.Model';
 import { GestaoAdministrativa } from '../models/GestaoAdministrativa.Model';
 import { QuantitativoPresencaModel } from '../models/QuantitativoPresenca.Model';
+import { RitoModel } from '../models/Rito.Model';
+import { EstadoModel } from '../models/Estado.Model';
+import { CidadeModel } from '../models/Cidade.Model';
 
 @Injectable({
   providedIn: 'root',
@@ -211,6 +214,30 @@ export class HttpService {
   ): Observable<PotenciaModel[]> {
     return this.http.get<PotenciaModel[]>(
       `${environment.apiServicos}/Potencia/GetPotencia/${potCodi}`
+    );
+  }
+
+  public GetRito(
+    ritCodi: number
+  ): Observable<RitoModel[]> {
+    return this.http.get<RitoModel[]>(
+      `${environment.apiServicos}/Rito/GetRito/${ritCodi}`
+    );
+  }
+
+  public GetCidades(
+    cidCodi: number
+  ): Observable<CidadeModel[]> {
+    return this.http.get<CidadeModel[]>(
+      `${environment.apiServicos}/Cidade/GetCidades/${cidCodi}`
+    );
+  }
+
+  public GetEstados(
+    estCodi: number
+  ): Observable<EstadoModel[]> {
+    return this.http.get<EstadoModel[]>(
+      `${environment.apiServicos}/Estado/GetEstados/${estCodi}`
     );
   }
 

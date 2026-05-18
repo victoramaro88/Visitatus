@@ -31,6 +31,7 @@ import { BadgeModule } from 'primeng/badge';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { EditorModule } from 'primeng/editor';
 
 @NgModule({
   imports: [
@@ -65,6 +66,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     InputNumberModule,
     CheckboxModule,
     ConfirmDialogModule,
+    EditorModule
   ],
   exports: [
     CommonModule,
@@ -98,6 +100,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     InputNumberModule,
     CheckboxModule,
     ConfirmDialogModule,
+    EditorModule
   ],
   providers: [provideNgxMask()],
 })
