@@ -159,14 +159,14 @@
     <div class="text-center flex flex-column flex-grow-1 col-4 md:col-3 mt-2">
       <label class="mb-2" for="CidCodi"><b>Imagem</b></label>
         <p-image
-          [src]="imagemBase64 ? imagemBase64 : 'assets/img/noImage.png'"
+          [src]="imagemBase64 ? imagemBase64 : 'assets/img/noImage.png'" 
           alt="Preview"
           width="128">
         </p-image>
         <input
             #fileInput
             type="file"
-            accept="image/*"
+            accept="image/png, image/jpeg"
             hidden
             (change)="onFileSelected($event)" />
         <p-button label="Alterar Imagem" (click)="fileInput.click()" size="small" [raised]="true" severity="info"/>
@@ -177,7 +177,18 @@
 
   <div class="flex flex-column flex-grow-1 col-12">
     <label class="mb-2" for="orientacaoLoja"><b>Orientações da Loja</b></label>
-    <p-editor [(ngModel)]="orientacaoLoja" [style]="{ height: '320px' }" />
+    <!-- <p-editor [(ngModel)]="orientacaoLoja" [style]="{ height: '320px' }" (onTextChange)="CaracterRestanteOrientacao($event)"/> -->
+    <!-- <label class="mb-2 text-right">{{ cont }} caracteres restantes.</label> -->
+    <p-editor
+        #editor
+        [(ngModel)]="orientacaoLoja"
+        [style]="{ height: '320px' }"
+        (onTextChange)="AtualizarContador()">
+    </p-editor>
+
+    <label class="mb-2 text-right">
+        <small>{{ cont }} caracteres restantes.</small>
+    </label>
   </div>
 
   <hr>

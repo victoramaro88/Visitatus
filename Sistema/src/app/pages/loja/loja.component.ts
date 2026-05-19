@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { UsuarioModel } from '../../models/Usuario.Model';
 import { UsuarioLogadoModel } from '../../models/UsuarioLogado.Model';
 import { HttpService } from '../../services/http-service.service';
@@ -66,7 +66,8 @@ export class LojaComponent implements OnInit {
       private router: Router,
       private route: ActivatedRoute,
       private base64Service: Base64Service,
-      private cryptoService: CryptoService
+      private cryptoService: CryptoService,
+      private cdr: ChangeDetectorRef
     ) {
       this.objPerfilUsuario = JSON.parse(
         this.cryptoService.lerDoSessionStorage('prf')
@@ -247,72 +248,122 @@ export class LojaComponent implements OnInit {
     if (base64Banco) {
 
       // caso o banco salve apenas o base64 puro
-      this.imagemBase64 =
-        'data:image/jpeg;base64,' + base64Banco;
+      // this.imagemBase64 =
+      //   'data:image/jpeg;base64,' + base64Banco;
+      this.imagemBase64 = base64Banco;
 
     }
 
   }
 
   // selecionar imagem do computador
-onFileSelected(event: any): void {
+  onFileSelected(event: any): void {
 
-  const file = event.target.files[0];
+    const file = event.target.files[0];
 
-  if (!file) {
-    return;
-  }
+    if (!file) {
+      return;
+    }
 
-  // valida tipo apenas png
-  if (file.type !== 'image/png') {
-    this.messageService.add({
-      severity: 'warn',
-      summary: 'Atenção! ',
-      detail: 'Selecione apenas imagens do formato ".PNG"',
-    });
-    return;
-  }
+    // valida tipo apenas png e jpeg
+    const tiposPermitidos = [
+      'image/png',
+      'image/jpeg'
+    ];
 
-  const reader = new FileReader();
+    if (!tiposPermitidos.includes(file.type)) {
 
-  reader.onload = (e: any) => {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção! ',
+        detail: 'Selecione apenas imagens do formato ".png" ou ".jpeg"',
+      });
 
-    const img = new Image();
+      return;
 
-    img.onload = () => {
+    }
 
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+    const reader = new FileReader();
 
-      const maxWidth = 128;
+    reader.onload = (e: any) => {
 
-      // mantém proporção
-      const scale = maxWidth / img.width;
+      const img = new Image();
 
-      canvas.width = maxWidth;
-      canvas.height = img.height * scale;
+      img.onload = () => {
 
-      ctx?.drawImage(
-        img,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
 
-      // gera base64 final
-      this.imagemBase64 =
-        canvas.toDataURL('image/png', 0.9);
+        const maxWidth = 128;
+
+        // mantém proporção
+        const scale = maxWidth / img.width;
+
+        canvas.width = maxWidth;
+        canvas.height = img.height * scale;
+
+        ctx?.drawImage(
+          img,
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+
+        // gera base64 final
+        this.imagemBase64 =
+          canvas.toDataURL('image/png', 0.9);
+        
+        this.objLoja.LojLogo = this.imagemBase64.replace('data:image/png;base64,', '');
+        // console.warn('BASE 64 da imagem da variável: ', this.imagemBase64);
+        // console.warn('BASE 64 da imagem do objeto: ', this.objLoja.LojLogo);
+
+      };
+
+      img.src = e.target.result;
 
     };
 
-    img.src = e.target.result;
+    reader.readAsDataURL(file);
 
-  };
+  }
 
-  reader.readAsDataURL(file);
+  // cont: number = 2000;
 
-}
+  // CaracterRestanteOrientacao(event: any): void {
+
+  //   console.log(event);
+
+  //   const texto = event.textValue || '';
+
+  //   // this.cont = Math.max(
+  //   //   0,
+  //   //   2000 - texto.trim().length
+  //   // );
+
+  //   this.cont = 2000 - texto.trim().length;
+  // }
+
+  cont: number = 2000;
+
+  @ViewChild('editor') editor: any;
+
+  AtualizarContador(): void {
+
+    if (!this.editor?.quill) {
+      return;
+    }
+
+    const texto = this.editor.quill.getText();
+
+    const tamanho = texto.trimEnd().length;
+
+    this.cont = 2000 - tamanho;
+
+    // força atualizar a tela
+    this.cdr.detectChanges();
+
+  }
 
   onGlobalFilter(table: Table, event: Event) {
     table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
