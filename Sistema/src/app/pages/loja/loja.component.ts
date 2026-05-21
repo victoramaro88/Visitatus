@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { UsuarioModel } from '../../models/Usuario.Model';
 import { UsuarioLogadoModel } from '../../models/UsuarioLogado.Model';
 import { HttpService } from '../../services/http-service.service';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { Utils } from '../../services/utils';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Base64Service } from '../../services/base64.service';
@@ -15,6 +15,8 @@ import { PotenciaModel } from '../../models/Potencia.Model';
 import { RitoModel } from '../../models/Rito.Model';
 import { EstadoModel } from '../../models/Estado.Model';
 import { CidadeModel } from '../../models/Cidade.Model';
+import { OrientacaoLojaModel } from '../../models/OrientacaoLoja.Model';
+
 
 @Component({
   selector: 'app-loja',
@@ -22,17 +24,18 @@ import { CidadeModel } from '../../models/Cidade.Model';
   imports: [ImportsModule],
   templateUrl: './loja.component.html',
   styleUrl: './loja.component.css',
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
 })
 export class LojaComponent implements OnInit {
-  orientacaoLoja: string = '';
+  @ViewChild('editor') editor: any;
+
+  // orientacaoLoja: string = '';
   boolLoading = false;
   objUsuarioLogado: UsuarioLogadoModel = new UsuarioLogadoModel();
   objPerfilUsuario: PerfilUsuarioListaModel = new PerfilUsuarioListaModel();
-  objUsuario: UsuarioModel = new UsuarioModel();
-
   boolManterRegistro: boolean = false;
   boolEditarRegistro: boolean = false;
+  contCaracterOrientacao: number = 2000;
 
   objLoja: LojaModel = new LojaModel(
     0,
@@ -58,6 +61,8 @@ export class LojaComponent implements OnInit {
   objEstado: EstadoModel = new EstadoModel();
   lstCidade: CidadeModel[] = [];
   objCidade: CidadeModel = new CidadeModel();
+  lstOrientacaoLoja: OrientacaoLojaModel[] = [];
+  objOrientacaoLoja: OrientacaoLojaModel = new OrientacaoLojaModel();
 
   constructor(
       private http: HttpService,
@@ -67,7 +72,8 @@ export class LojaComponent implements OnInit {
       private route: ActivatedRoute,
       private base64Service: Base64Service,
       private cryptoService: CryptoService,
-      private cdr: ChangeDetectorRef
+      private cdr: ChangeDetectorRef,
+      private confirmationService: ConfirmationService
     ) {
       this.objPerfilUsuario = JSON.parse(
         this.cryptoService.lerDoSessionStorage('prf')
@@ -84,6 +90,7 @@ export class LojaComponent implements OnInit {
   ngOnInit() {
     try {
       this.GetLoja(this.objPerfilUsuario.lojCodi);
+
     } catch (error) {
       this.boolLoading = false;
       console.warn('Falha ao realizar a operação inicial.', error);
@@ -99,6 +106,7 @@ export class LojaComponent implements OnInit {
         // console.warn('LISTA DE LOJAS:', this.lstLoja);
         this.objLoja = this.lstLoja[0];
         this.imagemBase64 = this.objLoja.LojLogo ? 'data:image/png;base64,' + this.objLoja.LojLogo : null;
+        this.GetOrientacaoLojaByLojCodi(lojCodi);
         this.GetPotencia(0);
         this.GetRito(0);
         this.GetCidades(0);
@@ -113,6 +121,36 @@ export class LojaComponent implements OnInit {
         this.boolLoading = false;
       },
     });
+  }
+
+  GetOrientacaoLojaByLojCodi(lojCodi: number) {
+    this.boolLoading = true;
+    try {
+      this.http.GetOrientacaoLojaByLojCodi(lojCodi).subscribe({
+        next: (response) => {
+          this.lstOrientacaoLoja = response;
+          this.objOrientacaoLoja = this.lstOrientacaoLoja ? this.lstOrientacaoLoja[0] : new OrientacaoLojaModel();
+          this.boolLoading = false;
+          setTimeout(() => {
+              this.AtualizarContador();
+            }, 500);
+          // console.warn('ORIENTAÇÃO DA LOJA:', this.objOrientacaoLoja);
+        },
+        error: (error) => {
+          if(error.status != 404){
+            console.error('Erro ao carregar dados:', error);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Erro: ',
+              detail: 'Falha ao realizar a operação, contate o suporte.',
+            });
+          }
+          this.boolLoading = false;
+        },
+      });
+    } catch (error) {
+
+    }
   }
 
   GetPotencia(potCodi: number) {
@@ -194,9 +232,32 @@ export class LojaComponent implements OnInit {
     this.http.GetEstados(estCodi).subscribe({
       next: (response) => {
         this.lstEstado = response;
-        this.LocalizaEstadoLoja(this.objCidade.EstCodi);
+        if(this.objCidade){
+          this.LocalizaEstadoLoja(this.objCidade.EstCodi);
+        }
         this.boolLoading = false;
         // console.warn('LISTA DE ESTADOS:', this.lstEstado);
+      },
+      error: (error) => {
+        console.error('Erro ao carregar dados:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro: ',
+          detail: 'Falha ao realizar a operação, contate o suporte.',
+        });
+        this.boolLoading = false;
+      },
+    });
+  }
+
+  GetCidadesPorEstado(estCodi: number){
+    this.boolLoading = true;
+    this.http.GetCidadesPorEstado(estCodi).subscribe({
+      next: (response) => {
+        this.lstCidade = response;
+        this.objCidade = new CidadeModel();
+        this.boolLoading = false;
+        // console.warn('LISTA DE CIDADES:', this.lstCidade);
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);
@@ -237,7 +298,166 @@ export class LojaComponent implements OnInit {
   }
 
   SalvarRegistro(){
-    console.warn('EDITOR:', this.orientacaoLoja);
+    this.objLoja.PotCodi = this.objPotencia ? this.objPotencia.PotCodi : 0;
+    this.objLoja.RitCodi = this.objRito ? this.objRito.RitCodi : 0;
+    this.objLoja.CidCodi = this.objCidade ? this.objCidade.CidCodi : 0;
+
+    if(this.ValidaInformacoes()){
+      // console.warn('OBJ LOJA: ', this.objLoja);
+      // console.warn('ORIENTAÇÃO DA LOJA: ', this.objOrientacaoLoja);
+
+      if(this.objLoja.LojCodi > 0){
+        this.PutLoja(this.objLoja.LojCodi, this.objLoja);
+      } else{
+        this.PostLoja(this.objLoja);
+      }
+    }
+  }
+
+  ValidaInformacoes(){
+    if(this.objLoja.LojNumL.length === 0){
+      this.messageService.add({severity: 'warn', summary: 'Atenção! ', detail: 'Insira o número da Loja.'});
+      return false;
+    }
+    if(this.objLoja.PotCodi === 0){
+      this.messageService.add({severity: 'warn', summary: 'Atenção! ', detail: 'Insira a potência da Loja.'});
+      return false;
+    }
+    if(this.objLoja.RitCodi === 0){
+      this.messageService.add({severity: 'warn', summary: 'Atenção! ', detail: 'Insira o rito da Loja.'});
+      return false;
+    }
+    if(this.contCaracterOrientacao > 2000){
+      this.messageService.add({severity: 'warn', summary: 'Atenção! ', detail: 'O limite máximo de caracteres da orientação é 2.000.'});
+      return false;
+    }
+
+    return true;
+  }
+
+  PostLoja(loja: LojaModel){
+    console.warn('POST LOJA: ', loja);
+  }
+
+  PutLoja(lojCodi: number, loja: LojaModel){
+    try {
+      this.boolLoading = true;
+      this.http.PutLoja(lojCodi, loja).subscribe({
+        next: (response) => {
+          // console.warn("RETORNO DA ALTERAÇÃO:", response);
+          if (response === 'Alterado com sucesso!') {
+            //-> INSERINDO OU ALTERANDO A ORIENTAÇÃO DA LOJA
+            if(this.objOrientacaoLoja.OrlCodi > 0){
+              this.PutOrientacaoLoja(this.objOrientacaoLoja.OrlCodi, this.objOrientacaoLoja);
+            }else{
+              if(this.objOrientacaoLoja.OrlDesc.length > 0){
+                this.objOrientacaoLoja.LojCodi = this.objLoja.LojCodi;
+                this.objOrientacaoLoja.UsuCodi = this.objUsuarioLogado.usuCodi;
+                this.objOrientacaoLoja.OrlStat = true;
+                this.PostOrientacaoLoja(this.objOrientacaoLoja);
+              } else{
+                this.messageService.add({
+                  severity: 'success',
+                  summary: 'Sucesso!',
+                  detail: 'Registro alterado com sucesso!'
+                });
+                this.boolLoading = false;
+                this.router.navigate(['/home']);
+              }
+            }
+          } else {
+            console.error('Erro ao salvar o registro: ', response);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Erro:',
+              detail: 'Falha ao alterar o registro.',
+            });
+            this.boolLoading = false;
+          }
+        },
+        error: (error) => {
+          console.error('Erro ao carregar dados:', error);
+          this.boolLoading = false;
+        },
+      });
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+      this.boolLoading = false;
+    }
+  }
+
+  PostOrientacaoLoja(orientacaoLoja: OrientacaoLojaModel){
+    try {
+          this.http.PostOrientacaoLoja(orientacaoLoja).subscribe({
+            next: (response) => {
+              if (response) {
+                this.messageService.add({severity: 'success', summary: 'Sucesso!', detail: 'Registro alterado com sucesso!' });
+                this.boolLoading = false;
+              } else{
+                this.boolLoading = false;
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Erro: ',
+                  detail: 'Falha ao realizar a operação, contate o suporte.',
+                });
+              }
+            },
+            error: (error) => {
+              console.error('Erro ao carregar dados:', error);
+              this.boolLoading = false;
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Erro: ',
+                detail: 'Falha ao realizar a operação, contate o suporte.',
+              });
+            },
+          });
+        } catch (error) {
+          console.error('Erro ao carregar dados:', error);
+          this.boolLoading = false;
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro: ',
+            detail: 'Falha ao realizar a operação, contate o suporte.',
+          });
+        }
+  }
+
+  PutOrientacaoLoja(orlCodi: number, orientacaoLoja: OrientacaoLojaModel){
+    try {
+      this.boolLoading = true;
+      this.http.PutOrientacaoLoja(orlCodi, orientacaoLoja).subscribe({
+        next: (response) => {
+          if (response === 'Alterado com sucesso!') {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Sucesso!',
+              detail: 'Registro alterado com sucesso!',
+            });            
+            setTimeout(() => {
+              this.boolLoading = false;
+              this.router.navigate(['/home']);
+            }, 1000);
+          } else {
+            console.error('Erro ao salvar o registro: ', response);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Erro:',
+              detail: 'Falha ao alterar o registro.',
+            });
+            this.boolLoading = false;
+          }
+        },
+        error: (error) => {
+          console.error('Erro ao carregar dados:', error);
+          this.boolLoading = false;
+          this.messageService.add({severity: 'error', summary: 'Erro:', detail: 'Falha ao alterar o registro.' });
+        },
+      });
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+      this.boolLoading = false;
+    }
   }
 
   CancelaRegitro(){}
@@ -284,24 +504,17 @@ export class LojaComponent implements OnInit {
     }
 
     const reader = new FileReader();
-
     reader.onload = (e: any) => {
-
       const img = new Image();
-
       img.onload = () => {
-
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-
         const maxWidth = 128;
 
         // mantém proporção
         const scale = maxWidth / img.width;
-
         canvas.width = maxWidth;
         canvas.height = img.height * scale;
-
         ctx?.drawImage(
           img,
           0,
@@ -313,7 +526,7 @@ export class LojaComponent implements OnInit {
         // gera base64 final
         this.imagemBase64 =
           canvas.toDataURL('image/png', 0.9);
-        
+
         this.objLoja.LojLogo = this.imagemBase64.replace('data:image/png;base64,', '');
         // console.warn('BASE 64 da imagem da variável: ', this.imagemBase64);
         // console.warn('BASE 64 da imagem do objeto: ', this.objLoja.LojLogo);
@@ -328,25 +541,10 @@ export class LojaComponent implements OnInit {
 
   }
 
-  // cont: number = 2000;
-
-  // CaracterRestanteOrientacao(event: any): void {
-
-  //   console.log(event);
-
-  //   const texto = event.textValue || '';
-
-  //   // this.cont = Math.max(
-  //   //   0,
-  //   //   2000 - texto.trim().length
-  //   // );
-
-  //   this.cont = 2000 - texto.trim().length;
-  // }
-
-  cont: number = 2000;
-
-  @ViewChild('editor') editor: any;
+  LimparImagem(){
+    this.imagemBase64 = '';
+    this.objLoja.LojLogo = '';
+  }
 
   AtualizarContador(): void {
 
@@ -354,16 +552,52 @@ export class LojaComponent implements OnInit {
       return;
     }
 
-    const texto = this.editor.quill.getText();
+    const quill = this.editor.quill;
 
-    const tamanho = texto.trimEnd().length;
+    // pega texto visível
+    let texto = quill.getText().trimEnd();
 
-    this.cont = 2000 - tamanho;
+    // limite máximo
+    const limite = 2000;
 
-    // força atualizar a tela
+    // se ultrapassou
+    if (texto.length > limite) {
+
+      // corta excesso
+      quill.deleteText(
+        limite,
+        texto.length
+      );
+
+      texto = quill.getText().trimEnd();
+
+    }
+
+    // contador restante
+    this.contCaracterOrientacao =
+      limite - texto.length;
+
+    // evita negativo
+    if (this.contCaracterOrientacao < 0) {
+      this.contCaracterOrientacao = 0;
+    }
+
     this.cdr.detectChanges();
 
   }
+
+  ConfirmaCancelar() {
+        this.confirmationService.confirm({
+            header: 'Deseja realmente cancelar?',
+            message: 'Todas as alterações serão perdidas!',
+            accept: () => {
+                this.router.navigate(['/home']);
+            },
+            reject: () => {
+                
+            }
+        });
+    }
 
   onGlobalFilter(table: Table, event: Event) {
     table.filterGlobal((event.target as HTMLInputElement).value, 'contains');

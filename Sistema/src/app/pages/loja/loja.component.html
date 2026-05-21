@@ -9,8 +9,8 @@
   <h1>EM FASE DE DESENVOLVIMENTO</h1>
 </div> -->
 
-<!-- GRID DE EXIBIÇÃO DOS REGISTROS -->
-<div *ngIf="this.lstLoja.length > 0 && this.objPerfilUsuario.perCodi === 1">
+<!-- GRID DE EXIBIÇÃO DOS REGISTROS - SOMENTE PARA O PERFIL DE ADMINISTRADOR -->
+<div *ngIf="this.objPerfilUsuario.perCodi === 1 && boolManterRegistro === false">
   <div class="text-right mb-3">
     <p-button (click)="NovoRegistro();" label="Nova Loja" [raised]="true" severity="primary" /> &nbsp;
   </div>
@@ -73,12 +73,9 @@
 </div>
 
 <!-- FORMULÁRIO DE REGISTRO -->
-<div *ngIf="lstLoja.length === 1" class="container">
+ <!-- ************************************************************* PROBLEMA NESSA VALIDAÇÃO AQUI, NÃO EXIBE QUADO NÃO É ADM ************************************************************* -->
+<div *ngIf="boolManterRegistro === true" class="container">
   <div class="formgrid grid">
-    <!-- <div class="field col-12 md:col-2 p-fluid"> -->
-      <!-- <label for="UsuNCIM">Nº CIM</label><br> -->
-      <!-- <input (blur)="ConsultaUsuarioExistente(objUsuarioRegistro.UsuNCIM);" id="UsuNCIM" type="text" pInputText [(ngModel)]="objUsuarioRegistro.UsuNCIM" style="text-align: center;"/> -->
-    <!-- </div> -->
     <div class="field col-12 md:col-4 p-fluid">
       <label for="lojNome">Nome da Loja</label><br>
       <input id="lojNome" type="text" pInputText [(ngModel)]="objLoja.LojNome" />
@@ -118,7 +115,6 @@
     <div class="field col-12 md:col-5 p-fluid">
       <label for="LojLogr">Endereço</label>
       <input id="LojLogr" type="text" pInputText [(ngModel)]="objLoja.LojLogr" />
-      <!-- <p-inputMask id="UsuNCel" mask="(99) 99999-9999" [(ngModel)]="objUsuarioRegistro.UsuNCel" placeholder="(00) 00000-0000"></p-inputMask> -->
     </div>
     <div class="field col-12 md:col-2 p-fluid">
       <label for="LojNume">Número</label>
@@ -128,7 +124,7 @@
       <label for="LojBair">Bairro</label>
       <input id="LojBair" type="text" pInputText [(ngModel)]="objLoja.LojBair" />
     </div>
-    <div class="flex flex-column flex-grow-1 col-8 md:col-3">
+    <div class="flex flex-column flex-grow-1 col-12 md:col-8">
       <label class="mb-2" for="EstCodi"><b>Estado</b></label>
       <p-dropdown
         placeholder="Selecione"
@@ -136,13 +132,12 @@
         [options]="lstEstado"
         optionLabel="EstNome"
         [(ngModel)]="objEstado"
+        (onChange)="GetCidadesPorEstado(objEstado.EstCodi);"
         [style]="{ width: '100%' }"
         [showClear]="true"
         [filter]="true"
         filterBy="EstNome, EstSigl"
       ></p-dropdown>
-    <!-- </div>
-    <div class="flex flex-column flex-grow-1 col-12 md:col-3 mt-2"> -->
       <label class="mb-2 mt-2" for="CidCodi"><b>Cidade</b></label>
       <p-dropdown
         placeholder="Selecione"
@@ -156,20 +151,29 @@
         filterBy="CidNome" 
       ></p-dropdown>
     </div>
-    <div class="text-center flex flex-column flex-grow-1 col-4 md:col-3 mt-2">
-      <label class="mb-2" for="CidCodi"><b>Imagem</b></label>
-        <p-image
-          [src]="imagemBase64 ? imagemBase64 : 'assets/img/noImage.png'" 
-          alt="Preview"
-          width="128">
-        </p-image>
-        <input
+    <div class="text-center flex flex-column flex-grow-1 col-12 md:col-4 mt-2">
+      <div class="formgrid grid">
+        <div class="text-center flex flex-column flex-grow-1 col-6 md:col-6">
+          <label class="mb-2" for="CidCodi"><b>Imagem</b></label>
+          <p-image
+            [src]="imagemBase64 ? imagemBase64 : 'assets/img/noImage.png'" 
+            alt="Preview"
+            width="128">
+          </p-image>
+          <input
             #fileInput
             type="file"
             accept="image/png, image/jpeg"
             hidden
             (change)="onFileSelected($event)" />
-        <p-button label="Alterar Imagem" (click)="fileInput.click()" size="small" [raised]="true" severity="info"/>
+        </div>
+        <div class="text-center flex flex-column flex-grow-1 col-6 md:col-6">
+          <br><br>
+          <p-button label="Alterar Imagem" (click)="fileInput.click()" size="small" [raised]="true" severity="info"/>
+          <br><br>
+          <p-button label="Limpar Imagem" (click)="LimparImagem();" size="small" [raised]="true" severity="secondary"/>
+        </div>
+      </div>
     </div>
   </div>
   
@@ -177,17 +181,15 @@
 
   <div class="flex flex-column flex-grow-1 col-12">
     <label class="mb-2" for="orientacaoLoja"><b>Orientações da Loja</b></label>
-    <!-- <p-editor [(ngModel)]="orientacaoLoja" [style]="{ height: '320px' }" (onTextChange)="CaracterRestanteOrientacao($event)"/> -->
-    <!-- <label class="mb-2 text-right">{{ cont }} caracteres restantes.</label> -->
     <p-editor
         #editor
-        [(ngModel)]="orientacaoLoja"
+        [(ngModel)]="objOrientacaoLoja.OrlDesc"
         [style]="{ height: '320px' }"
         (onTextChange)="AtualizarContador()">
     </p-editor>
 
     <label class="mb-2 text-right">
-        <small>{{ cont }} caracteres restantes.</small>
+        <small>{{ contCaracterOrientacao }} caracteres restantes.</small>
     </label>
   </div>
 
@@ -195,6 +197,36 @@
 
   <div class="text-right">
     <p-button (click)="SalvarRegistro();" label="Salvar" [raised]="true" severity="success" /> &nbsp;
-    <p-button (click)="CancelaRegitro();" label="Cancelar" [raised]="true" severity="danger" />
+    <p-button (click)="ConfirmaCancelar();" label="Cancelar" [raised]="true" severity="danger" />
   </div>
 </div>
+
+
+<!-- CONFIRMAÇÃO DE CANCELAMENTO DA OPERAÇÃO -->
+<p-confirmDialog #cd>
+    <ng-template pTemplate="headless" let-message>
+        <div class="flex flex-column align-items-center p-5 surface-overlay border-round">
+            <div class="border-circle bg-primary inline-flex justify-content-center align-items-center h-6rem w-6rem">
+                <i class="pi pi-question text-5xl"></i>
+            </div>
+            <span class="font-bold text-2xl block mb-2 mt-4">
+                {{ message.header }}
+            </span>
+            <p class="mb-0">{{ message.message }}</p>
+            <div class="flex align-items-center gap-2 mt-4">
+                <button 
+                    pButton 
+                    label="Sim" 
+                    (click)="cd.accept()" 
+                    class="w-8rem">
+                </button>
+                <button 
+                    pButton 
+                    label="Não" 
+                    (click)="cd.reject()" 
+                    class="p-button-outlined w-8rem ">
+                </button>
+            </div>
+        </div>
+    </ng-template>
+</p-confirmDialog>

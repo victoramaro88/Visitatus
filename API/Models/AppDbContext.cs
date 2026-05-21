@@ -201,7 +201,7 @@ namespace API_Visitatus.Models
             modelBuilder.Entity<OrientacaoLoja>(entity =>
             {
                 entity.HasKey(e => e.OrlCodi)
-                    .HasName("PK__Orientac__7BF1EAF22B8383CA");
+                    .HasName("PK__Orientac__7BF1EAF2133F4E19");
 
                 entity.Property(e => e.OrlCodi).ValueGeneratedNever();
 
@@ -209,13 +209,13 @@ namespace API_Visitatus.Models
                     .WithMany(p => p.OrientacaoLojas)
                     .HasForeignKey(d => d.LojCodi)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Orientaca__lojCo__0C85DE4D");
+                    .HasConstraintName("FK__Orientaca__lojCo__160F4887");
 
                 entity.HasOne(d => d.UsuCodiNavigation)
                     .WithMany(p => p.OrientacaoLojas)
                     .HasForeignKey(d => d.UsuCodi)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Orientaca__usuCo__0D7A0286");
+                    .HasConstraintName("FK__Orientaca__usuCo__17036CC0");
             });
 
             modelBuilder.Entity<Perfil>(entity =>

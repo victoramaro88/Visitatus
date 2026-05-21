@@ -27,6 +27,7 @@ import { QuantitativoPresencaModel } from '../models/QuantitativoPresenca.Model'
 import { RitoModel } from '../models/Rito.Model';
 import { EstadoModel } from '../models/Estado.Model';
 import { CidadeModel } from '../models/Cidade.Model';
+import { OrientacaoLojaModel } from '../models/OrientacaoLoja.Model';
 
 @Injectable({
   providedIn: 'root',
@@ -233,11 +234,27 @@ export class HttpService {
     );
   }
 
+  public GetCidadesPorEstado(
+    estCodi: number
+  ): Observable<CidadeModel[]> {
+    return this.http.get<CidadeModel[]>(
+      `${environment.apiServicos}/Cidade/GetCidadesPorEstado/${estCodi}`
+    );
+  }
+
   public GetEstados(
     estCodi: number
   ): Observable<EstadoModel[]> {
     return this.http.get<EstadoModel[]>(
       `${environment.apiServicos}/Estado/GetEstados/${estCodi}`
+    );
+  }
+
+  public GetOrientacaoLojaByLojCodi(
+    lojCodi: number
+  ): Observable<OrientacaoLojaModel[]> {
+    return this.http.get<OrientacaoLojaModel[]>(
+      `${environment.apiServicos}/Loja/GetOrientacaoLojaByLojCodi/${lojCodi}`
     );
   }
 
@@ -333,6 +350,13 @@ export class HttpService {
     );
   }
 
+  public PostOrientacaoLoja(objOrientacaoLoja: OrientacaoLojaModel): Observable<string> {
+    return this.http.post<string>(
+      `${environment.apiServicos}/Loja/PostOrientacaoLoja`,
+      objOrientacaoLoja
+    );
+  }
+
   // #endregion
 
   // #region PUT
@@ -383,6 +407,24 @@ export class HttpService {
     return this.http.put<string>(
       `${environment.apiServicos}/Permissao/PutPermissao/${pemCodi}`,
       objPermissao
+    );
+  }
+
+  public PutLoja(
+    lojCodi: number,
+    objLoja: LojaModel
+  ): Observable<string> {
+    return this.http.put<string>(
+      `${environment.apiServicos}/Loja/PutLoja/${lojCodi}`, objLoja
+    );
+  }
+
+  public PutOrientacaoLoja(
+    orlCodi: number,
+    orientacaoLoja: OrientacaoLojaModel
+  ): Observable<string> {
+    return this.http.put<string>(
+      `${environment.apiServicos}/Loja/PutOrientacaoLoja/${orlCodi}`, orientacaoLoja
     );
   }
 

@@ -13,7 +13,6 @@ namespace API_Visitatus.Models
         [Column("orlCodi")]
         public long OrlCodi { get; set; }
         [Column("orlDesc")]
-        [StringLength(2000)]
         [Unicode(false)]
         public string? OrlDesc { get; set; }
         [Column("orlDtHr", TypeName = "datetime")]

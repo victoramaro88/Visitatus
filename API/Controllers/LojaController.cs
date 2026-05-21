@@ -170,7 +170,7 @@ namespace API_Visitatus.Controllers
         }
 
         [HttpPut("{lojCodi}")]
-        public async Task<IActionResult> PutLoja(int lojCodi, Loja loja)
+        public async Task<IActionResult> PutLoja(int lojCodi, [FromBody] Loja loja)
         {
             if (lojCodi != loja.LojCodi)
             {
@@ -229,9 +229,11 @@ namespace API_Visitatus.Controllers
             {
                 var result = await _context.OrientacaoLojas.FindAsync(lojCodi);
 
+                //return Ok(new List<OrientacaoLoja> { result! });
+
                 if (result == null)
                 {
-                    return NotFound();
+                    return Ok(null);
                 }
                 else
                 {
@@ -245,7 +247,7 @@ namespace API_Visitatus.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<OrientacaoLoja>> PostOrientacaoLoja(OrientacaoLoja orientacaoLoja)
+        public async Task<ActionResult<OrientacaoLoja>> PostOrientacaoLoja([FromBody] OrientacaoLoja orientacaoLoja)
         {
             try
             {
@@ -255,6 +257,7 @@ namespace API_Visitatus.Controllers
                 }
 
                 orientacaoLoja.OrlCodi = _context.OrientacaoLojas.Max(p => (int?)p.OrlCodi) + 1 ?? 1;
+                orientacaoLoja.OrlDtHr = DateTime.Now;
 
                 _context.OrientacaoLojas.Add(orientacaoLoja);
                 var retorno = await _context.SaveChangesAsync();
@@ -268,7 +271,7 @@ namespace API_Visitatus.Controllers
         }
 
         [HttpPut("{orlCodi}")]
-        public async Task<IActionResult> PutOrientacaoLoja(int orlCodi, OrientacaoLoja orientacaoLoja)
+        public async Task<IActionResult> PutOrientacaoLoja(int orlCodi, [FromBody] OrientacaoLoja orientacaoLoja)
         {
             if (orlCodi != orientacaoLoja.OrlCodi)
             {
