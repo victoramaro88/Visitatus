@@ -357,6 +357,13 @@ export class HttpService {
     );
   }
 
+  public PostLoja(objSessao: LojaModel): Observable<LojaModel> {
+    return this.http.post<LojaModel>(
+      `${environment.apiServicos}/Loja/PostLoja`,
+      objSessao
+    );
+  }
+
   // #endregion
 
   // #region PUT

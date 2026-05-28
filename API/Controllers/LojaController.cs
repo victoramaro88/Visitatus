@@ -56,61 +56,61 @@ namespace API_Visitatus.Controllers
             CertificadoSessaoModel objRetorno = new CertificadoSessaoModel();
 
             CertificadoDadosLojaModel? objCertificadoDadosLojaModel = await (from ses in _context.Sessaos
-                                                                   join loj in _context.Lojas on ses.LojCodi equals loj.LojCodi
-                                                                   join pot in _context.Potencia on loj.PotCodi equals pot.PotCodi
-                                                                   join cid in _context.Cidades on loj.CidCodi equals cid.CidCodi
-                                                                   join est in _context.Estados on cid.EstCodi equals est.EstCodi
-                                                                   where ses.SesCodi == SesCodi
-                                                                   select new CertificadoDadosLojaModel
-                                                                   {
-                                                                       LojCodi = loj.LojCodi,
-                                                                       LojNome = loj.LojNome,
-                                                                       LojNumL = loj.LojNumL,
-                                                                       PotSigl = pot.PotSigl,
-                                                                       PotNome = pot.PotNome,
-                                                                       SesDtHr = ses.SesDtHr,
-                                                                       CidNome = cid.CidNome,
-                                                                       EstSigl = est.EstSigl,
-                                                                       LojLogo = loj.LojLogo,
-                                                                       PotLogo = pot.PotLogo
-                                                                   }).FirstOrDefaultAsync();
+                                                                             join loj in _context.Lojas on ses.LojCodi equals loj.LojCodi
+                                                                             join pot in _context.Potencia on loj.PotCodi equals pot.PotCodi
+                                                                             join cid in _context.Cidades on loj.CidCodi equals cid.CidCodi
+                                                                             join est in _context.Estados on cid.EstCodi equals est.EstCodi
+                                                                             where ses.SesCodi == SesCodi
+                                                                             select new CertificadoDadosLojaModel
+                                                                             {
+                                                                                 LojCodi = loj.LojCodi,
+                                                                                 LojNome = loj.LojNome,
+                                                                                 LojNumL = loj.LojNumL,
+                                                                                 PotSigl = pot.PotSigl,
+                                                                                 PotNome = pot.PotNome,
+                                                                                 SesDtHr = ses.SesDtHr,
+                                                                                 CidNome = cid.CidNome,
+                                                                                 EstSigl = est.EstSigl,
+                                                                                 LojLogo = loj.LojLogo,
+                                                                                 PotLogo = pot.PotLogo
+                                                                             }).FirstOrDefaultAsync();
 
             List<CertificadoDadosPresencaModel>? objCertificadoDadosPresencaModel = await (from pre in _context.Presencas
-                                                                                     join usu in _context.Usuarios on pre.UsuCodi equals usu.UsuCodi
-                                                                                     join loj in _context.Lojas on pre.LojCodi equals loj.LojCodi
-                                                                                     join ses in _context.Sessaos on pre.SesCodi equals ses.SesCodi
-                                                                                     join tip in _context.TipoSessaos on ses.TiScodi equals tip.TiScodi
-                                                                                     where pre.SesCodi == SesCodi
-                                                                                     select new CertificadoDadosPresencaModel
-                                                                                     {
-                                                                                         UsuCodi = usu.UsuCodi,
-                                                                                         UsuNome = usu.UsuNome,
-                                                                                         LojNome = loj.LojNome,
-                                                                                         LojNumL = loj.LojNumL
-                                                                                     }).ToListAsync();
+                                                                                           join usu in _context.Usuarios on pre.UsuCodi equals usu.UsuCodi
+                                                                                           join loj in _context.Lojas on pre.LojCodi equals loj.LojCodi
+                                                                                           join ses in _context.Sessaos on pre.SesCodi equals ses.SesCodi
+                                                                                           join tip in _context.TipoSessaos on ses.TiScodi equals tip.TiScodi
+                                                                                           where pre.SesCodi == SesCodi
+                                                                                           select new CertificadoDadosPresencaModel
+                                                                                           {
+                                                                                               UsuCodi = usu.UsuCodi,
+                                                                                               UsuNome = usu.UsuNome,
+                                                                                               LojNome = loj.LojNome,
+                                                                                               LojNumL = loj.LojNumL
+                                                                                           }).ToListAsync();
 
             List<GestaoAdmAtivaModel> lstCargosGestaoLoja = await (from l in _context.Lojas
-                                                      join ga in _context.GestaoAdministrativas on l.LojCodi equals ga.LojCodi
-                                                      join gc in _context.GestaoCargos on ga.GstAdmCodi equals gc.GstAdmCodi
-                                                      join c in _context.Cargos on gc.CarCodi equals c.CarCodi
-                                                      join u in _context.Usuarios on gc.UsuCodi equals u.UsuCodi
-                                                      where l.LojCodi == objCertificadoDadosLojaModel!.LojCodi &&
-                                                            ga.GstAdmStat == true &&
-                                                            ga.GstAdmDtIn <= DateTime.Today &&
-                                                            ga.GstAdmDtFi >= DateTime.Today
-                                                      orderby ga.GstAdmDtFi descending
-                                                      select new GestaoAdmAtivaModel
-                                                      {
-                                                          LojCodi = l.LojCodi,
-                                                          LojNome = l.LojNome,
-                                                          LojNumL = l.LojNumL,
-                                                          GstAdmNome = ga.GstAdmNome,
-                                                          GstAdmDtIn = ga.GstAdmDtIn,
-                                                          GstAdmDtFi = ga.GstAdmDtFi,
-                                                          GstAdmStat = ga.GstAdmStat,
-                                                          CarNome = c.CarNome,
-                                                          UsuNome = u.UsuNome
-                                                      }).ToListAsync();
+                                                                   join ga in _context.GestaoAdministrativas on l.LojCodi equals ga.LojCodi
+                                                                   join gc in _context.GestaoCargos on ga.GstAdmCodi equals gc.GstAdmCodi
+                                                                   join c in _context.Cargos on gc.CarCodi equals c.CarCodi
+                                                                   join u in _context.Usuarios on gc.UsuCodi equals u.UsuCodi
+                                                                   where l.LojCodi == objCertificadoDadosLojaModel!.LojCodi &&
+                                                                         ga.GstAdmStat == true &&
+                                                                         ga.GstAdmDtIn <= DateTime.Today &&
+                                                                         ga.GstAdmDtFi >= DateTime.Today
+                                                                   orderby ga.GstAdmDtFi descending
+                                                                   select new GestaoAdmAtivaModel
+                                                                   {
+                                                                       LojCodi = l.LojCodi,
+                                                                       LojNome = l.LojNome,
+                                                                       LojNumL = l.LojNumL,
+                                                                       GstAdmNome = ga.GstAdmNome,
+                                                                       GstAdmDtIn = ga.GstAdmDtIn,
+                                                                       GstAdmDtFi = ga.GstAdmDtFi,
+                                                                       GstAdmStat = ga.GstAdmStat,
+                                                                       CarNome = c.CarNome,
+                                                                       UsuNome = u.UsuNome
+                                                                   }).ToListAsync();
 
 
             objRetorno.objCertificadoDadosLojaModel = objCertificadoDadosLojaModel;
@@ -199,7 +199,7 @@ namespace API_Visitatus.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Loja>> PostLoja(Loja loja)
+        public async Task<ActionResult<Loja>> PostLoja([FromBody] Loja loja)
         {
             try
             {
@@ -225,24 +225,15 @@ namespace API_Visitatus.Controllers
         [HttpGet("{lojCodi}")]
         public async Task<ActionResult<IEnumerable<OrientacaoLoja>>> GetOrientacaoLojaByLojCodi(long lojCodi = 0)
         {
-            if (lojCodi > 0)
+            var result = await _context.OrientacaoLojas.FindAsync(lojCodi);
+
+            if (result == null)
             {
-                var result = await _context.OrientacaoLojas.FindAsync(lojCodi);
-
-                //return Ok(new List<OrientacaoLoja> { result! });
-
-                if (result == null)
-                {
-                    return Ok(null);
-                }
-                else
-                {
-                    return Ok(new List<OrientacaoLoja> { result });
-                }
+                return Ok(null);
             }
             else
             {
-                return NotFound("Orientação da Loja não encontrada.");
+                return Ok(new List<OrientacaoLoja> { result });
             }
         }
 

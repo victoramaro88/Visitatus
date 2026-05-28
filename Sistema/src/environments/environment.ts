@@ -7,8 +7,8 @@ export const environment = {
   // version: '1.4.0 | 07/03/2026-12:11 | Localhost', //-> Exibição de presentes confirmados e confirmação de ágape.
   version: '1.5.0 | 26/04/2026-18:16 | Localhost', //-> Exibição de presentes confirmados e confirmação de ágape.
 
-  // apiServicos: 'https://localhost:7237/api',
-  apiServicos: 'https://dev.visitatus.com.br/_API/api',
+  apiServicos: 'https://localhost:7237/api',
+  // apiServicos: 'https://dev.visitatus.com.br/_API/api',
   //apiServicos: 'https://visitatus.com.br/_API/api',
 };
 

@@ -233,40 +233,33 @@ namespace API_Visitatus.Controllers
         {
             try
             {
-                if (lojCodi > 0)
-                {
-                    List<ProximaSessaoModel> result = await (from ses in _context.Sessaos
-                                         join pre in _context.Presencas on ses.SesCodi equals pre.SesCodi into presencas
-                                         from pre in presencas.DefaultIfEmpty() // LEFT JOIN
-                                         where ses.LojCodi == lojCodi && ses.SesDtHr >= DateTime.Now
-                                         group pre by new
-                                         {
-                                             ses.SesCodi,
-                                             ses.SesNume,
-                                             ses.SesDtHr,
-                                             ses.SesLibe,
-                                             ses.SesStat,
-                                             ses.SesNome
-                                         } into grouped
-                                         orderby grouped.Key.SesDtHr ascending
-                                         select new ProximaSessaoModel
-                                         {
-                                             SesCodi = grouped.Key.SesCodi,
-                                             SesNume = grouped.Key.SesNume ?? 0,
-                                             SesDtHr = grouped.Key.SesDtHr,
-                                             SesLibe = grouped.Key.SesLibe,
-                                             SesStat = grouped.Key.SesStat,
-                                             SesNome = grouped.Key.SesNome,
-                                             TotalPresenca = grouped.Count(pre => pre != null)
-                                         }).ToListAsync();
+                List<ProximaSessaoModel> result = await (from ses in _context.Sessaos
+                                                         join pre in _context.Presencas on ses.SesCodi equals pre.SesCodi into presencas
+                                                         from pre in presencas.DefaultIfEmpty() // LEFT JOIN
+                                                         where ses.LojCodi == lojCodi && ses.SesDtHr >= DateTime.Now
+                                                         group pre by new
+                                                         {
+                                                             ses.SesCodi,
+                                                             ses.SesNume,
+                                                             ses.SesDtHr,
+                                                             ses.SesLibe,
+                                                             ses.SesStat,
+                                                             ses.SesNome
+                                                         } into grouped
+                                                         orderby grouped.Key.SesDtHr ascending
+                                                         select new ProximaSessaoModel
+                                                         {
+                                                             SesCodi = grouped.Key.SesCodi,
+                                                             SesNume = grouped.Key.SesNume ?? 0,
+                                                             SesDtHr = grouped.Key.SesDtHr,
+                                                             SesLibe = grouped.Key.SesLibe,
+                                                             SesStat = grouped.Key.SesStat,
+                                                             SesNome = grouped.Key.SesNome,
+                                                             TotalPresenca = grouped.Count(pre => pre != null)
+                                                         }).ToListAsync();
 
 
-                    return Ok(result);
-                }
-                else
-                {
-                    return BadRequest("Parâmetros Inválidos.");
-                }
+                return Ok(result);
             }
             catch (Exception)
             {

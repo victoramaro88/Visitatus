@@ -60,7 +60,7 @@
           <td style="text-align: center;">{{ item.RitCodi }}</td>
           <td style="text-align: center;">{{ item.LojStat ? "Ativa" : "Inativa" }}</td>
           <td style="text-align: center;">
-            <p-button (click)="EditarRegistro(item.UsuNCIM);" icon="pi pi-pen-to-square" [rounded]="true" [text]="true" severity="info" pTooltip="Editar" tooltipPosition="left"/>
+            <p-button (click)="EditarRegistro(item);" icon="pi pi-pen-to-square" [rounded]="true" [text]="true" severity="info" pTooltip="Editar" tooltipPosition="left"/>
           </td>
         </tr>
       </ng-template>
@@ -74,7 +74,7 @@
 
 <!-- FORMULÁRIO DE REGISTRO -->
  <!-- ************************************************************* PROBLEMA NESSA VALIDAÇÃO AQUI, NÃO EXIBE QUADO NÃO É ADM ************************************************************* -->
-<div *ngIf="boolManterRegistro === true" class="container">
+<div *ngIf="boolManterRegistro === true || objPerfilUsuario.perCodi != 1" class="container">
   <div class="formgrid grid">
     <div class="field col-12 md:col-4 p-fluid">
       <label for="lojNome">Nome da Loja</label><br>

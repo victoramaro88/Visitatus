@@ -34,22 +34,10 @@ export class LojaComponent implements OnInit {
   objUsuarioLogado: UsuarioLogadoModel = new UsuarioLogadoModel();
   objPerfilUsuario: PerfilUsuarioListaModel = new PerfilUsuarioListaModel();
   boolManterRegistro: boolean = false;
-  boolEditarRegistro: boolean = false;
+  boolNovoRegistro: boolean = false;
   contCaracterOrientacao: number = 2000;
 
-  objLoja: LojaModel = new LojaModel(
-    0,
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    true,
-    0,
-    0,
-    0
-  );
+  objLoja: LojaModel = new LojaModel(0,'','','','','','',true,0,0,0);
   imagemPadrao: string = 'assets/img/noImage.png';
   imagemBase64: string | null = null;
   lstLoja: LojaModel[] = [];
@@ -89,8 +77,7 @@ export class LojaComponent implements OnInit {
 
   ngOnInit() {
     try {
-      this.GetLoja(this.objPerfilUsuario.lojCodi);
-
+      this.GetPotencia(0);
     } catch (error) {
       this.boolLoading = false;
       console.warn('Falha ao realizar a operação inicial.', error);
@@ -103,13 +90,16 @@ export class LojaComponent implements OnInit {
       next: (response) => {
         this.lstLoja = response;
         this.boolLoading = false;
-        // console.warn('LISTA DE LOJAS:', this.lstLoja);
         this.objLoja = this.lstLoja[0];
+        if(this.objPerfilUsuario.perCodi !== 1){
+          this.LocalizaPotenciaLoja(this.objLoja.PotCodi);
+          this.LocalizaRitoLoja(this.objLoja.RitCodi);
+          this.LocalizaCidadeLoja(this.objLoja.CidCodi);
+          this.LocalizaEstadoLoja(this.objCidade.EstCodi);
+        }
         this.imagemBase64 = this.objLoja.LojLogo ? 'data:image/png;base64,' + this.objLoja.LojLogo : null;
         this.GetOrientacaoLojaByLojCodi(lojCodi);
-        this.GetPotencia(0);
-        this.GetRito(0);
-        this.GetCidades(0);
+        this.boolLoading = false;
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);
@@ -128,13 +118,17 @@ export class LojaComponent implements OnInit {
     try {
       this.http.GetOrientacaoLojaByLojCodi(lojCodi).subscribe({
         next: (response) => {
-          this.lstOrientacaoLoja = response;
-          this.objOrientacaoLoja = this.lstOrientacaoLoja ? this.lstOrientacaoLoja[0] : new OrientacaoLojaModel();
-          this.boolLoading = false;
-          setTimeout(() => {
+          console.warn(response);
+          if(response){
+            this.lstOrientacaoLoja = response;
+            this.objOrientacaoLoja = this.lstOrientacaoLoja ? this.lstOrientacaoLoja[0] : new OrientacaoLojaModel();
+            setTimeout(() => {
               this.AtualizarContador();
+              this.boolLoading = false;
             }, 500);
-          // console.warn('ORIENTAÇÃO DA LOJA:', this.objOrientacaoLoja);
+            console.warn('ORIENTAÇÃO DA LOJA:', this.objOrientacaoLoja);
+            this.boolLoading = false;
+          }
         },
         error: (error) => {
           if(error.status != 404){
@@ -168,8 +162,8 @@ export class LojaComponent implements OnInit {
           PotStat: p.potStat,
           PotSigl: p.potSigl
         }));
-        this.LocalizaPotenciaLoja(this.objLoja.PotCodi);
-        this.boolLoading = false;
+        this.GetRito(0);
+        // this.boolLoading = false;
         // console.warn('LISTA DE POTÊNCIAS:', this.lstPotencia);
       },
       error: (error) => {
@@ -189,31 +183,9 @@ export class LojaComponent implements OnInit {
     this.http.GetRito(ritCodi).subscribe({
       next: (response) => {
         this.lstRito = response.filter(r => r.RitStat === true);
-        this.LocalizaRitoLoja(this.objLoja.RitCodi);
-        this.boolLoading = false;
-        // console.warn('LISTA DE RITOS:', this.lstRito);
-      },
-      error: (error) => {
-        console.error('Erro ao carregar dados:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro: ',
-          detail: 'Falha ao realizar a operação, contate o suporte.',
-        });
-        this.boolLoading = false;
-      },
-    });
-  }
-
-  GetCidades(estCodi: number) {
-    this.boolLoading = true;
-    this.http.GetCidades(estCodi).subscribe({
-      next: (response) => {
-        this.lstCidade = response;
-        this.LocalizaCidadeLoja(this.objLoja.CidCodi);
         this.GetEstado(0);
-        this.boolLoading = false;
-        // console.warn('LISTA DE CIDADES:', this.lstCidade);
+        // this.boolLoading = false;
+        // console.warn('LISTA DE RITOS:', this.lstRito);
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);
@@ -232,11 +204,30 @@ export class LojaComponent implements OnInit {
     this.http.GetEstados(estCodi).subscribe({
       next: (response) => {
         this.lstEstado = response;
-        if(this.objCidade){
-          this.LocalizaEstadoLoja(this.objCidade.EstCodi);
-        }
-        this.boolLoading = false;
+        this.GetCidades(0);
+        // this.boolLoading = false;
         // console.warn('LISTA DE ESTADOS:', this.lstEstado);
+      },
+      error: (error) => {
+        console.error('Erro ao carregar dados:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro: ',
+          detail: 'Falha ao realizar a operação, contate o suporte.',
+        });
+        this.boolLoading = false;
+      },
+    });
+  }
+
+  GetCidades(estCodi: number) {
+    this.boolLoading = true;
+    this.http.GetCidades(estCodi).subscribe({
+      next: (response) => {
+        this.lstCidade = response;
+        this.GetLoja(this.objPerfilUsuario.lojCodi);
+        // this.boolLoading = false;
+        // console.warn('LISTA DE CIDADES:', this.lstCidade);
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);
@@ -272,13 +263,30 @@ export class LojaComponent implements OnInit {
   }
 
   NovoRegistro() {
+    this.objLoja = new LojaModel(0,'','','','','','',true,0,0,0);
+    this.imagemBase64 = this.objLoja.LojLogo ? 'data:image/png;base64,' + this.objLoja.LojLogo : null;
+    this.objOrientacaoLoja = new OrientacaoLojaModel();
     this.boolManterRegistro = true;
-    this.boolEditarRegistro = true;
   }
 
-  EditarRegistro(registro: string) {
-    this.boolEditarRegistro = true;
+  EditarRegistro(loja: LojaModel) {
+    console.warn(loja);
+    this.objLoja = loja;
+    this.LocalizaPotenciaLoja(loja.PotCodi);
+    this.LocalizaRitoLoja(loja.RitCodi);
+    this.LocalizaCidadeLoja(loja.CidCodi);
+    // this.objPotencia = this.lstPotencia.find(p => p.PotCodi === loja.PotCodi)!;
+    // this.objRito = this.lstRito.find(r => r.RitCodi === loja.RitCodi)!;
+    // this.objCidade = this.lstCidade.find(c => c.CidCodi === loja.CidCodi)!;
+    this.imagemBase64 = loja.LojLogo ? 'data:image/png;base64,' + loja.LojLogo : null;
+    this.GetOrientacaoLojaByLojCodi(loja.LojCodi);
+
+    if(this.objCidade){
+      this.LocalizaEstadoLoja(this.objCidade.EstCodi);
+    }
+
     this.boolManterRegistro = true;
+    this.boolLoading = false;
   }
 
   LocalizaPotenciaLoja(potCodi: number){
@@ -315,6 +323,10 @@ export class LojaComponent implements OnInit {
   }
 
   ValidaInformacoes(){
+    if(this.objLoja.LojNome.length === 0){
+      this.messageService.add({severity: 'warn', summary: 'Atenção! ', detail: 'Insira o nome da Loja.'});
+      return false;
+    }
     if(this.objLoja.LojNumL.length === 0){
       this.messageService.add({severity: 'warn', summary: 'Atenção! ', detail: 'Insira o número da Loja.'});
       return false;
@@ -331,12 +343,61 @@ export class LojaComponent implements OnInit {
       this.messageService.add({severity: 'warn', summary: 'Atenção! ', detail: 'O limite máximo de caracteres da orientação é 2.000.'});
       return false;
     }
+    if(this.objCidade && this.objCidade.CidCodi === 0){
+      this.messageService.add({severity: 'warn', summary: 'Atenção! ', detail: 'Insira a cidade da Loja.'});
+      return false;
+    }
 
     return true;
   }
 
   PostLoja(loja: LojaModel){
-    console.warn('POST LOJA: ', loja);
+    this.boolLoading = true;
+    if (this.ValidaInformacoes()) {
+      this.boolLoading = true;
+      // console.warn(this.objConsultaUsrLj);
+      this.http.PostLoja(loja).subscribe({
+        next: (response) => {
+          // console.warn(response);
+          this.boolLoading = false;
+          if (response) {
+            if(this.objOrientacaoLoja.OrlDesc.length > 0){
+              this.boolNovoRegistro = true; //-> FEITO PARA ALTERAR A MENSAGEM FINAL DE ALTERADO PARA INSERIDO NA ORIENTAÇÃO DA LOJA.
+              this.objOrientacaoLoja.LojCodi = response.LojCodi;
+              this.objOrientacaoLoja.UsuCodi = this.objUsuarioLogado.usuCodi;
+              this.objOrientacaoLoja.OrlStat = true;
+              this.PostOrientacaoLoja(this.objOrientacaoLoja);
+            } else {
+              this.messageService.add({
+                  severity: 'success',
+                  summary: 'Sucesso!',
+                  detail: 'Registro inserido com sucesso!'
+              });
+              setTimeout(() => {
+                this.boolLoading = false;
+                this.router.navigate(['/home']);
+              }, 1000);
+            }
+          } else {
+            console.error('Erro ao confirmar a presença:', response);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Erro: ',
+              detail: 'Falha ao realizar a operação, contate o suporte.',
+            });
+          }
+        },
+        error: (error) => {
+          console.error('Erro ao carregar dados:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro: ',
+            detail: 'Falha ao realizar a operação, contate o suporte.',
+          });
+          this.boolLoading = false;
+        },
+      });
+    }
   }
 
   PutLoja(lojCodi: number, loja: LojaModel){
@@ -391,7 +452,19 @@ export class LojaComponent implements OnInit {
           this.http.PostOrientacaoLoja(orientacaoLoja).subscribe({
             next: (response) => {
               if (response) {
-                this.messageService.add({severity: 'success', summary: 'Sucesso!', detail: 'Registro alterado com sucesso!' });
+                if(this.boolNovoRegistro){
+                  this.messageService.add({severity: 'success', summary: 'Sucesso!', detail: 'Registro inserido com sucesso!' });
+                  setTimeout(() => {
+                    this.boolLoading = false;
+                    this.router.navigate(['/home']);
+                  }, 1000);
+                } else{
+                  this.messageService.add({severity: 'success', summary: 'Sucesso!', detail: 'Registro alterado com sucesso!' });
+                  setTimeout(() => {
+                    this.boolLoading = false;
+                    this.router.navigate(['/home']);
+                  }, 1000);
+                }
                 this.boolLoading = false;
               } else{
                 this.boolLoading = false;
@@ -459,8 +532,6 @@ export class LojaComponent implements OnInit {
       this.boolLoading = false;
     }
   }
-
-  CancelaRegitro(){}
 
   // carregar imagem vinda do banco
   carregarImagem(base64Banco: string | null): void {
@@ -591,13 +662,19 @@ export class LojaComponent implements OnInit {
             header: 'Deseja realmente cancelar?',
             message: 'Todas as alterações serão perdidas!',
             accept: () => {
+              if(this.objPerfilUsuario.perCodi === 1){
+                this.objOrientacaoLoja = new OrientacaoLojaModel();
+                this.GetLoja(this.objPerfilUsuario.lojCodi);
+                this.boolManterRegistro = false;
+              } else{
                 this.router.navigate(['/home']);
+              }
             },
             reject: () => {
                 
             }
         });
-    }
+  }
 
   onGlobalFilter(table: Table, event: Event) {
     table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
