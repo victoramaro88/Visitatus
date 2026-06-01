@@ -225,7 +225,8 @@ namespace API_Visitatus.Controllers
         [HttpGet("{lojCodi}")]
         public async Task<ActionResult<IEnumerable<OrientacaoLoja>>> GetOrientacaoLojaByLojCodi(long lojCodi = 0)
         {
-            var result = await _context.OrientacaoLojas.FindAsync(lojCodi);
+            var result = await _context.OrientacaoLojas
+                                .FirstOrDefaultAsync(x => x.LojCodi == lojCodi);
 
             if (result == null)
             {

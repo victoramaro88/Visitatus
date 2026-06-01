@@ -118,7 +118,6 @@ export class LojaComponent implements OnInit {
     try {
       this.http.GetOrientacaoLojaByLojCodi(lojCodi).subscribe({
         next: (response) => {
-          console.warn(response);
           if(response){
             this.lstOrientacaoLoja = response;
             this.objOrientacaoLoja = this.lstOrientacaoLoja ? this.lstOrientacaoLoja[0] : new OrientacaoLojaModel();
@@ -126,7 +125,7 @@ export class LojaComponent implements OnInit {
               this.AtualizarContador();
               this.boolLoading = false;
             }, 500);
-            console.warn('ORIENTAÇÃO DA LOJA:', this.objOrientacaoLoja);
+            // console.warn('ORIENTAÇÃO DA LOJA:', this.objOrientacaoLoja);
             this.boolLoading = false;
           }
         },
@@ -270,7 +269,6 @@ export class LojaComponent implements OnInit {
   }
 
   EditarRegistro(loja: LojaModel) {
-    console.warn(loja);
     this.objLoja = loja;
     this.LocalizaPotenciaLoja(loja.PotCodi);
     this.LocalizaRitoLoja(loja.RitCodi);
@@ -286,7 +284,7 @@ export class LojaComponent implements OnInit {
     }
 
     this.boolManterRegistro = true;
-    this.boolLoading = false;
+    // this.boolLoading = false;
   }
 
   LocalizaPotenciaLoja(potCodi: number){
