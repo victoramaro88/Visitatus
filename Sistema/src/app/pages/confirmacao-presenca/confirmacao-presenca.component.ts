@@ -14,6 +14,8 @@ import { UsuarioModel } from '../../models/Usuario.Model';
 import { PotenciaModel } from '../../models/Potencia.Model';
 import { ChangeDetectorRef } from '@angular/core';
 import { QuantitativoPresencaModel } from '../../models/QuantitativoPresenca.Model';
+import { OrientacaoLojaModel } from '../../models/OrientacaoLoja.Model';
+import { DomSanitizer, SafeHtml  } from '@angular/platform-browser';
 
 interface Mensagem {
   titulo: string;
@@ -69,6 +71,9 @@ export class ConfirmacaoPresencaComponent implements OnInit {
   confirmacaoEmail: string = '';
   objConfirmacoes: QuantitativoPresencaModel = new QuantitativoPresencaModel();
   boolDialogPropaganda: boolean = false;
+  lstOrientacaoLoja: OrientacaoLojaModel[] = [];
+  objOrientacaoLoja: OrientacaoLojaModel = new OrientacaoLojaModel();
+  boolPainelOrientacoesLoja: boolean = false;
 
   constructor(
     private http: HttpService,
@@ -78,7 +83,8 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     private route: ActivatedRoute,
     private base64Service: Base64Service,
     private cryptoService: CryptoService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private sanitizer: DomSanitizer
   ) {
     this.objUsuarioLogado = JSON.parse(
       this.cryptoService.lerDoSessionStorage('usr')
@@ -159,7 +165,8 @@ export class ConfirmacaoPresencaComponent implements OnInit {
           }
         });
 
-        this.boolLoading = false;
+        // this.boolLoading = false;
+        this.GetOrientacaoLojaByLojCodi(this.objSessaoConvite?.LojCodi!);
       },
       error: (error) => {
         console.error('Erro ao carregar dados:', error);
@@ -250,6 +257,38 @@ export class ConfirmacaoPresencaComponent implements OnInit {
         });
     }
   }
+
+  GetOrientacaoLojaByLojCodi(lojCodi: number) {
+      this.boolLoading = true;
+      try {
+        this.http.GetOrientacaoLojaByLojCodi(lojCodi).subscribe({
+          next: (response) => {
+            if(response){
+              this.lstOrientacaoLoja = response;
+              this.objOrientacaoLoja = this.lstOrientacaoLoja ? this.lstOrientacaoLoja[0] : new OrientacaoLojaModel();
+              setTimeout(() => {
+                this.boolLoading = false;
+              }, 500);
+              // console.warn('ORIENTAÇÃO DA LOJA:', this.objOrientacaoLoja);
+              this.boolLoading = false;
+            }
+          },
+          error: (error) => {
+            if(error.status != 404){
+              console.error('Erro ao carregar dados:', error);
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Erro: ',
+                detail: 'Falha ao realizar a operação, contate o suporte.',
+              });
+            }
+            this.boolLoading = false;
+          },
+        });
+      } catch (error) {
+  
+      }
+    }
 
   ConfirmarPresenca() {
     this.objConsultaUsrLj.objUsuarioLoja.UsuNCel =

@@ -85,7 +85,7 @@
             <label for="usuEmai">Confirme seu e-mail</label><br>
             <input [disabled]="boolBlockIntputsUsuario" id="usuEmai" type="text" pInputText [(ngModel)]="confirmacaoEmail" class="p-2" style="text-transform: lowercase;"/>
           </div>
-          <div *ngIf="objSessaoConvite.SesAgap" class="field col-12 md:col-12 p-fluid text-center">
+          <div *ngIf="objSessaoConvite.SesAgap" class="field col-12 md:col-6 p-fluid text-center">
             <label for="jantar">Ficará para o jantar?
               <small> ({{objConsultaUsrLj.preAgap ? 'Sim' : 'Não'}})</small>
             </label><br>
@@ -93,7 +93,11 @@
             <small *ngIf="objSessaoConvite.SesVlAg! > 0" id="jantar">O valor para a participação do jantar <br> é de R$ {{objSessaoConvite.SesVlAg | number:'1.2-2':'pt-BR'}} por pessoa.</small>
             <small *ngIf="objSessaoConvite.SesVlAg! === 0" id="jantar">Não será cobrado valor individual para o jantar.</small>
           </div>
-
+          <div *ngIf="objOrientacaoLoja.OrlDesc.length > 0" class="field col-12 md:col-6 p-fluid text-center">
+            <p>Orientações aos Irmãos visitantes:</p>
+            <p-button (onClick)="boolPainelOrientacoesLoja = true" label="Ver Orientações" [raised]="true" severity="info"/>
+          </div>
+          
         </div>
 
         <div class="text-center mt-3">
@@ -128,7 +132,6 @@
       <p-button label="Fechar" (onClick)="FechaDialog();" />
   </div>
 </p-dialog>
-
 
 
 
@@ -175,6 +178,36 @@
     <br><br>
 
     <p-button label="Fechar" (onClick)="boolDialogPropaganda = false" [raised]="true" severity="danger" size="small"></p-button>
+  </div>
+
+</p-dialog>
+
+
+
+<!-- ORIENTAÇÕES DA LOJA  -->
+<p-dialog
+    [(visible)]="boolPainelOrientacoesLoja"
+    [modal]="true"
+    [style]="{ width: '70vw' }"
+    [breakpoints]="{ '960px': '60vw', '640px': '90vw' }"
+>
+
+  <ng-template pTemplate="header">
+    <div class="flex justify-content-center w-full">
+      <span class="text-center"><b>ORIENTAÇÕES AOS IRMÃOS VISITANTES:</b></span>
+    </div>
+  </ng-template>
+
+  <div *ngIf="boolPainelOrientacoesLoja">
+    <p-editor
+      [(ngModel)]="objOrientacaoLoja.OrlDesc"
+      [style]="{ height: '320px' }">
+      <ng-template pTemplate="header"></ng-template>
+    </p-editor>
+  </div>
+
+  <div class="text-center justify-content-center gap-2 mt-4">
+    <p-button label="Fechar" (onClick)="boolPainelOrientacoesLoja = false" [raised]="true" severity="danger" size="small"></p-button>
   </div>
 
 </p-dialog>

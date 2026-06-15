@@ -4,7 +4,7 @@
 <p-toast></p-toast>
 
 <!-- IMAGEM DE PROPAGANDA -->
-<div>
+<div *ngIf="objSessaoConvite && objSessaoConvite.LojCodi === 1">
   <div class="flex justify-content-center mt-3">
     <p-image
         src="assets/img/Baalbek/Logo_Infancia_Azul.png"
