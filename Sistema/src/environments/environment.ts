@@ -6,7 +6,8 @@ export const environment = {
   // version: '1.3.0 | 23/01/2026-11:49 | Localhost', //-> Exibição de presentes confirmados e confirmação de ágape.
   // version: '1.4.0 | 07/03/2026-12:11 | Localhost', //-> Exibição de presentes confirmados e confirmação de ágape.
   // version: '1.5.0 | 26/04/2026-18:16 | Localhost', //-> Exibição de presentes confirmados e confirmação de ágape.
-  version: '1.6.0 | 01/06/2026-13:50 | Localhost', //-> Exibição de presentes confirmados e confirmação de ágape.
+  // version: '1.6.0 | 01/06/2026-13:50 | Localhost', //-> Exibição de presentes confirmados e confirmação de ágape.
+  version: '1.7.0 | 18/06/2026-14:07 | Localhost', //-> Exibição de Orientações da Loja.
 
   // apiServicos: 'https://localhost:7237/api',
   apiServicos: 'https://dev.visitatus.com.br/_API/api',

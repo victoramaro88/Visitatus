@@ -85,7 +85,8 @@
             <label for="usuEmai">Confirme seu e-mail</label><br>
             <input [disabled]="boolBlockIntputsUsuario" id="usuEmai" type="text" pInputText [(ngModel)]="confirmacaoEmail" class="p-2" style="text-transform: lowercase;"/>
           </div>
-          <div *ngIf="objSessaoConvite.SesAgap" class="field col-12 md:col-6 p-fluid text-center">
+          <!-- <div *ngIf="objSessaoConvite.SesAgap" class="field col-12 md:col-6 p-fluid text-center"> -->
+            <div *ngIf="objSessaoConvite.SesAgap" class="field p-fluid text-center"  [ngClass]="objOrientacaoLoja.OrlDesc.length > 0 ? 'col-12 md:col-6' : 'col-12 md:col-12'">
             <label for="jantar">Ficará para o jantar?
               <small> ({{objConsultaUsrLj.preAgap ? 'Sim' : 'Não'}})</small>
             </label><br>
@@ -93,7 +94,8 @@
             <small *ngIf="objSessaoConvite.SesVlAg! > 0" id="jantar">O valor para a participação do jantar <br> é de R$ {{objSessaoConvite.SesVlAg | number:'1.2-2':'pt-BR'}} por pessoa.</small>
             <small *ngIf="objSessaoConvite.SesVlAg! === 0" id="jantar">Não será cobrado valor individual para o jantar.</small>
           </div>
-          <div *ngIf="objOrientacaoLoja.OrlDesc.length > 0" class="field col-12 md:col-6 p-fluid text-center">
+          <!-- <div *ngIf="objOrientacaoLoja.OrlDesc.length > 0" class="field col-12 md:col-6 p-fluid text-center"> -->
+            <div *ngIf="objOrientacaoLoja.OrlDesc.length > 0" class="field p-fluid text-center" [ngClass]="objSessaoConvite.SesAgap ? 'col-12 md:col-6' : 'col-12 md:col-12'">
             <p>Orientações aos Irmãos visitantes:</p>
             <p-button (onClick)="boolPainelOrientacoesLoja = true" label="Ver Orientações" [raised]="true" severity="info"/>
           </div>

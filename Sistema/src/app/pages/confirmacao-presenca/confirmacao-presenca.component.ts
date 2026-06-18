@@ -270,8 +270,8 @@ export class ConfirmacaoPresencaComponent implements OnInit {
                 this.boolLoading = false;
               }, 500);
               // console.warn('ORIENTAÇÃO DA LOJA:', this.objOrientacaoLoja);
-              this.boolLoading = false;
             }
+            this.boolLoading = false;
           },
           error: (error) => {
             if(error.status != 404){

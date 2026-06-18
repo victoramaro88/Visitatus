@@ -2,7 +2,7 @@
 export const environment = {
   production: false,
 
-  version: '1.6.0 | 01/06/2026-13:50 | Desenvolvimento',
+  version: '1.7.0 | 18/06/2026-14:16 | Desenvolvimento',
 
   apiServicos: 'https://dev.visitatus.com.br/_API/api',
 };
