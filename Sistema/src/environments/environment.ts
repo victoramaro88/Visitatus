@@ -11,7 +11,7 @@ export const environment = {
 
   // apiServicos: 'https://localhost:7237/api',
   apiServicos: 'https://dev.visitatus.com.br/_API/api',
-  //apiServicos: 'https://visitatus.com.br/_API/api',
+  // apiServicos: 'https://visitatus.com.br/_API/api',
 };
 
 //-> PÁGINAS QUE NECESSITAM ATENÇÃO NA URL DAS IMAGENS:
