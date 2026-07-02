@@ -233,12 +233,19 @@ export class ConviteComponent implements OnInit {
   }
 
   abrirLink(tipo: string) {
-    if(tipo === 'INFO'){
-      window.open('https://wa.link/duxusp', '_blank');
-    } else if(tipo === 'IAA') {
-      window.open('https://www.infanciaazul.com.br/', '_blank');
-    } else {
-      window.open('https://pag.ae/81CfhAguq/button', '_blank');
+    switch (tipo) {
+      case 'INFO':
+        window.open('https://wa.link/duxusp', '_blank');
+        break;
+      case 'COMPRA':
+        window.open('https://pag.ae/81CfhAguq/button', '_blank');
+        break;
+      case 'RIFA':
+        window.open('https://rifa.digital/s/RKX1piIwQ47', '_blank');
+        break;
+    
+      default:
+        break;
     }
   }
 }

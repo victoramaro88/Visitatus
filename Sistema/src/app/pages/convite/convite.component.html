@@ -43,7 +43,7 @@
 
 <!-- POPUP DA PROPAGANDA  -->
  <!-- PROGAPANDA DO EVENTO -->
-<!-- <p-dialog
+<p-dialog
     [(visible)]="boolDialogPropaganda"
     [modal]="true"
     [style]="{ width: '70vw' }"
@@ -58,38 +58,31 @@
 
   <div class="flex justify-content-center mb-3">
     <p-image
-        src="assets/img/Baalbek/Convite_Feijoada_IA_2026.png"
+        src="assets/img/Baalbek/Banner_Rifa_Bike_Instituto.png"
         alt="Convite"
+        (click)="abrirLink('RIFA');"
         [preview]="true"
         [imageStyle]="{ width: '100%', height: 'auto', 'max-width': '700px' }">
     </p-image>
   </div>
 
+  
   <div class="text-center justify-content-center gap-2 mt-4">
     <p-button
-      label="Comprar via Pix ou Cartão"
+      label="Acessar Rifa"
       [raised]="true"
       severity="success"
-      (onClick)="abrirLink('COMPRA')">
-    </p-button>
-
-    <br><br>
-
-    <p-button
-      label="Mais informações sobre o evento"
-      [raised]="true"
-      severity="success"
-      (onClick)="abrirLink('INFO')">
+      (onClick)="abrirLink('RIFA')">
     </p-button>
 
     <br><br>
 
     <p-button label="Fechar" (onClick)="boolDialogPropaganda = false" [raised]="true" severity="danger" size="small"></p-button>
   </div>
-</p-dialog> -->
+</p-dialog>
 
 <!-- PROPAGANDA COMUM -->
-<p-dialog
+<!-- <p-dialog
     [(visible)]="boolDialogPropaganda"
     [modal]="true"
     [style]="{ width: '60vw' }"
@@ -134,13 +127,6 @@
         severity="info"
       />
     </div>
-
-    <!-- <ng-template pTemplate="footer">
-        <div class="flex gap-3 mt-1">
-            <p-button label="Cancel" severity="secondary" class="w-full" styleClass="w-full" />
-            <p-button label="Save" class="w-full" styleClass="w-full" />
-        </div>
-    </ng-template> -->
   </p-card>
 
-</p-dialog>
+</p-dialog> -->

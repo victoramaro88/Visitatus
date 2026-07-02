@@ -434,17 +434,32 @@ export class ConfirmacaoPresencaComponent implements OnInit {
     this.confirmacaoEmail = '';
 
     //-> VERIFICANDO SE A LOJA É BAALBEK, SE SIM, ABRE A PROPAGANDA
-    // if(this.objSessaoConvite?.LojCodi === 1){ //-> COMENTADO PARA NÃO EXIBIR MAIS O CONVITE.
-    //   this.boolDialogPropaganda = true;
-    // }
+    if(this.objSessaoConvite?.LojCodi === 1){ //-> COMENTADO PARA NÃO EXIBIR MAIS O CONVITE.
+      this.boolDialogPropaganda = true;
+    }
   }
 
   abrirLink(tipo: string) {
-    if(tipo === 'INFO'){
-      window.open('https://wa.link/duxusp', '_blank');
-    } else {
-      // window.open('https://uticket.com.br/event/01LT2RJ6G62VER', '_blank');
-      window.open('https://pag.ae/81CfhAguq/button', '_blank');
+    switch (tipo) {
+      case 'INFO':
+        window.open('https://wa.link/duxusp', '_blank');
+        break;
+      case 'COMPRA':
+        window.open('https://pag.ae/81CfhAguq/button', '_blank');
+        break;
+      case 'RIFA':
+        window.open('https://rifa.digital/s/RKX1piIwQ47', '_blank');
+        break;
+    
+      default:
+        break;
     }
+
+    // if(tipo === 'INFO'){
+    //   window.open('https://wa.link/duxusp', '_blank');
+    // } else {
+    //   // window.open('https://uticket.com.br/event/01LT2RJ6G62VER', '_blank');
+    //   window.open('https://pag.ae/81CfhAguq/button', '_blank');
+    // }
   }
 }

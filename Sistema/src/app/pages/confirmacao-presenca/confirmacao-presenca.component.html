@@ -153,8 +153,9 @@
 
   <div class="flex justify-content-center mb-3">
     <p-image
-        src="assets/img/Baalbek/Convite_Feijoada_IA_2026.png"
+        src="assets/img/Baalbek/Banner_Rifa_Bike_Instituto.png"
         alt="Convite"
+        (click)="abrirLink('RIFA');"
         [preview]="true"
         [imageStyle]="{ width: '100%', height: 'auto', 'max-width': '700px' }">
     </p-image>
@@ -162,19 +163,10 @@
 
   <div class="text-center justify-content-center gap-2 mt-4">
     <p-button
-      label="Comprar via Pix ou Cartão"
+      label="Acessar Rifa"
       [raised]="true"
       severity="success"
-      (onClick)="abrirLink('COMPRA')">
-    </p-button>
-
-    <br><br>
-
-    <p-button
-      label="Mais informações sobre o evento"
-      [raised]="true"
-      severity="success"
-      (onClick)="abrirLink('INFO')">
+      (onClick)="abrirLink('RIFA')">
     </p-button>
 
     <br><br>
